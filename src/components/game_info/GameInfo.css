@@ -1,0 +1,41 @@
+/* Styles for game info */
+.category-icon {
+	margin-right: 8px;
+	font-size: 22px;
+}
+.category-label-fancy {
+	background: linear-gradient(90deg, #e0c3fc 0%, #8ec5fc 100%);
+	color: #222;
+	font-size: 1.25em;
+	font-weight: bold;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgba(140, 197, 252, 0.18);
+	padding: 10px 22px;
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	animation: pulse-category 1.2s infinite alternate;
+}
+
+@keyframes pulse-category {
+	0% {
+		box-shadow: 0 2px 8px rgba(140, 197, 252, 0.18);
+	}
+	100% {
+		box-shadow: 0 4px 16px rgba(140, 197, 252, 0.32);
+	}
+}
+
+.category-title {
+  color: #3f51b5;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.category-value {
+  color: #7b1fa2;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

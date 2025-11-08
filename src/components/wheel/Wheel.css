@@ -1,0 +1,70 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* height: 100vh; */
+  display: grid;
+  place-items: center;
+}
+
+#wheelOfFortune {
+  display: inline-block;
+  position: relative;
+  overflow: visible;
+  padding-bottom: 40px; /* Spazio extra sotto la ruota */
+}
+
+
+#wheel {
+  display: block;
+}
+
+.wheel-canvas {
+  /* Remove inline transformOrigin and willChange, use CSS */
+  transform-origin: 50% 50%;
+  will-change: transform;
+  transition: transform 0.8s;
+}
+
+.wheel-canvas.wheel-rotating {
+  /* This class can be toggled for JS-driven rotation */
+  /* The actual transform is set inline by JS, but you can add effects here if needed */
+}
+
+.spin-btn, .spin {
+  font: 1em / 0 sans-serif;
+  user-select: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  height: 30%;
+  transform: translate(+55%, +70%);  /* centratura perfetta */
+  background: #fb0303;
+  color: #fff;
+  box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  transition: 0.8s;
+}
+
+.spin-btn.spinning {
+  /* This class can be toggled for spinning state */
+}
+
+.spin-btn::after {
+  content: '';
+  position: absolute;
+  top: -17px;
+  border: 10px solid transparent;
+  border-bottom-color: currentColor;
+  border-top: none;
+}
+
+/* Removed duplicate #spin and #spin::after rules. All button styles are now in .spin-btn and .spin-btn::after. */

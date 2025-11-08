@@ -1,0 +1,58 @@
+.game-actions-container {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-icon {
+  margin-right: 8px;
+  font-size: 22px;
+}
+/* Stili per le azioni di gioco */
+.action-button {
+  padding: 12px 28px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  outline: none;
+  position: relative;
+  letter-spacing: 1px;
+}
+
+.action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.action-button:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.action-button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.guess-phrase-btn {
+  background: linear-gradient(90deg, #ffb347 0%, #ffcc80 100%);
+  color: #333;
+  box-shadow: 0 2px 8px rgba(255, 188, 66, 0.18);
+}
+
+.guess-phrase-btn:not(:disabled):hover {
+  box-shadow: 0 4px 12px rgba(255, 188, 66, 0.25);
+}
+
+.buy-vowel-btn {
+  background: linear-gradient(90deg, #80d8ff 0%, #b3e5fc 100%);
+  color: #333;
+  box-shadow: 0 2px 8px rgba(66, 188, 255, 0.18);
+}
+
+.buy-vowel-btn:not(:disabled):hover {
+  box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
+}

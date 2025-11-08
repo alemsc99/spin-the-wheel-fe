@@ -1,0 +1,124 @@
+{
+  "it": {
+  "start.title": "La ruota della fortuna",
+  "start.rules": "Regole",
+  "start.rulesTitle": "Regole del gioco",
+  "start.rulesBody": [
+    "Indovina la frase misteriosa prima dei tuoi avversari!",
+    "Durante il tuo turno gira la ruota e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
+    "Alcuni spicchi della ruota possono causare penalità (ad esempio 'Passa' o 'Bancarotta') che mettono fine al tuo turno o azzerano i tuoi punti.",
+    "Le vocali si comprano sempre al costo fisso di 500€: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
+    "Puoi provare a indovinare la frase nascosta in qualsiasi momento del tuo turno: se sbagli perdi il turno; se indovini vinci il round e ricevi 500 punti bonus sul tuo punteggio finale.",
+    "I punti si accumulano tra i round: il vincitore è il giocatore con lo score più alto alla fine della partita."
+  ],
+    "start.disclaimer": "Nota: gli importi mostrati in euro sono a scopo ludico e non rappresentano premi in denaro reale o ricompense in contanti.",
+    "players.label": "Numero di giocatori:",
+    "player.placeholder": "Nome giocatore",
+    "players.defaultName": "Giocatore",
+    "start.button": "Inizia",
+    "error.emptyNames": "Inserisci il nome per tutti i giocatori!",
+    "error.duplicateNames": "I nomi dei giocatori devono essere diversi!",
+
+    "overlay.turnSpin": "Gira la ruota!",
+    "overlay.changeTurn": "Cambio turno!",
+    "overlay.wrongAnswerTurn": "Risposta sbagliata! Cambio turno!",
+    "overlay.wrongAnswerSingle": "Risposta sbagliata! Riprova!",
+
+    "players.title": "Giocatori",
+
+    "newgame.confirmTitle": "Vuoi cambiare il numero, il nome dei giocatori o la lingua?",
+    "common.yes": "Sì",
+    "common.no": "No",
+
+    "buyVowel.lowMoney": "Devi avere almeno 500€ per comprare una vocale.",
+    "buyVowel.afterSpin": "Non puoi comprare una vocale dopo aver girato la ruota.",
+
+    "wheel.mustSpinFirst": "Devi prima girare la ruota per poter indovinare una lettera.",
+    "lettersGrid.selectVowel": "Seleziona una vocale da acquistare."
+    ,
+    "actions.guessPhrase": "Indovina la frase",
+    "actions.buyVowel": "Compra una vocale",
+    "phrase.placeholder": "Indovina la frase...",
+    "phrase.confirm": "Conferma",
+    "phrase.cancel": "Annulla",
+    "victory.title": "VITTORIA!",
+    "victory.subtitle": "Hai indovinato la frase"
+  ,
+  "victory.rankingTitle": "Classifica finale",
+  "victory.playAgain": "Gioca ancora",
+  "overlay.attention": "Attenzione!",
+  "game.newGame": "Nuova partita",
+  "wheel.spin": "SPIN"
+    ,
+  "wheel.bankrupt": "Bancarotta",
+  "wheel.bankruptLabel": "Bancarotta",
+  "wheel.pass": "Passa",
+  "lang.it": "Italiano",
+  "lang.en": "Inglese",
+  "start.langSelectionAria": "Selezione lingua",
+  "score.label": "Punteggio:",
+    "category.label": "Categoria:",
+    "board.placeholder": "—"
+  },
+  "en": {
+  "start.title": "Wheel of Fortune",
+  "start.rules": "Rules",
+  "start.rulesTitle": "Game rules",
+  "start.rulesBody": [
+        "Guess the secret phrase before your opponents!",
+        "During your turn, spin the wheel and choose a consonant: if the chosen consonant is in the phrase, all occurrences are revealed and you earn points equal to the wheel value multiplied by the number of occurrences; if the chosen consonant is not in the phrase, the turn passes to the next player.",
+        "Some wheel slices can cause penalties (for example 'Pass' or 'Bankrupt') that end your turn or reset your points to zero.",
+        "Vowels must always be bought at the fixed cost of €500: they are not affected by the wheel value but reveal all occurrences if present.",
+        "You can attempt to guess the hidden phrase at any time during your turn: if you guess wrong you lose the turn; if you guess correctly you win the round and receive a 500-point bonus to your final score.",
+        "Points carry over between rounds: the winner is the player with the highest score at the end of the game."
+    ],
+    "start.disclaimer": "Note: The amounts shown in euros are for entertainment purposes only and do not represent real cash prizes or rewards.",
+    "players.label": "Number of players:",
+    "player.placeholder": "Player name",
+    "players.defaultName": "Player",
+    "start.button": "Start",
+    "error.emptyNames": "Enter a name for every player!",
+    "error.duplicateNames": "Player names must be distinct!",
+
+    "overlay.turnSpin": "Spin the wheel!",
+    "overlay.changeTurn": "Change turn!",
+    "overlay.wrongAnswerTurn": "Wrong answer! Change turn!",
+    "overlay.wrongAnswerSingle": "Wrong answer! Try again!",
+
+    "players.title": "Players",
+
+    "newgame.confirmTitle": "Would you like to change players, their names or the language?",
+    "common.yes": "Yes",
+    "common.no": "No",
+
+    "buyVowel.lowMoney": "You need at least €500 to buy a vowel.",
+    "buyVowel.afterSpin": "You can't buy a vowel after spinning the wheel.",
+
+    "wheel.mustSpinFirst": "You must spin the wheel before guessing a letter.",
+    "lettersGrid.selectVowel": "Select a vowel to buy."
+    ,
+    "actions.guessPhrase": "Guess phrase",
+    "actions.buyVowel": "Buy a vowel",
+    "phrase.placeholder": "Guess the phrase...",
+    "phrase.confirm": "Confirm",
+    "phrase.cancel": "Cancel",
+    "victory.title": "VICTORY!",
+    "victory.subtitle": "You guessed the phrase"
+  ,
+  "victory.rankingTitle": "Final ranking",
+  "victory.playAgain": "Play again",
+  "overlay.attention": "Attention!",
+  "game.newGame": "New game",
+  "wheel.spin": "SPIN"
+    ,
+  "wheel.bankrupt": "Bankruptcy",
+  "wheel.bankruptLabel": "Bankruptcy",
+  "wheel.pass": "Pass",
+  "lang.it": "Italian",
+  "lang.en": "English",
+  "start.langSelectionAria": "Language selection",
+  "score.label": "Score:",
+    "category.label": "Category:",
+    "board.placeholder": "—"
+  }
+}

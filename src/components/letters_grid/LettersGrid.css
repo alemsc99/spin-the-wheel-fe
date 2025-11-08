@@ -1,0 +1,87 @@
+.letters-grid-container {
+  position: relative;
+}
+.letters-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.letter-btn {
+  background: #f7c948;
+  color: #222;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: background 0.2s;
+}
+
+.letter-btn:active {
+  background: #b7b7b3;
+}
+
+
+
+.letter-btn.wrong {
+  animation: shake 0.4s;
+  background: #ff6f6f !important;
+  color: #fff !important;
+  border: 6px solid #d32f2f !important;
+  box-shadow: 0 0 12px 6px #d32f2f !important;
+}
+
+.letter-btn.wrong:disabled {
+  animation: shake 0.4s;
+  background: #ff6f6f !important;
+  color: #fff !important;
+  border: 2px solid #d32f2f !important;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+/* Stili per modalità acquisto vocale */
+.letter-btn.vowel-mode-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.letter-btn.consonant-mode-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.letter-btn.vowel-mode-active {
+  opacity: 1;
+  background: #80d8ff;
+  color: #222;
+  box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
+  border: 2px solid #42bcff;
+}
+
+.letter-btn.vowel-mode-active:hover:not(:disabled) {
+  background: #66ccff;
+  transform: translateY(-2px);
+}
+
+.letters-grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  cursor: not-allowed;
+  background: rgba(0,0,0,0);
+}

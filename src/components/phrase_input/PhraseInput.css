@@ -1,0 +1,76 @@
+/* Stili per l'input della frase */
+.phrase-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.phrase-input {
+  padding: 12px 18px;
+  font-size: 18px;
+  width: 270px;
+  border-radius: 18px;
+  border: 2px solid #ffb347;
+  box-shadow: 0 2px 8px rgba(255, 188, 66, 0.10);
+  outline: none;
+  background: #fff8e1;
+  color: #333;
+  font-weight: 500;
+  letter-spacing: 1px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.phrase-input:focus {
+  border-color: #ffa726;
+  box-shadow: 0 4px 12px rgba(255, 188, 66, 0.18);
+}
+
+.phrase-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.phrase-input-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.phrase-input-button {
+  padding: 12px 28px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  outline: none;
+  letter-spacing: 1px;
+}
+
+.phrase-input-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.confirm-btn {
+  background: linear-gradient(90deg, #ffb347 0%, #ffcc80 100%);
+  color: #333;
+  box-shadow: 0 2px 8px rgba(255, 188, 66, 0.18);
+}
+
+.confirm-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 188, 66, 0.25);
+}
+
+.cancel-btn {
+  background: linear-gradient(90deg, #e0e0e0 0%, #f5f5f5 100%);
+  color: #666;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cancel-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
