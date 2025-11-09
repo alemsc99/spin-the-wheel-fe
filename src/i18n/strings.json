@@ -21,6 +21,7 @@
 
     "overlay.turnSpin": "Gira la ruota!",
     "overlay.changeTurn": "Cambio turno!",
+    "overlay.swapPlayers": "Punteggio scambiato con:",
     "overlay.wrongAnswerTurn": "Risposta sbagliata! Cambio turno!",
     "overlay.wrongAnswerSingle": "Risposta sbagliata! Riprova!",
 
@@ -52,6 +53,7 @@
     ,
   "wheel.bankrupt": "Bancarotta",
   "wheel.bankruptLabel": "Bancarotta",
+  "wheel.swap": "Scambia",
   "wheel.pass": "Passa",
   "lang.it": "Italiano",
   "lang.en": "Inglese",
@@ -82,6 +84,7 @@
 
     "overlay.turnSpin": "Spin the wheel!",
     "overlay.changeTurn": "Change turn!",
+    "overlay.swapPlayers": "Score swapped with:",
     "overlay.wrongAnswerTurn": "Wrong answer! Change turn!",
     "overlay.wrongAnswerSingle": "Wrong answer! Try again!",
 
@@ -113,6 +116,7 @@
     ,
   "wheel.bankrupt": "Bankruptcy",
   "wheel.bankruptLabel": "Bankruptcy",
+  "wheel.swap": "Swap",
   "wheel.pass": "Pass",
   "lang.it": "Italian",
   "lang.en": "English",

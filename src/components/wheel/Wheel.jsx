@@ -44,14 +44,14 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       const firstBankruptcyPos = 0;
       // Choose the first position for "Passa" far from bankruptcies
       const firstPassaPos = 3;
+      //Choose the first position for "Swap"
+      const firstSwapPos = 5;
       // Choose the second position for "Bancarotta" far from the first
       const secondBankruptcyPos = 7;
       // Choose the second position for "Passa" far from the first two
       const secondPassaPos = 10;
-      // Choose the third position for "Bancarotta" far from the first two
-      const thirdBankruptcyPos = 14;
-      // Choose the third position for "Passa" far from the first two
-      const thirdPassaPos = 17;
+      // Choose the second position for "Swap"
+      const secondSwapPos = 14;
       // Insert special values in the calculated positions
       // Create pos/label pairs to alternate Bancarotta/Passa
       finalValues = [...shuffledValues];
@@ -60,8 +60,8 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
         { pos: firstPassaPos, label: "Passa" },
         { pos: secondBankruptcyPos, label: "Bancarotta" },
         { pos: secondPassaPos, label: "Passa" },
-        { pos: thirdBankruptcyPos, label: "Bancarotta" },
-        { pos: thirdPassaPos, label: "Passa" }
+        { pos: firstSwapPos, label: "Swap" },
+        { pos: secondSwapPos, label: "Swap" }
       ];
       // Sort by descending index before splice to avoid index shifting
       specialPairs.sort((a, b) => b.pos - a.pos).forEach(p => {
@@ -103,14 +103,23 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       "#6A1B9A"
     ];
     
-  // Build sectors with raw value and a translated/display label
+    // Build sectors with raw value and a translated/display label
     const sectors = finalValues.map((value, i) => {
-      const color = value === "Bancarotta" ? "#000000" : value === "Passa" ? "#1976d2" : colorPalette[i % colorPalette.length];
-      const displayLabel = value === "Bancarotta"
-        ? (t('wheel.bankruptLabel') || 'BANCAROTTA').toUpperCase()
+      const color =
+      value === "Bancarotta" ? "#000000" :
+      value === "Passa" ? "#1976d2" :
+      value === "Swap" ? "#d025ffff" :
+      colorPalette[i % colorPalette.length];
+
+      const displayLabel =
+      value === "Bancarotta"
+        ? (t('wheel.bankruptLabel'))
         : value === "Passa"
-        ? (t('wheel.pass') || 'Pass')
+        ? (t('wheel.pass'))
+        : value === "Swap"
+        ? (t('wheel.swap'))
         : value;
+
       return { raw: value, color, label: displayLabel };
     });
 
@@ -197,14 +206,17 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       // When spinning show the current sector, otherwise show the latest value from parent (if any)
       let displayText;
       if (isSpinning) {
-        // During spin, show emoji if the sector is Bancarotta or Passa
-        displayText = sector.raw === "Bancarotta" ? "😵‍💫" : sector.raw === "Passa" ? "🔄" : sector.label;
+        // During spin, show emoji if the sector is Bancarotta/Passa/Swap (support localized/raw)
+        const isSwapSector = sector.raw === "Swap" || sector.raw === "Scambia" || sector.raw === t('wheel.swap');
+        displayText = sector.raw === "Bancarotta" ? "😵‍💫" : sector.raw === "Passa" ? "⏭️" : isSwapSector ? "🔀" : sector.label;
       } else if (lastSpinRef.current) {
-        if (lastSpinRef.current === "Bancarotta") displayText = "😵‍💫";
-        else if (lastSpinRef.current === "Passa") displayText = "🔄";
+        const ls = String(lastSpinRef.current);
+        if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) displayText = "😵‍💫";
+        else if (ls === "Passa" || ls === t('wheel.pass')) displayText = "⏭️";
+        else if (ls === "Scambia" || ls === "Swap" || ls === t('wheel.swap')) displayText = "🔀";
         else displayText = `${lastSpinRef.current} €`;
       } else {
-        displayText = t('wheel.spin') || 'SPIN';
+        displayText = t('wheel.spin');
       }
       spinEl.textContent = displayText;
       spinEl.setAttribute('data-sector-color', sector.color);
@@ -227,6 +239,31 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
     function engine() {
       frame();
       if (engineRunning) rafId = requestAnimationFrame(engine);
+    }
+
+    // Helper: build a list of possible raw values to search the sectors array
+    function buildSearchCandidates(val) {
+      const v = String(val);
+      const candidates = new Set();
+      // localized labels (could match server locale)
+      candidates.add(t('wheel.swap'));
+      candidates.add(t('wheel.pass'));
+      candidates.add(t('wheel.bankrupt'));
+      // lower/upper variants
+      candidates.add(v.toLowerCase());
+      candidates.add(v.toUpperCase());
+      return Array.from(candidates).map(x => String(x));
+    }
+
+    // Normalize server-provided value to canonical raw keys used in sectors
+    function normalizeServerValue(val) {
+      const s = String(val);
+      // direct canonical matches
+      if ( s === t('wheel.swap')) return 'Swap';
+      if (s === t('wheel.pass')) return 'Passa';
+      if ( s === t('wheel.bankrupt')) return 'Bancarotta';
+      // numeric values might be strings or numbers, return as-is
+      return s;
     }
 
     function init() {
@@ -305,7 +342,7 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
           ctx.canvas.style.transform = `rotate(${finalAng - PI / 2}rad)`;
 
           // Keep button text as the localized "spin" text during spinning instead of showing dots
-          spinEl.textContent = t('wheel.spin') || 'SPIN';
+          spinEl.textContent = t('wheel.spin');
         };
 
         const startSpinFallback = () => { 
@@ -325,27 +362,22 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
                   return;
                 }
                 const val = spinResult.value;
-                let targetIndex;
-                if (val === "Bancarotta") {
-                  targetIndex = sectors.findIndex(s => s.raw === "Bancarotta");
-                } else if (val === "Passa") {
-                  targetIndex = sectors.findIndex(s => s.raw === "Passa");
-                } else {
-                  targetIndex = sectors.findIndex(s => s.raw === String(val));
-                }
+                const norm = normalizeServerValue(val);
+                const candidates = buildSearchCandidates(val);
+                // Prefer exact match against normalized canonical key, fall back to candidates
+                const targetIndex = sectors.findIndex(s => String(s.raw) === norm) >= 0
+                  ? sectors.findIndex(s => String(s.raw) === norm)
+                  : sectors.findIndex(s => candidates.includes(String(s.raw)));
                 startSpinVisual(targetIndex >= 0 ? targetIndex : Math.floor(Math.random()*tot), spinResult);
               }).catch((e) => { console.log('onSpin promise rejected', e); startSpinFallback(); });
             } else if (res) {
               const spinResult = res;
               const val = spinResult.value;
-              let targetIndex;
-              if (val === "Bancarotta") {
-                targetIndex = sectors.findIndex(s => s.raw === "Bancarotta");
-              } else if (val === "Passa") {
-                targetIndex = sectors.findIndex(s => s.raw === "Passa");
-              } else {
-                targetIndex = sectors.findIndex(s => s.raw === String(val));
-              }
+              const norm = normalizeServerValue(val);
+              const candidates = buildSearchCandidates(val);
+              const targetIndex = sectors.findIndex(s => String(s.raw) === norm) >= 0
+                ? sectors.findIndex(s => String(s.raw) === norm)
+                : sectors.findIndex(s => candidates.includes(String(s.raw)));
               startSpinVisual(targetIndex >= 0 ? targetIndex : Math.floor(Math.random()*tot), spinResult);
             } else {
               console.log('onSpin returned falsy non-promise', res);
@@ -390,8 +422,10 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
     if (!lastSpin) {
       spinEl.textContent = t('wheel.spin') || "SPIN";
     } else {
-      if (lastSpin === "Bancarotta") spinEl.textContent = "😵‍💫";
-      else if (lastSpin === "Passa") spinEl.textContent = "🔄";
+      const ls = String(lastSpin);
+      if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) spinEl.textContent = "😵‍💫";
+      else if (ls === "Passa" || ls === t('wheel.pass')) spinEl.textContent = "⏭️";
+      else if (ls === "Scambia" || ls === "Swap" || ls === t('wheel.swap')) spinEl.textContent = "🔀";
       else spinEl.textContent = `${lastSpin} €`;
     }
   }, [lastSpin, t]);

@@ -63,12 +63,13 @@ export default function App() {
     }
   }, [showTurnOverlay]);
 
-  // Automatically set the current overlay player name when the turn overlay is shown
   useEffect(() => {
-    if (showTurnOverlay && firstPlayerIdx !== null && playerNames.length > 0) {
+    // Only auto-set the overlay name when the overlay is for a normal "change turn" event.
+    // This prevents overwriting custom messages (e.g. swap) that set a different name.
+    if (showTurnOverlay && firstPlayerIdx !== null && playerNames.length > 0 && turnOverlayMsg === 'overlay.changeTurn') {
       setCurrentOverlayPlayerName(playerNames[firstPlayerIdx] || '');
     }
-  }, [firstPlayerIdx, showTurnOverlay, playerNames]);
+  }, [firstPlayerIdx, showTurnOverlay, playerNames, turnOverlayMsg]);
 
   // Keep the displayed `score` synced with the active player's stored score
   useEffect(() => {
@@ -604,6 +605,22 @@ export default function App() {
                     }
                   }
 
+                  
+                  // Show swap overlay when server includes swapped_player (name or index)
+                  if (server.swapped_player !== undefined && server.swapped_player !== null) {
+                    const s = server.swapped_player;
+                    // get overlay.swapPlayer value translated
+                    let overlayMsg = t('overlay.swapPlayers');
+                    // append swapped player name if string
+                    if (typeof s === 'string') {
+                      overlayMsg += ` ${s}`;
+                    }
+                    setTurnOverlayMsg(overlayMsg);
+                    setTurnOverlayIsError(false);
+                    setCurrentOverlayPlayerName(s);
+                    setShowTurnOverlay(true);
+                  }
+
                   // Respect server-provided masked/complete/can_guess (if present). Do not derive them from value.
                   if (server.masked) setMasked(server.masked)
                   if (server.complete) setVictory(true)
@@ -621,9 +638,10 @@ export default function App() {
 
   {/* Overlays */}
       <TurnOverlay
-        show={showTurnOverlay && (numPlayers > 1 ? !!currentOverlayPlayerName : !!turnOverlayMsg)}
+        // Show when the overlay flag is set and there is either a message key or (in multiplayer) a player name
+        show={showTurnOverlay && ( !!turnOverlayMsg || (numPlayers > 1 && !!currentOverlayPlayerName) )}
         playerName={numPlayers > 1 ? currentOverlayPlayerName : ''}
-        messageKey={turnOverlayMsg}
+        messageKey={turnOverlayMsg} 
         isError={turnOverlayIsError}
       />
       {/* New-game confirmation overlay (same style as TurnOverlay) */}

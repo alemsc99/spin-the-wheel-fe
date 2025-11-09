@@ -11,6 +11,7 @@ type NewGameResp = {
 	used_letters?: Record<string, boolean>;
 	last_spin?: number | string;
 	can_guess?: boolean;
+	swapped_player?: string;
 }
 
 type SpinResp = {
