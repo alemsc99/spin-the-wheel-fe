@@ -91,9 +91,9 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       "#FD9D24",
       "#BF8B2E",
       "#3F7E44",
-      "#0A97D9",
+      "#0ad9b7ff",
       "#56C02B",
-      "#00689D",
+      "#51c4fdff",
       "#19486A",
       "#8E24AA",
       "#2E7D32",
@@ -141,25 +141,48 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
     const getIndex = () => Math.floor(tot - (ang / TAU) * tot) % tot;
 
     function drawSector(sector, i) {
-      const ang = arc * i;
+      const startAng = arc * i;
+      const angleMid = startAng + arc / 2;
       ctx.save();
+    
+      // disegna lo spicchio
       ctx.beginPath();
       ctx.fillStyle = sector.color;
       ctx.moveTo(rad, rad);
-      ctx.arc(rad, rad, rad, ang, ang + arc);
-      ctx.lineTo(rad, rad);
+      ctx.arc(rad, rad, rad, startAng, startAng + arc);
+      ctx.closePath();
       ctx.fill();
+    
+      // trasla al centro e ruota sulla bisettrice
       ctx.translate(rad, rad);
-      ctx.rotate(ang + arc / 2);
-      ctx.textAlign = "right";
+    
+      // Normalizza l'angolo in [0, TAU)
+      const normalized = (angleMid % TAU + TAU) % TAU;
+      ctx.rotate(normalized);
+    
+      // Se il testo sarebbe capovolto (settori sul lato sinistro), ruotalo di 180°
+      const flipped = normalized > Math.PI / 2 && normalized < 3 * Math.PI / 2;
+      if (flipped) ctx.rotate(Math.PI);
+    
+      // Stile testo e adattamento larghezza
       ctx.fillStyle = "#fff";
-      // Use smaller font for bankrupt text, normal for numbers
-      if (sector.raw === "Bancarotta") {
-        ctx.font = "bold 10px sans-serif";
-      } else {
-        ctx.font = "bold 14px sans-serif";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+    
+      let fontSize = sector.raw === "Bancarotta" ? 12 : 14;
+      ctx.font = `bold ${fontSize}px sans-serif`;
+    
+      const maxWidth = rad * 0.7;
+      while (ctx.measureText(sector.label).width > maxWidth && fontSize > 8) {
+        fontSize -= 1;
+        ctx.font = `bold ${fontSize}px sans-serif`;
       }
-      ctx.fillText(sector.label, rad - 10, 10);
+    
+      // posizione: lungo il raggio; se abbiamo fatto il flip invertiamo la direzione
+      const textRadius = Math.floor(rad * 0.65);
+      const x = flipped ? -textRadius : textRadius;
+      ctx.fillText(sector.label, x, 0);
+    
       ctx.restore();
     }
 
