@@ -1,0 +1,116 @@
+.leaderboard-root {
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 8px 16px 8px 16px;
+  box-shadow: 0 2px 8px #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: fit-content;
+}
+
+.leaderboard-title {
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  color: #d14c4c;
+  font-size: 20px;
+}
+
+.leaderboard-list {
+  width: 100%;
+}
+
+.leaderboard-entry {
+  width: 100%;
+  margin-bottom: 1px; /* keep compact spacing between entries */
+}
+
+.leaderboard-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 4px 8px;
+  transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+}
+
+
+/* unified highlight for the whole entry (name row + meta row) */
+.leaderboard-entry.active {
+  background: #e3f0ff;
+  border: 2px solid #1976d2;
+  box-shadow: 0 0 8px #90caf9;
+  border-radius: 10px;
+  box-sizing: border-box; /* ensure border doesn't push inner spacing */
+  overflow: hidden; /* clip inner rounding so the two rows appear as one box */
+}
+
+/* meta row under each player (icons like shield / ban) */
+.leaderboard-player-meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 1px 8px 4px 8px; /* reduced spacing under player */
+}
+
+.status-icon {
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.25; /* inactive by default */
+  transition: opacity 0.15s ease, transform 0.12s ease;
+}
+
+.status-icon.active {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.status-icon.inactive {
+  opacity: 0.25;
+}
+
+.leaderboard-name {
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  max-width: 1500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.2em;
+}
+
+.leaderboard-score {
+  background: #ffd54f;
+  border-radius: 8px;
+  padding: 2px 12px;
+  font-weight: 700;
+  color: #222;
+  min-width: 32px;
+  text-align: center;
+}
+
+.leaderboard-deduction {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ffebee;        /* rosso molto chiaro */
+  color: #b71c1c;              /* rosso scuro per il testo */
+  border: 1px solid #ffcdd2;   /* contorno soft */
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  pointer-events: none;
+  animation: lb-pop-float 1.2s ease forwards;
+}
+
+@keyframes lb-pop-float {
+  0%   { transform: translateY(4px) scale(0.9); opacity: 0; }
+  12%  { transform: translateY(-2px) scale(1.06); opacity: 1; }
+  60%  { transform: translateY(-4px) scale(1.0); opacity: 1; }
+  100% { transform: translateY(-10px) scale(1.0); opacity: 0; }
+}

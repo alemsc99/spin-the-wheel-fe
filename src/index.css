@@ -1,16 +1,3 @@
-.fancy-title.rotating {
-	animation: rotate-title 0.9s cubic-bezier(.68,-0.55,.27,1.55);
-}
-
-@keyframes rotate-title {
-	0% { transform: rotate(0deg); }
-	20% { transform: rotate(10deg); }
-	40% { transform: rotate(-12deg); }
-	60% { transform: rotate(8deg); }
-	80% { transform: rotate(-6deg); }
-	100% { transform: rotate(360deg); }
-}
-
 .fancy-title {
 	background: linear-gradient(90deg, #ffb74d 0%, #e0c3fc 100%);
 	color: #222;

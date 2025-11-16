@@ -18,7 +18,8 @@
     "start.button": "Inizia",
     "error.emptyNames": "Inserisci il nome per tutti i giocatori!",
     "error.duplicateNames": "I nomi dei giocatori devono essere diversi!",
-
+    "buyPowerup.lowMoney": "Il tuo score non è sufficiente per acquistare questo potenziamento.",
+    "buyPowerup.cannotUseNow": "Questo potenziamento è già in uso",
     "overlay.turnSpin": "Gira la ruota!",
     "overlay.changeTurn": "Cambio turno!",
     "overlay.swapPlayers": "Punteggio scambiato con:",
@@ -89,6 +90,8 @@
     "overlay.wrongAnswerSingle": "Wrong answer! Try again!",
 
     "players.title": "Players",
+    "buyPowerup.lowMoney": "Your score is not enough to buy this powerup.",
+    "buyPowerup.cannotUseNow": "This powerup is already in use",
 
     "newgame.confirmTitle": "Would you like to change players, their names or the language?",
     "common.yes": "Yes",

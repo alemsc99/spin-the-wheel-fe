@@ -12,6 +12,7 @@ type NewGameResp = {
 	last_spin?: number | string;
 	can_guess?: boolean;
 	swapped_player?: string;
+	powerups?: Record<string, string[]>;
 }
 
 type SpinResp = {
@@ -35,6 +36,7 @@ type GuessResp = {
 	current_player_idx?: number;
 	used_letters?: Record<string, boolean>;
 	can_guess?: boolean;
+	powerups?: Record<string, string[]>;
 }
 
 type GuessPhraseResp = {

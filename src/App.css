@@ -26,6 +26,23 @@
 	}
 }
 
+
+/* Powerups cards */
+.powerup-card {
+	transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.powerup-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 6px 18px rgba(25, 118, 210, 0.08);
+}
+.powerup-btn {
+	font-weight: 700;
+}
+.powerup-btn:focus {
+	outline: 2px solid rgba(25,118,210,0.25);
+	outline-offset: 2px;
+}
+
 @keyframes scoreDecrease {
 	0% {
 		opacity: 0;

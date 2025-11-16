@@ -12,6 +12,8 @@ import './index.css';
 import "./components/letters_grid/LettersGrid.css";
 import { useTranslation } from './i18n/TranslationProvider';
 import TurnOverlay from './components/overlays/TurnOverlay.tsx';
+import Powerups from './components/powerups/Powerups.jsx';
+import Leaderboard from './components/leaderboard/Leaderboard';
 import { GuessPhraseResp, GuessResp, NewGameResp, SpinResp } from './types/api.ts';
 import { debugLog } from './utils/utils.ts';
 import { API_URL } from './constants/constants.jsx';
@@ -49,6 +51,8 @@ export default function App() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [showPhraseInput, setShowPhraseInput] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
+  const [powerups, setPowerups] = useState<Record<string, string[]>>({});
+  const [recentDeductions, setRecentDeductions] = useState<Record<string, number>>({});
 
   const scoreManager = useScoreManager({ API_URL, gameId, playerNames, firstPlayerIdx, setPlayerScores, setScore });
   const { incrementPlayerScore, setPlayerScoreAbsolute } = scoreManager;
@@ -110,6 +114,7 @@ export default function App() {
       setGameId(data.game_id ?? null)
       if (typeof data.topic === 'string') setTopic(data.topic)
       if (typeof data.masked === 'string') setMasked(data.masked)
+      if (data.powerups) setPowerups(data.powerups);
       setLastSpin(data.last_spin !== undefined ? data.last_spin : 0)
       setUsedLetters(data.used_letters ?? {})
       setGuessInput('')
@@ -120,6 +125,7 @@ export default function App() {
       setIsSpinning(false)
       setShowPhraseInput(false)
       setWrongLetters({})
+
 
       if (data.player_scores && Object.keys(data.player_scores).length > 0) {
         setPlayerScores(data.player_scores)
@@ -179,6 +185,67 @@ export default function App() {
       console.error(err);
       showErrorMessage(t('buyVowel.lowMoney'));
     }
+  }
+
+  // Handler for clicks on powerup buttons (called by <Powerups onUse={...} />)
+  // Each case is intentionally left empty for you to implement the desired behavior.
+  async function handlePowerupUse(powerup: string, targetPlayer: string | null = null) {
+    const currentPlayer = firstPlayerIdx !== null ? playerNames[firstPlayerIdx] : null;
+    const prevScores = playerScores;
+
+    if (!currentPlayer) {
+      showErrorMessage('Nessun giocatore attivo');
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/use-powerup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer })
+      });
+      if (!res.ok) {
+        if (res.status === 409){
+          showErrorMessage(t('buyPowerup.cannotUseNow'));
+        }else{
+          console.log(t('buyPowerup.lowMoney'))
+          showErrorMessage(t('buyPowerup.lowMoney'));
+        }
+        return;
+      }
+      const data: any = await res.json();
+      setScoreDecrement(data.cost);
+      setShowScoreDecAnim(true);
+      setTimeout(() => setShowScoreDecAnim(false), 1200);
+
+      // Se Lose colpisce un target e il server restituisce player_scores, calcola la detrazione
+     if (powerup === 'Lose' && targetPlayer && data.player_scores) {
+       const before = prevScores[targetPlayer] ?? 0;
+       const after = data.player_scores[targetPlayer] ?? before;
+       const delta = after - before; // negativo se tolto
+       if (delta < 0) {
+         const amount = Math.abs(delta);
+         setRecentDeductions(prev => ({ ...prev, [targetPlayer]: amount }));
+         // rimuovi il badge dopo breve tempo
+         setTimeout(() => {
+           setRecentDeductions(prev => {
+             const copy = { ...prev };
+             delete copy[targetPlayer];
+             return copy;
+           });
+         }, 1400);
+       }
+     }
+
+      if (data.player_scores) {
+        setPlayerScores(data.player_scores);
+      }
+      if (data.powerups) {
+        setPowerups(data.powerups);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
   }
 
   async function handleGuessVowel(vowel: string) {
@@ -289,11 +356,11 @@ export default function App() {
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
         return;
       }
-      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean } = await res.json()
+      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]> } = await res.json()
 
       // Apply server-provided masked / used letters
       if (typeof data.masked === 'string') setMasked(data.masked)
-
+      if (data.powerups) setPowerups(data.powerups);
       if (data.added_score > 0) {
         setScoreIncrement(data.added_score)
         setShowScoreAnim(true)
@@ -315,6 +382,8 @@ export default function App() {
           setCanGuess(false);
 
           // Rely on server-provided current_player_idx for turn changes when available
+          debugLog('firstPlayerIdx', firstPlayerIdx);
+          debugLog('data.current_player_idx', data.current_player_idx);
           if (numPlayers > 1 && typeof data.current_player_idx === 'number' && firstPlayerIdx !== null && data.current_player_idx !== firstPlayerIdx) {
             debugLog('handleGuess -> server changed turn to idx', data.current_player_idx, 'player', playerNames[data.current_player_idx]);
             setFirstPlayerIdx(data.current_player_idx);
@@ -477,48 +546,29 @@ export default function App() {
           path="/game"
           element={(
             <main style={{ display: 'flex', gap: 40, marginTop: 50 }}>
-              {/* PLAYER LIST COLUMN */}
-              <aside style={{ minWidth: 180, background: '#f7f7f7', borderRadius: 12, padding: 16, boxShadow: '0 2px 8px #eee', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', height: 'fit-content' }}>
-                <h3 style={{ margin: '0 0 12px 0', fontWeight: 700, color: '#d14c4c', fontSize: 18 }}>{t('players.title')}</h3>
-                {playerNames.map((name, idx) => {
-                  const isActive = firstPlayerIdx === idx;
-                  return (
-                    <div
-                      key={idx}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        marginBottom: 10,
-                        width: '100%'
-                      , background: isActive ? '#e3f0ff' : undefined,
-                      border: isActive ? '2px solid #1976d2' : '2px solid transparent',
-                      borderRadius: 10,
-                      boxShadow: isActive ? '0 0 8px #90caf9' : undefined,
-                      position: 'relative',
-                      padding: isActive ? '6px 8px' : '4px 8px',
-                      transition: 'background 0.2s, border 0.2s, box-shadow 0.2s'
-                      }}
-                    >
-                      <span style={{
-                        fontWeight: 600,
-                        color: '#333',
-                        flex: 1,
-                        maxWidth: 1500,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        display: 'inline-block',
-                        verticalAlign: 'middle',
-                        lineHeight: '1.2em',
-                        cursor: 'default'
-                      }} title={name}>{name}</span>
-                      <span style={{ background: '#ffd54f', borderRadius: 8, padding: '2px 12px', fontWeight: 700, color: '#222', minWidth: 32, textAlign: 'center' }}>{(playerScores[name] ?? 0)} €</span>
-                    </div>
-                  );
-                })}
-              </aside>
-
+              {/* LEFT COLUMN: players list with powerups below (separate component) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
+                <Leaderboard
+                 playerNames={playerNames}
+                 playerScores={playerScores}
+                 firstPlayerIdx={firstPlayerIdx}
+                 powerups={powerups}
+                 recentDeductions={recentDeductions}
+               />
+                {/* POWERUPS: in its own container directly below the players list */}
+                {numPlayers > 1 && (
+                  <aside style={{ background: '#f7f7f7', borderRadius: 12, padding: 16, boxShadow: '0 2px 8px #eee', height: 'fit-content' }}>
+                    <Powerups
+                      onUse={handlePowerupUse}
+                      powerups={powerups}
+                      isSpinning={isSpinning}
+                      canGuess={canGuess}
+                      playerNames={playerNames}
+                      currentPlayerIdx={firstPlayerIdx ?? undefined}
+                    />
+                  </aside>
+                )}
+              </div>
               {/* LEFT: categoria, frase segreta, griglia lettere */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <GameInfo topic={topic} masked={masked} />
