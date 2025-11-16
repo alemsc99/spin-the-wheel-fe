@@ -125,6 +125,7 @@ export default function App() {
       setIsSpinning(false)
       setShowPhraseInput(false)
       setWrongLetters({})
+      setPowerups(data.powerups ?? {});
 
 
       if (data.player_scores && Object.keys(data.player_scores).length > 0) {
@@ -677,6 +678,7 @@ export default function App() {
                   if (typeof server.can_guess === 'boolean') setCanGuess(server.can_guess)
 
                   setIsSpinning(false);
+                  setPowerups((spinResult as any).powerups || powerups);
                 }}
                 onNewGame={handleNewGameRequest}
                 onWheelClick={handleWheelClick}

@@ -27,9 +27,11 @@ export default function Leaderboard({ playerNames = [], playerScores = {}, first
           if (powerups && Object.keys(powerups).length > 0) {
             const shieldList = Array.isArray(powerups.Shield) ? powerups.Shield : [];
             const bannedList = Array.isArray(powerups.Skip) ? powerups.Skip : [];
+            const doubleList = Array.isArray(powerups.Double) ? powerups.Double : [];
             status = {
               shield: shieldList.includes(name),
               banned: bannedList.includes(name),
+              double: doubleList.includes(name),
             };
           }
           return (
@@ -56,6 +58,12 @@ export default function Leaderboard({ playerNames = [], playerScores = {}, first
                   title={status.banned ? t('players.ban_on') : t('players.ban_off')}
                 >
                   🚫
+                </span>
+                <span
+                  className={`status-icon double ${status.double ? 'active' : 'inactive'}`}
+                  title={status.double ? t('players.double_on') : t('players.double_off')}
+                >
+                  💰
                 </span>
               </div>
               )}

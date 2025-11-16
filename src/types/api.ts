@@ -24,6 +24,7 @@ type SpinResp = {
 	last_spin?: number | string;
 	can_guess?: boolean;
 	used_letters?: Record<string, boolean>;
+	powerups?: Record<string, string[]>;
 }
 
 type GuessResp = {
