@@ -169,9 +169,8 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       const normalized = (angleMid % TAU + TAU) % TAU;
       ctx.rotate(normalized);
     
-      // Se il testo sarebbe capovolto (settori sul lato sinistro), ruotalo di 180°
-      const flipped = normalized > Math.PI / 2 && normalized < 3 * Math.PI / 2;
-      if (flipped) ctx.rotate(Math.PI);
+      // Ruota sempre di 180° per scrivere dall'esterno verso l'interno
+      ctx.rotate(Math.PI);
     
       // Stile testo e adattamento larghezza
       ctx.fillStyle = "#fff";
@@ -187,10 +186,9 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
         ctx.font = `bold ${fontSize}px sans-serif`;
       }
     
-      // posizione: lungo il raggio; se abbiamo fatto il flip invertiamo la direzione
+      // posizione: lungo il raggio, sempre negativa per scrivere dall'esterno verso il centro
       const textRadius = Math.floor(rad * 0.65);
-      const x = flipped ? -textRadius : textRadius;
-      ctx.fillText(sector.label, x, 0);
+      ctx.fillText(sector.label, -textRadius, 0);
     
       ctx.restore();
     }
