@@ -80,6 +80,17 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
 
   return (
     <div className="start-screen pretty-bg">
+      {/* Elementi decorativi dinamici: stelle e cerchi */}
+      <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
+      <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
+      <svg className="bg-decor bg-star star3" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
+      <svg className="bg-decor bg-star star4" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
+      <svg className="bg-decor bg-star star5" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
+      <div className="bg-decor bg-circle c1"></div>
+      <div className="bg-decor bg-circle c2"></div>
+      <div className="bg-decor bg-circle c3"></div>
+      <div className="bg-decor bg-circle c4"></div>
+      <div className="bg-decor bg-circle c5"></div>
       <div className="start-card start-card-relative">
         {/* Rules button in the top-right inside the card */}
         <div className="rules-btn-container">
