@@ -1,16 +1,55 @@
 {
   "it": {
-  "start.title": "La ruota della fortuna",
+  "start.title": "GiraParole",
   "start.rules": "Regole",
   "start.rulesTitle": "Regole del gioco",
   "start.rulesBody": [
-    "Indovina la frase misteriosa prima dei tuoi avversari!",
-    "Durante il tuo turno gira la ruota e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
-    "Alcuni spicchi della ruota possono causare penalità (ad esempio 'Passa' o 'Bancarotta') che mettono fine al tuo turno o azzerano i tuoi punti.",
-    "Le vocali si comprano sempre al costo fisso di 500€: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
-    "Puoi provare a indovinare la frase nascosta in qualsiasi momento del tuo turno: se sbagli perdi il turno; se indovini vinci il round e ricevi 500 punti bonus sul tuo punteggio finale.",
-    "I punti si accumulano tra i round: il vincitore è il giocatore con lo score più alto alla fine della partita."
+    {
+      "title": "Regole del gioco",
+      "content": [
+        "Indovina la frase misteriosa prima dei tuoi avversari!",
+        "Il vincitore è il giocatore con lo score più alto alla fine della partita.",
+        "Durante il tuo turno gira la ruota e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
+        "Le vocali si comprano sempre al costo fisso di 500€: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
+        "Puoi provare a indovinare la frase nascosta in qualsiasi momento del tuo turno: se sbagli perdi il turno; se indovini vinci il round e ricevi 500 punti bonus sul tuo punteggio finale."
+      ]
+    },
+    {
+      "title": "Settori speciali",
+      "content": [
+        "Tutti i settori contengono valori numerici tranne alcuni settori speciali.",
+        "<strong>Prossimo</strong> fa terminare il tuo turno senza guadagnare o perdere punti.",
+        "<strong>Blackout</strong> azzera il tuo punteggio e termina il turno. Il turno passa al giocatore successivo.",
+        "<strong>Scambia</strong> inverte il tuo punteggio con quello di un altro giocatore casuale. Mantieni il tuo turno dopo lo scambio.",
+        "I settori <strong>Scambia</strong> e <strong>Prossimo</strong> sono presenti solo nella modalità con più giocatori.",
+        "L'effetto dei settori speciali e il valore aggiunto al punteggio dipende dall'effetto di eventuali potenziamenti attivi per il giocatore."
+      ]
+    },
+    {
+      "title": "Rullo verticale",
+      "content": [
+        "Nel momento in cui viene indovinato più del 50% delle lettere della frase nascosta, appare un rullo verticale con diversi valori.",
+        "<strong>x0.5</strong> dimezza il punteggio di tutti i giocatori.",
+        "<strong>x2</strong> raddoppia il punteggio di tutti i giocatori.",
+        "<strong>x5</strong> moltiplica per 5 il punteggio di tutti i giocatori.",
+        "😈 azzera il punteggio di tutti i giocatori.",
+        "🆕 cambia la frase misteriosa. I punteggi e i potenziamenti rimangono invariati ma la frase da indovinare cambia."
+      ]
+    },
+    {
+      "title": "Potenziamenti",
+      "content": [
+        "I potenziamenti possono essere acquistati prima di girare la ruota utilizzando lo score accumulato.",
+        "Ogni potenziamento ha un costo e un effetto specifico che può influenzare il valore della ruota, l'effetto dei settori speciali o altri aspetti del gioco.",
+        "Non è possibile acquistare lo stesso potenziamento se è già attivo.",
+        "<strong>Salta 🚫</strong> permette di indicare un giocatore che salterà il suo prossimo turno.",
+        "<strong>Doppio 💰</strong> raddoppia il valore ottenuto girando la ruota per il turno corrente.",
+        "<strong>Scudo 🛡️</strong> protegge da un effetto di Blackout, Prossimo, Salta o nel caso di consonante sbagliata. Rimane attivo finché non viene utilizzato.",
+        "<strong>Inferno</strong> permette di indicare un giocatore a cui azzerare il punteggio."
+      ]
+    }
   ],
+    "start.wheelSectors": "Settori della ruota",
     "start.disclaimer": "Nota: gli importi mostrati in euro sono a scopo ludico e non rappresentano premi in denaro reale o ricompense in contanti.",
     "players.label": "Numero di giocatori:",
     "player.placeholder": "Nome giocatore",
@@ -50,12 +89,11 @@
   "victory.playAgain": "Gioca ancora",
   "overlay.attention": "Attenzione!",
   "game.newGame": "Nuova partita",
-  "wheel.spin": "SPIN"
-    ,
-  "wheel.bankrupt": "Bancarotta",
-  "wheel.bankruptLabel": "Bancarotta",
+  "wheel.spin": "SPIN",
+  "wheel.bankrupt": "Blackout",
+  "wheel.bankruptLabel": "Blackout",
   "wheel.swap": "Scambia",
-  "wheel.pass": "Passa",
+  "wheel.pass": "Prossimo",
   "lang.it": "Italiano",
   "lang.en": "Inglese",
   "start.langSelectionAria": "Selezione lingua",
@@ -64,16 +102,53 @@
     "board.placeholder": "—"
   },
   "en": {
-  "start.title": "Wheel of Fortune",
+  "start.title": "SpinWords",
   "start.rules": "Rules",
-  "start.rulesTitle": "Game rules",
+  "start.rulesTitle": "Game Rules",
   "start.rulesBody": [
-        "Guess the secret phrase before your opponents!",
-        "During your turn, spin the wheel and choose a consonant: if the chosen consonant is in the phrase, all occurrences are revealed and you earn points equal to the wheel value multiplied by the number of occurrences; if the chosen consonant is not in the phrase, the turn passes to the next player.",
-        "Some wheel slices can cause penalties (for example 'Pass' or 'Bankrupt') that end your turn or reset your points to zero.",
-        "Vowels must always be bought at the fixed cost of €500: they are not affected by the wheel value but reveal all occurrences if present.",
-        "You can attempt to guess the hidden phrase at any time during your turn: if you guess wrong you lose the turn; if you guess correctly you win the round and receive a 500-point bonus to your final score.",
-        "Points carry over between rounds: the winner is the player with the highest score at the end of the game."
+    {
+      "title": "Game Rules",
+      "content": [
+        "Guess the mystery phrase before your opponents!",
+        "The winner is the player with the highest score at the end of the game.",
+        "During your turn, spin the wheel and choose a consonant: if the chosen consonant is present in the phrase, all occurrences are revealed and you earn points equal to the wheel value multiplied by the number of occurrences; if the consonant is not present, the turn passes to the next player.",
+        "Vowels always cost a fixed price of €500: they are not influenced by the wheel value but reveal all occurrences if present.",
+        "You can try to guess the hidden phrase at any time during your turn: if you are wrong you lose your turn; if you guess it you win the round and receive a 500-point bonus on your final score."
+      ]
+    },
+    {
+      "title": "Special Sectors",
+      "content": [
+        "All sectors contain numerical values except for some special sectors.",
+        "<strong>Next</strong> ends your turn without earning or losing points.",
+        "<strong>Blackout</strong> resets your score to zero and ends your turn. The turn passes to the next player.",
+        "<strong>Swap</strong> swaps your score with that of a random other player. You keep your turn after the swap.",
+        "The <strong>Swap</strong> and <strong>Next</strong> sectors are only present in multiplayer mode.",
+        "The effect of special sectors and the score added depends on any active power-ups for the player."
+      ]
+    },
+    {
+      "title": "Vertical Reel",
+      "content": [
+        "When more than 50% of the letters in the hidden phrase have been guessed, a vertical reel with different values appears.",
+        "<strong>x0.5</strong> halves all players' scores.",
+        "<strong>x2</strong> doubles all players' scores.",
+        "<strong>x5</strong> multiplies all players' scores by 5.",
+        "😈 resets all players' scores to zero.",
+        "🆕 changes the mystery phrase. Scores and power-ups remain unchanged but the phrase to guess changes."
+      ]
+    },
+    {
+      "title": "Power-ups",
+      "content": [
+        "Power-ups can be purchased before spinning the wheel using accumulated score.",
+        "Each power-up has a specific cost and effect that can influence the wheel value, the effect of special sectors, or other aspects of the game.",
+        "You cannot purchase the same power-up if it is already active.",
+        "<strong>Skip 🚫</strong> allows you to designate a player who will skip their next turn.",
+        "<strong>Double 💰</strong> doubles the value obtained by spinning the wheel for the current turn.",
+        "<strong>Shield 🛡️</strong> protects against the effect of Blackout, Next, Skip, or a wrong consonant. It remains active until used."
+    ]
+    }
     ],
     "start.disclaimer": "Note: The amounts shown in euros are for entertainment purposes only and do not represent real cash prizes or rewards.",
     "players.label": "Number of players:",
@@ -117,10 +192,10 @@
   "game.newGame": "New game",
   "wheel.spin": "SPIN"
     ,
-  "wheel.bankrupt": "Bankruptcy",
-  "wheel.bankruptLabel": "Bankruptcy",
+  "wheel.bankrupt": "Blackout",
+  "wheel.bankruptLabel": "Blackout",
   "wheel.swap": "Swap",
-  "wheel.pass": "Pass",
+  "wheel.pass": "Next",
   "lang.it": "Italian",
   "lang.en": "English",
   "start.langSelectionAria": "Language selection",

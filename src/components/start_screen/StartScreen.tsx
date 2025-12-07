@@ -26,6 +26,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const [names, setNames] = useState([] as string[]);
   const [error, setError] = useState('');
   const [showRules, setShowRules] = useState(false);
+  const [rulesPage, setRulesPage] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const n = Number(e.target.value);
@@ -68,15 +69,21 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
 
   // Use translations from strings.json instead of hardcoded rules.
-  const rulesLabel = t('start.rules') || (lang === 'it' ? 'Regole' : 'Rules');
-  const rulesTitle = t('start.rulesTitle') || (lang === 'it' ? 'Regole del gioco' : 'Game rules');
-  // The translation map may contain an array for start.rulesBody. The `t` helper is typed
-  // to return string, but at runtime the JSON value can be an array. Handle both cases.
+  const rulesLabel = t('start.rules');
+  // rulesBody: array di oggetti { title, content }
   const _rawRulesBody: any = (t('start.rulesBody') as any);
-  const rulesBody: string[] = Array.isArray(_rawRulesBody)
+  // fallback: se è stringa o array di stringhe legacy
+  const rulesBody: Array<{ title: string; content: string[] }> = Array.isArray(_rawRulesBody) && typeof _rawRulesBody[0] === 'object'
     ? _rawRulesBody
-    : (typeof _rawRulesBody === 'string' ? _rawRulesBody.split('\n') : []);
-  const disclaimer :any = (t('start.disclaimer') as any);
+    : Array.isArray(_rawRulesBody)
+      ? _rawRulesBody.map((str: string, i: number) => ({ title: `Pagina ${i + 1}`, content: [str] }))
+      : typeof _rawRulesBody === 'string'
+        ? [{ title: 'Regole', content: _rawRulesBody.split('\n') }]
+        : [];
+  const disclaimer: any = (t('start.disclaimer') as any);
+
+  const totalRulesPages = Math.max(1, rulesBody.length);
+  const currentPage = rulesBody[rulesPage] || { title: '', content: [] };
 
   return (
     <div className="start-screen pretty-bg">
@@ -98,7 +105,10 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             type="button"
             className="rules-btn pretty-btn cute-rules-btn"
             aria-label={rulesLabel}
-            onClick={() => setShowRules(true)}
+            onClick={() => {
+              setRulesPage(0);
+              setShowRules(true);
+            }}
           >
             <span className="rules-btn-icon" role="img" aria-label="rules">📜</span>
             {rulesLabel}
@@ -168,7 +178,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             className="rules-overlay"
             role="dialog"
             aria-modal="true"
-            aria-label={rulesTitle}
+            aria-label={currentPage.title}
             onClick={() => setShowRules(false)}
           >
             <div
@@ -179,15 +189,34 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               <div className="rules-modal-icon-wrapper">
                 <span className="rules-modal-icon" role="img" aria-label="wheel">🎡</span>
               </div>
-              {/* (Removed close button in top right) */}
-              <h2 className="rules-modal-title">{rulesTitle}</h2>
+              <h2 className="rules-modal-title">{currentPage.title}</h2>
               <div className="rules-content">
                 <ol className="rules-list">
-                  {rulesBody.slice(0, -1).map((line, i) => (
-                    <li key={i} className="rules-list-item">{line}</li>
+                  {currentPage.content.map((line, i) => (
+                    <li key={i} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }}></li>
                   ))}
                 </ol>
                 <div className="rules-disclaimer">{disclaimer}</div>
+                <div className="rules-pagination">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    <button
+                      className="pretty-btn rules-page-btn"
+                      disabled={rulesPage === 0}
+                      onClick={() => setRulesPage(p => Math.max(0, p - 1))}
+                      style={{ alignSelf: 'flex-start' }}
+                    >
+                      {lang === 'it' ? 'Indietro' : 'Previous'}
+                    </button>
+                    <button
+                      className="pretty-btn rules-page-btn"
+                      disabled={rulesPage >= totalRulesPages - 1}
+                      onClick={() => setRulesPage(p => Math.min(totalRulesPages - 1, p + 1))}
+                      style={{ alignSelf: 'flex-end' }}
+                    >
+                      {lang === 'it' ? 'Avanti' : 'Next'}
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="rules-modal-footer">
                 <button
