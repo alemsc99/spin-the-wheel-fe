@@ -15,6 +15,17 @@ type NewGameResp = {
 	powerups?: Record<string, string[]>;
 }
 
+type ReelSpinResponse = {
+    value: string;
+    player_scores: Record<string, number>;
+    masked: string;
+    phrase: string;
+    used_letters: Record<string, boolean>;
+    last_spin: number | string;
+    current_spin: number;
+    topic: string;
+}
+
 type SpinResp = {
 	value: number | string;
 	old_score: number;
@@ -25,6 +36,7 @@ type SpinResp = {
 	can_guess?: boolean;
 	used_letters?: Record<string, boolean>;
 	powerups?: Record<string, string[]>;
+	showReel?: boolean;
 }
 
 type GuessResp = {
@@ -38,6 +50,7 @@ type GuessResp = {
 	used_letters?: Record<string, boolean>;
 	can_guess?: boolean;
 	powerups?: Record<string, string[]>;
+	showReel?: boolean;
 }
 
 type GuessPhraseResp = {
@@ -51,4 +64,4 @@ type GuessPhraseResp = {
 	can_guess?: boolean;
 }
 
-export { NewGameResp, SpinResp, GuessResp, GuessPhraseResp };
+export { NewGameResp, SpinResp, GuessResp, GuessPhraseResp, ReelSpinResponse};

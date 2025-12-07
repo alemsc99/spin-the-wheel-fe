@@ -1,0 +1,15 @@
+.reel-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 3000;
+}
+.reel-box {
+  background: #fff; border-radius: 18px; padding: 32px 48px; box-shadow: 0 6px 32px rgba(0,0,0,0.18); display: flex; flex-direction: column; align-items: center;
+}
+.reel-values {
+  display: flex; flex-direction: column; gap: 18px; font-size: 2rem; font-weight: bold;
+}
+.reel-value.selected {
+  color: #ff9800; background: #ffe0b2; border-radius: 8px; padding: 8px 24px;
+}
+.reel-close-btn {
+  margin-top: 24px; padding: 10px 28px; font-size: 1.1rem; border-radius: 8px; border: none; background: #ffd54f; font-weight: bold; cursor: pointer;
+}

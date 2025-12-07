@@ -14,14 +14,14 @@ import { useTranslation } from './i18n/TranslationProvider';
 import TurnOverlay from './components/overlays/TurnOverlay.tsx';
 import Powerups from './components/powerups/Powerups.jsx';
 import Leaderboard from './components/leaderboard/Leaderboard';
-import { GuessPhraseResp, GuessResp, NewGameResp, SpinResp } from './types/api.ts';
+import { GuessPhraseResp, GuessResp, NewGameResp, ReelSpinResponse, SpinResp } from './types/api.ts';
 import { debugLog } from './utils/utils.ts';
 import { API_URL } from './constants/constants.jsx';
 import useScoreManager from './hooks/ScoreManager.ts';
+import HalfGameReel from './components/half_game_reel/HalfGameReel.jsx';
 
 
 export default function App() {
-
   const [numPlayers, setNumPlayers] = useState(2);
   const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [playerScores, setPlayerScores] = useState<Record<string, number>>({});
@@ -53,10 +53,26 @@ export default function App() {
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [powerups, setPowerups] = useState<Record<string, string[]>>({});
   const [recentDeductions, setRecentDeductions] = useState<Record<string, number>>({});
-
   const scoreManager = useScoreManager({ API_URL, gameId, playerNames, firstPlayerIdx, setPlayerScores, setScore });
   const { incrementPlayerScore, setPlayerScoreAbsolute } = scoreManager;
-  
+  const [showReel, setShowReel] = useState(false);
+  const [reelResult, setReelResult] = useState<string | null>(null);
+  const [pendingShowReel, setPendingShowReel] = useState(false);
+  const [pendingReelPayload, setPendingReelPayload] = useState<ReelSpinResponse | null>(null);
+
+  // Mostra il reel, chiama il backend e chiudi l'overlay in automatico
+  useEffect(() => {
+    if (pendingShowReel) {
+      setIsSpinning(true);
+      let timer = setTimeout(() => {
+        setShowReel(true);
+        fetchReelResult();
+        setPendingShowReel(false);
+      }, 1000); 
+      setIsSpinning(false);
+      return () => clearTimeout(timer);
+    }
+  }, [pendingShowReel]);
 
   useEffect(() => {
     if (showTurnOverlay) {
@@ -108,8 +124,8 @@ export default function App() {
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
-      const data: NewGameResp & { num_players?: number, player_names?: string[], player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, last_spin?: string | number, masked?: string, complete?: boolean } = await res.json()
-
+      const data: NewGameResp & { num_players?: number, player_names?: string[], player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, last_spin?: string | number, masked?: string, complete?: boolean, phrase?: string } = await res.json()
+      debugLog('data:', data);
       // Accept and apply server-provided authoritative state fields when present.
       setGameId(data.game_id ?? null)
       if (typeof data.topic === 'string') setTopic(data.topic)
@@ -126,7 +142,6 @@ export default function App() {
       setShowPhraseInput(false)
       setWrongLetters({})
       setPowerups(data.powerups ?? {});
-
 
       if (data.player_scores && Object.keys(data.player_scores).length > 0) {
         setPlayerScores(data.player_scores)
@@ -151,6 +166,42 @@ export default function App() {
       console.error(err)
     }
   }
+  // Fetch the reel result from backend
+  async function fetchReelResult() {
+    if (!gameId) return;
+    try {
+      const res = await fetch(`${API_URL}/reel-spin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ game_id: gameId })
+      });
+      const data: ReelSpinResponse = await res.json();
+      debugLog(data)
+      // Only store result; apply effects when reel animation ends
+      setReelResult(data.value);
+      setPendingReelPayload(data);
+    } catch (err) {
+      setReelResult('error');
+    }
+  }
+
+  function applyReelResult() {
+    if (!pendingReelPayload) return;
+    const data = pendingReelPayload;
+    setLastSpin(data.last_spin);
+    setUsedLetters(data.used_letters);
+    setPlayerScores(data.player_scores);
+    setTopic(data.topic);
+    setMasked(data.masked);
+    setPendingReelPayload(null);
+  }
+
+  function handleReelClose() {
+    setShowReel(false);
+    applyReelResult();
+  }
+
+
 
   async function handleBuyVowel() {
     if (!gameId) return;
@@ -169,7 +220,6 @@ export default function App() {
         return;
       }
       const data: any = await res.json();
-
       // Apply authoritative state from server
       if (data.player_scores) {
         setPlayerScores(data.player_scores);
@@ -295,6 +345,9 @@ export default function App() {
         setFirstPlayerIdx(data.current_player_idx);
       }
       if (data.complete) setVictory(true);
+      if (data.showReel && !showReel) {
+        setPendingShowReel(true);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -325,7 +378,7 @@ export default function App() {
         setIsSpinning(false);
         return false;
       }
-      const data: SpinResp = await res.json()
+      const data: SpinResp= await res.json();
       return data
     }catch(err){
       console.error(err)
@@ -358,7 +411,6 @@ export default function App() {
         return;
       }
       const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]> } = await res.json()
-
       // Apply server-provided masked / used letters
       if (typeof data.masked === 'string') setMasked(data.masked)
       if (data.powerups) setPowerups(data.powerups);
@@ -415,6 +467,10 @@ export default function App() {
       }
 
       if (data.complete) setVictory(true)
+
+      if (data.showReel && !showReel) {
+        setPendingShowReel(true);
+      }
     }catch(err){
       console.error(err)
     }
@@ -716,7 +772,11 @@ export default function App() {
           .sort((a, b) => b.score - a.score)}
       />
       <ErrorOverlay show={!!errorMsg} message={errorMsg} />
-
+      <HalfGameReel
+        show={showReel}
+        result={reelResult}
+        onClose={handleReelClose}
+      />
       <footer style={{ marginTop: 24 }}>
       </footer>
     </div>
