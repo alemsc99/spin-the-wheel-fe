@@ -1,4 +1,4 @@
-export const API_URL = process.env.BACKEND_URL;;
+export const API_URL = import.meta.env.VITE_BACKEND_URL;
 import doubleImg from '../components/powerups/images/double.png';
 import shieldImg from '../components/powerups/images/shield.png';
 import skipImg from '../components/powerups/images/skip.png';
