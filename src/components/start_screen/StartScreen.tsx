@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
 import './StartScreen.css';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async'; 
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 import { SEO } from '../SEO/SEO';
 
@@ -16,9 +17,7 @@ declare global {
 const MIN_PLAYERS = 1;
 const MAX_PLAYERS = 4;
 
-
 type StartScreenProps = {
-  // onStart(players, names?)
   onStart: (players: number, names?: string[]) => void;
 };
 
@@ -26,6 +25,35 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const { lang, t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  const isIt = lang === 'it'; // Comodo per i check
+
+  // --- DEFINIZIONE DATI STRUTTURATI (JSON-LD) ---
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": isIt ? "GiraParole" : "SpinWords",
+    "description": isIt 
+      ? "Gioco di parole e di enigmistica online gratuito. Gira la ruota, usa i powerups e indovina la frase prima degli altri giocatori." 
+      : "Free online word puzzle game. Spin the wheel, use power-ups, and guess the phrase before other players.",
+    "genre": ["Puzzle", "Word Game", "Trivia", "Enigmistic"],
+    "url": "https://spinwords.pages.dev",
+    "playMode": ["SinglePlayer", "Multiplayer"],
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "inLanguage": ["it", "en"],
+    "author": {
+      "@type": "Person",
+      "name": "SpinWords Team"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    }
+  };
+  // ----------------------------------------------
+
   const switchLanguage = (nextLang: Lang) => {
     if (nextLang === lang) {
       return;
@@ -38,9 +66,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       navigate(targetPath);
     }
   };
-  const openRulesPage = () => {
-    navigate('rules');
-  };
+
 
   const [players, setPlayers] = useState(MIN_PLAYERS);
   const [names, setNames] = useState([] as string[]);
@@ -75,7 +101,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         setError(t('error.emptyNames'));
         return;
       }
-      // Controllo nomi duplicati (case insensitive, trim)
       const normalized = names.map(n => n.trim().toLowerCase());
       const hasDuplicates = normalized.some((name, idx) => normalized.indexOf(name) !== idx);
       if (hasDuplicates) {
@@ -91,16 +116,25 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   return (
     <div className="start-screen pretty-bg">
       <SEO 
-        title={lang === 'it' 
-          ? "Giraparole - Gioco di Parole Online Gratis" 
+        title={isIt 
+          ? "GiraParole - Gioco di Parole Online Gratis" 
           : "SpinWords - Free Online Word Puzzle Game"}
-        description={lang === 'it'
-          ? "Gioca a Giraparole online! Gira la ruota, scegli una consonante e indovina la frase segreta. Sfida gli amici o gioca da solo in questo puzzle game e metti alla prova le tue capacità di enigmistica."
-          : "Play SpinWords online! Spin the wheel, choose a consonant, and guess the secret phrase. Challenge your friends or play solo in this word puzzle game and test your word skills."}
+        description={isIt
+          ? "Gioca a GiraParole online! Gira la ruota, scegli una consonante e indovina la frase segreta. Sfida gli amici o gioca da solo in questo puzzle game."
+          : "Play SpinWords online! Spin the wheel, choose a consonant, and guess the secret phrase. Challenge your friends or play solo in this word puzzle game."}
         lang={lang as 'it' | 'en'}
         path=""
       />
-      {/* Elementi decorativi dinamici: stelle e cerchi */}
+
+      {/* --- INIEZIONE JSON-LD --- */}
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(schemaData)}
+        </script>
+      </Helmet>
+      {/* ------------------------- */}
+
+      {/* SVG Decorativi (Invariati) */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star3" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
@@ -111,20 +145,25 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <div className="bg-decor bg-circle c3"></div>
       <div className="bg-decor bg-circle c4"></div>
       <div className="bg-decor bg-circle c5"></div>
+
       <div className="start-card start-card-relative">
-        {/* Rules button in the top-right inside the card */}
+        
         <div className="rules-btn-container">
-          <button
-            type="button"
+          <Link
+            to="rules" // React Router gestirà il link relativo (es. /it/rules)
             className="rules-btn pretty-btn cute-rules-btn"
             aria-label={rulesLabel}
-            onClick={openRulesPage}
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} // Fix rapido per assicurarsi che sembri un bottone
           >
             <span className="rules-btn-icon" role="img" aria-label="rules">📜</span>
             {rulesLabel}
-          </button>
+          </Link>
         </div>
+        {/* ------------------------------------------------ */}
+
         <h1 className="title fancy-title">{t('start.title')}</h1>
+        
+        {/* ... Il resto del form (select players, inputs) rimane invariato ... */}
         <div className="players-select pretty-select">
           <div className="players-select-label-group">
             <label htmlFor="players" className="players-label">

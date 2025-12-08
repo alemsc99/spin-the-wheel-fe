@@ -713,9 +713,9 @@ function AppContent() {
           element={(
               <>
                 <SEO 
-                  title={lang === 'it' ? "Partita in corso - Giraparole" : "Playing SpinWords - Guess the Phrase"}
+                  title={lang === 'it' ? "Partita in corso - GiraParole" : "Playing SpinWords - Guess the Phrase"}
                   description={lang === 'it'
-                    ? "Partita a Giraparole in corso. Gira la ruota e vinci!"
+                    ? "Partita a GiraParole in corso. Gira la ruota e vinci!"
                     : "SpinWords match in progress. Spin the wheel and win!"}
                   lang={lang as 'it' | 'en'}
                   path="/game"

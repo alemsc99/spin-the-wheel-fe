@@ -55,9 +55,9 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
   return (
     <div className="scoreboard-page">
       <SEO 
-        title={window.localStorage.getItem('lang') === 'it' ? "Regole punteggio di Giraparole - Guida Ufficiale" : "SpinWords Rules - Official Guide"}
+        title={window.localStorage.getItem('lang') === 'it' ? "Regole punteggio di GiraParole - Guida Ufficiale" : "SpinWords Rules - Official Guide"}
         description={window.localStorage.getItem('lang') === 'it'
-        ? "Scopri come funziona il punteggio a Giraparole. Le regole per guadagnare punti e vincere premi."
+        ? "Scopri come funziona il punteggio a GiraParole. Le regole per guadagnare punti e vincere premi."
         : "Learn how scoring works in SpinWords. Rules to earn points and win prizes."}
         lang={window.localStorage.getItem('lang') as 'it' | 'en'}
         path="/rules"
@@ -100,9 +100,9 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
           ) : (
             <>
             <SEO 
-              title={window.localStorage.getItem('lang') === 'it' ? "Il vincitore di Giraparole - Classifica finale" : "SpinWords Winner - Final Ranking"}
+              title={window.localStorage.getItem('lang') === 'it' ? "Il vincitore di GiraParole - Classifica finale" : "SpinWords Winner - Final Ranking"}
               description={window.localStorage.getItem('lang') === 'it'
-              ? "Chi ha vinto a Giraparole? Scopri la classifica finale dei giocatori."
+              ? "Chi ha vinto a GiraParole? Scopri la classifica finale dei giocatori."
               : "Who won SpinWords? Check out the final player rankings."}
               lang={window.localStorage.getItem('lang') as 'it' | 'en'}
               path="/rules"

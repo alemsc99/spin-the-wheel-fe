@@ -82,9 +82,9 @@ export default function RulesPage(): React.ReactElement {
   return (
     <div className="rules-page">
         <SEO 
-            title={activeLang === 'it' ? "Regole di Giraparole - Guida Ufficiale" : "SpinWords Rules - Official Guide"}
+            title={activeLang === 'it' ? "Regole di GiraParole - Guida Ufficiale" : "SpinWords Rules - Official Guide"}
             description={activeLang === 'it'
-            ? "Scopri come giocare a Giraparole. Le regole del gioco, come funzionano i potenziamenti e i vari spicchi del tabellone."
+            ? "Scopri come giocare a GiraParole. Le regole del gioco, come funzionano i potenziamenti e i vari spicchi del tabellone."
             : "Learn how to play SpinWords. Game rules, how power-ups work, and the different sections of the board."}
             lang={activeLang as 'it' | 'en'}
             path="/rules"
