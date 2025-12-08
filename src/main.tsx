@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
 import { TranslationProvider } from './i18n/TranslationProvider'
+import { HelmetProvider } from 'react-helmet-async'
 import posthog from 'posthog-js'
 
 posthog.init('phc_B3NBaN3DFIywYW6JBKoc62Bp552jTxhYwtl18g7vmy8',
@@ -15,8 +16,10 @@ posthog.init('phc_B3NBaN3DFIywYW6JBKoc62Bp552jTxhYwtl18g7vmy8',
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <TranslationProvider>
-      <App />
-    </TranslationProvider>
+    <HelmetProvider>
+      <TranslationProvider>
+        <App />
+      </TranslationProvider>
+    </HelmetProvider>
   </React.StrictMode>
 )

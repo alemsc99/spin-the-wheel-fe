@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import translations from './strings.json';
 
 export type Lang = 'it' | 'en';
+
+type TranslationsMap = Record<string, unknown>;
+const translationResources = translations as Record<Lang, TranslationsMap>;
 
 type TranslationContextType = {
   lang: Lang;
@@ -21,26 +24,26 @@ export const TranslationProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   });
 
-  const setLang = (l: Lang) => {
+  const setLang = useCallback((l: Lang) => {
     setLangState(l);
     try {
       localStorage.setItem('lang', l);
     } catch (e) {
       // ignore
     }
-  };
+  }, []);
 
-  const t = (key: string) => {
+  const t = useCallback((key: string) => {
     try {
-      // @ts-ignore
-      const map = translations[lang] || {};
-      return map[key] ?? key;
+      const map = translationResources[lang] || {};
+      const value = map[key];
+      return typeof value === 'string' ? value : key;
     } catch (e) {
       return key;
     }
-  };
+  }, [lang]);
 
-  const value = useMemo(() => ({ lang, setLang, t }), [lang]);
+  const value = useMemo(() => ({ lang, setLang, t }), [lang, setLang, t]);
 
   return (
     <TranslationContext.Provider value={value}>

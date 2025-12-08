@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Header from './components/header/Header.jsx';
 import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
 import GameCenter from './components/game_center/GameCenter.jsx';
-import { VictoryOverlay, ErrorOverlay } from './components/overlays/Overlays.jsx';
+import { SEO } from './components/SEO/SEO';
+import { ErrorOverlay } from './components/overlays/Overlays.jsx';
 import StartScreenWrapper from './components/start_screen/StartScreenWrapper.tsx';
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
 import "./components/letters_grid/LettersGrid.css";
-import { useTranslation } from './i18n/TranslationProvider';
+import { useTranslation, type Lang } from './i18n/TranslationProvider';
 import TurnOverlay from './components/overlays/TurnOverlay.tsx';
 import Powerups from './components/powerups/Powerups.jsx';
 import Leaderboard from './components/leaderboard/Leaderboard';
@@ -19,9 +20,14 @@ import { debugLog } from './utils/utils.ts';
 import { API_URL } from './constants/constants.jsx';
 import useScoreManager from './hooks/ScoreManager.ts';
 import HalfGameReel from './components/half_game_reel/HalfGameReel.jsx';
+import { Helmet } from 'react-helmet-async';
+import RulesPage from './components/rules/RulesPage';
+import ScoreboardPage from './components/scoreboard/ScoreboardPage.tsx';
 
 
-export default function App() {
+const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
+const LEGACY_ROUTES = new Set<string>(['game', 'rules', 'scoreboard']);
+function AppContent() {
   const [numPlayers, setNumPlayers] = useState(2);
   const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [playerScores, setPlayerScores] = useState<Record<string, number>>({});
@@ -31,7 +37,7 @@ export default function App() {
   const [turnOverlayMsg, setTurnOverlayMsg] = useState('');
   const [turnOverlayIsError, setTurnOverlayIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const { t } = useTranslation();
+  const { t, lang, setLang } = useTranslation();
   const [canBuyVowel, setCanBuyVowel] = useState(false);
   const [wrongLetters, setWrongLetters] = useState({} as Record<string, boolean>);
   const [gameId, setGameId] = useState<string | null>(null);
@@ -59,6 +65,53 @@ export default function App() {
   const [reelResult, setReelResult] = useState<string | null>(null);
   const [pendingShowReel, setPendingShowReel] = useState(false);
   const [pendingReelPayload, setPendingReelPayload] = useState<ReelSpinResponse | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const pathname = location.pathname;
+  const pathSegments = useMemo(() => pathname.split('/').filter(Boolean), [pathname]);
+  const pathLangCandidate = pathSegments[0];
+  const restSegments = useMemo(() => {
+    if (pathSegments.length === 0) {
+      return [] as string[];
+    }
+    const candidate = pathSegments[0];
+    if (!candidate) {
+      return [] as string[];
+    }
+    if (!SUPPORTED_LANGS.includes(candidate as Lang)) {
+      if (pathSegments.length === 1 && LEGACY_ROUTES.has(candidate)) {
+        return [candidate];
+      }
+      return pathSegments.slice(1);
+    }
+    return pathSegments.slice(1);
+  }, [pathSegments]);
+  const pathLangAsLang = pathLangCandidate as Lang | undefined;
+  const restPath = restSegments.join('/');
+  const restPathWithSlash = restPath ? `/${restPath}` : '';
+
+  useEffect(() => {
+    if (!pathLangCandidate) {
+      const target = `/${lang}${restPathWithSlash}`;
+      if (pathname !== target) {
+        navigate(target, { replace: true });
+      }
+      return;
+    }
+
+    if (!SUPPORTED_LANGS.includes(pathLangCandidate as Lang)) {
+      const target = `/${lang}${restPathWithSlash}`;
+      if (pathname !== target) {
+        navigate(target, { replace: true });
+      }
+      return;
+    }
+
+    if (pathLangCandidate !== lang) {
+      setLang(pathLangCandidate as Lang);
+    }
+  }, [lang, navigate, pathLangCandidate, pathname, restPathWithSlash, setLang]);
 
   // Mostra il reel, chiama il backend e chiudi l'overlay in automatico
   useEffect(() => {
@@ -559,8 +612,10 @@ export default function App() {
   function confirmNewGameYes() {
     // Return to start screen so user can change players/names
     setShowNewGameConfirm(false);
-    // Navigate back to the start route
-    window.location.href = '/';
+    const targetPath = localizedStartPath;
+    if (location.pathname !== targetPath) {
+      navigate(targetPath);
+    }
   }
 
   async function confirmNewGameNo() {
@@ -583,25 +638,88 @@ export default function App() {
 
   // language is handled by TranslationProvider (localStorage + context)
 
+  const effectiveLang = pathLangAsLang && SUPPORTED_LANGS.includes(pathLangAsLang) ? pathLangAsLang : lang;
+  const localizedStartPath = `/${effectiveLang}`;
+  const localizedGamePath = `${localizedStartPath}/game`;
+  const localizedRulesPath = `${localizedStartPath}/rules`;
+  const localizedScoreboardPath = `${localizedStartPath}/scoreboard`;
+  const localizedPath = `${localizedStartPath}${restPathWithSlash}`;
+  const isGameRoute = restPath === 'game';
+  const isRulesRoute = restPath === 'rules';
+  const isScoreboardRoute = restPath === 'scoreboard';
+  const seoPrefix = isGameRoute
+    ? 'seo.game'
+    : isRulesRoute
+      ? 'seo.rules'
+      : isScoreboardRoute
+        ? 'seo.scoreboard'
+        : 'seo.home';
+  const pageTitle = t(`${seoPrefix}.title`);
+  const pageDescription = t(`${seoPrefix}.description`);
+  const ogLocale = effectiveLang === 'it' ? 'it_IT' : 'en_US';
+  const alternateLang = SUPPORTED_LANGS.find(code => code !== effectiveLang) ?? effectiveLang;
+  const ranking = useMemo(
+    () => playerNames.map((name) => ({ name, score: playerScores[name] ?? 0 })).sort((a, b) => b.score - a.score),
+    [playerNames, playerScores]
+  );
+
+  useEffect(() => {
+    if (victory && pathname !== localizedScoreboardPath) {
+      navigate(localizedScoreboardPath);
+    }
+  }, [victory, pathname, localizedScoreboardPath, navigate]);
+
+  // RIMOSSO: redirect automatico da /scoreboard a /game
+
   return (
-    <BrowserRouter>
-      <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
+    <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
+      <Helmet>
+        <html lang={effectiveLang} />
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:locale" content={ogLocale} />
+        <link rel="alternate" hrefLang={effectiveLang} href={localizedPath || '/'} />
+        {alternateLang !== effectiveLang ? (
+          <link rel="alternate" hrefLang={alternateLang} href={`/${alternateLang}${restPathWithSlash}`} />
+        ) : null}
+        <link rel="alternate" hrefLang="x-default" href={`/en${restPathWithSlash}`} />
+      </Helmet>
       <Header />
 
       <Routes>
-        <Route path="/" element={<StartScreenWrapper
-          newGame={newGame}
-          setNumPlayers={setNumPlayers}
-          setPlayerNames={setPlayerNames}
-          setPlayerScores={setPlayerScores}
-          setFirstPlayerIdx={setFirstPlayerIdx}
-          setTurnOverlayMsg={setTurnOverlayMsg}
-          setTurnOverlayIsError={setTurnOverlayIsError}
-          setShowTurnOverlay={setShowTurnOverlay}
-        />} />
+        <Route path="/" element={<Navigate to={localizedStartPath} replace />} />
+        <Route path="/game" element={<Navigate to={localizedGamePath} replace />} />
+        <Route path="/rules" element={<Navigate to={localizedRulesPath} replace />} />
+        <Route path="/scoreboard" element={<Navigate to={localizedScoreboardPath} replace />} />
         <Route
-          path="/game"
+          path="/:lang"
+          element={
+            <StartScreenWrapper
+              newGame={newGame}
+              setNumPlayers={setNumPlayers}
+              setPlayerNames={setPlayerNames}
+              setPlayerScores={setPlayerScores}
+              setFirstPlayerIdx={setFirstPlayerIdx}
+              setTurnOverlayMsg={setTurnOverlayMsg}
+              setTurnOverlayIsError={setTurnOverlayIsError}
+              setShowTurnOverlay={setShowTurnOverlay}
+            />
+          }
+        />
+        <Route
+          path="/:lang/game"
           element={(
+              <>
+                <SEO 
+                  title={lang === 'it' ? "Partita in corso - Giraparole" : "Playing SpinWords - Guess the Phrase"}
+                  description={lang === 'it'
+                    ? "Partita a Giraparole in corso. Gira la ruota e vinci!"
+                    : "SpinWords match in progress. Spin the wheel and win!"}
+                  lang={lang as 'it' | 'en'}
+                  path="/game"
+                />
             <main style={{ display: 'flex', gap: 40, marginTop: 50 }}>
               {/* LEFT COLUMN: players list with powerups below (separate component) */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
@@ -740,12 +858,24 @@ export default function App() {
                 onWheelClick={handleWheelClick}
               />
             </main>
+              </>
           )}
         />
-      </Routes>
+        <Route
+          path="/:lang/scoreboard"
+          element={(
+            <ScoreboardPage
+              ranking={ranking}
+              onPlayAgain={handleNewGameRequest}
+            />
+          )}
+        />
+        <Route path="/:lang/rules" element={<RulesPage />} />
+        <Route path="*" element={<Navigate to={localizedStartPath} replace />} />
+          </Routes>
 
-  {/* Overlays */}
-      <TurnOverlay
+          {/* Overlays */}
+          <TurnOverlay
         // Show when the overlay flag is set and there is either a message key or (in multiplayer) a player name
         show={showTurnOverlay && ( !!turnOverlayMsg || (numPlayers > 1 && !!currentOverlayPlayerName) )}
         playerName={numPlayers > 1 ? currentOverlayPlayerName : ''}
@@ -765,12 +895,6 @@ export default function App() {
           </div>
         </div>
       )}
-      <VictoryOverlay 
-        show={victory} 
-        onNewGame={handleNewGameRequest}
-        ranking={playerNames.map((name) => ({ name, score: playerScores[name] ?? 0 }))
-          .sort((a, b) => b.score - a.score)}
-      />
       <ErrorOverlay show={!!errorMsg} message={errorMsg} />
       <HalfGameReel
         show={showReel}
@@ -780,7 +904,14 @@ export default function App() {
       <footer style={{ marginTop: 24 }}>
       </footer>
     </div>
-    </BrowserRouter>
   )
 
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }

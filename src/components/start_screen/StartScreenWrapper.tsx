@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import StartScreen from './StartScreen';
 import { useTranslation } from '../../i18n/TranslationProvider';
 
@@ -25,7 +25,9 @@ export default function StartScreenWrapper({
   setShowTurnOverlay,
 }: Props) {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const params = useParams<{ lang?: string }>();
+  const { t, lang } = useTranslation();
+  const activeLang = params.lang === 'en' || params.lang === 'it' ? params.lang : lang;
 
   return (
     <StartScreen
@@ -42,7 +44,7 @@ export default function StartScreenWrapper({
         setShowTurnOverlay(true);
         // start the new game
         await newGame(players, finalNames);
-        navigate('/game');
+        navigate(`/${activeLang}/game`);
       }}
     />
   );
