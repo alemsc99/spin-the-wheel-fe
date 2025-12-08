@@ -1,3 +1,57 @@
+/* Regole scoreboard - stile migliorato */
+.scoreboard-rules {
+  background: linear-gradient(135deg, #fffbe6 60%, #ffe066 100%);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(244, 159, 49, 0.10);
+  padding: 28px 18px 22px 18px;
+  margin-bottom: 12px;
+  text-align: left;
+  position: relative;
+  z-index: 2;
+}
+.rules-title {
+  font-size: 1.5rem;
+  color: #f49f31;
+  font-weight: bold;
+  margin-bottom: 18px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.rules-list li {
+  background: #fff9e3;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  padding: 12px 14px 12px 14px;
+  font-size: 1.08rem;
+  color: #7a5a00;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(244, 159, 49, 0.07);
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.rules-list li .rule-icon {
+  display: block;
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+  opacity: 0.92;
+  position: static;
+  left: unset;
+  top: unset;
+  transform: none;
+}
 .scoreboard-page {
   position: relative;
   min-height: 100vh;

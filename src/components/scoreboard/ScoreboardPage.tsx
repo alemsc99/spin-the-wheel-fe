@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { useTranslation } from '../../i18n/TranslationProvider';
+import strings from '../../i18n/strings.json';
 import '../start_screen/StartScreen.css';
 import '../overlays/Overlays.css';
 import './ScoreboardPage.css';
@@ -11,6 +13,43 @@ export type ScoreboardEntry = {
 
 export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: ScoreboardEntry[]; onPlayAgain: () => void; }): React.ReactElement {
   const { t } = useTranslation();
+  const translate = t as unknown as (key: string, options?: Record<string, unknown>) => unknown;
+
+  // Se la pagina viene aperta senza ranking, mostra le regole
+  const showRules = !ranking || ranking.length === 0;
+  // Fix universale per i18next: usa returnObjects: true
+  let rulesList: any = translate('scoreboard.rulesList', { returnObjects: true });
+  // Fallback: se la traduzione restituisce letteralmente 'scoreboard.rulesList', prendi la lista dal json
+  if (
+    typeof rulesList === 'string' &&
+    rulesList.trim() === 'scoreboard.rulesList'
+  ) {
+    // Determina la lingua attiva (default 'it')
+    let lang = 'it';
+    try {
+      // @ts-ignore
+      lang = (window.localStorage && window.localStorage.getItem('lang')) || 'it';
+    } catch {}
+    // @ts-ignore
+    rulesList = (strings as any)[lang]?.['scoreboard.rulesList'] || [];
+  }
+  if (!Array.isArray(rulesList)) {
+    const rulesListRaw = translate('scoreboard.rulesList');
+    if (Array.isArray(rulesListRaw)) {
+      rulesList = rulesListRaw;
+    } else if (typeof rulesListRaw === 'string') {
+      try {
+        rulesList = JSON.parse(rulesListRaw);
+      } catch {
+        rulesList = [rulesListRaw];
+      }
+    } else {
+      rulesList = [];
+    }
+  }
+  const rulesTitle = t('scoreboard.rulesTitle');
+  rulesList = Array.isArray(rulesList) ? rulesList : [];
+  rulesList = rulesList as string[];
 
   return (
     <div className="scoreboard-page">
@@ -27,35 +66,55 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
 
       <div className="scoreboard-wrapper">
         <div className="scoreboard-card">
-          <span className="trophy-icon">🏆</span>
-          <h1 className="victory-title ">{t('victory.title')}</h1>
-          <p className="subtitle">
-            {t('victory.subtitle')} <span className="celebration-icon">🎉</span>
-          </p>
-          <div className="ranking-container">
-            <h2 className="ranking-title">{t('victory.rankingTitle')}</h2>
-            <ol className="ranking-list">
-              {ranking.length === 0 ? (
-                <li className="ranking-item">
-                  <span className="ranking-name">{t('scoreboard.empty') || '—'}</span>
-                </li>
-              ) : (
-                ranking.map((player, index) => (
-                  <li key={player.name || index} className={`ranking-item${index === 0 ? ' first' : ''}`}>
-                    <span className="ranking-pos">{index + 1}.</span>
-                    <span className="ranking-name">{player.name}</span>
-                    <span className="ranking-score">{player.score} €</span>
+          {showRules ? (
+            <div className="scoreboard-rules">
+              <h1 className="rules-title">
+                <span role="img" aria-label="lightbulb">💡</span>
+                {rulesTitle}
+              </h1>
+              <ul className="rules-list">
+                {rulesList.map((rule: any, idx: number) => (
+                  <li key={idx}>
+                    <span className="rule-icon" aria-hidden="true">
+                      {idx === 0 && '🔠'}
+                      {idx === 1 && '🛠️'}
+                      {idx === 2 && '💸'}
+                      {idx === 3 && '🎁'}
+                      {idx > 3 && '⭐'}
+                    </span>
+                    <span className="rule-desc" dangerouslySetInnerHTML={{ __html: rule }} />
                   </li>
-                ))
-              )}
-            </ol>
-          </div>
-          <div className="scoreboard-actions">
-            <button type="button" className="play-again-btn" onClick={onPlayAgain}>
-              <span className="sparkles-icon">✨</span>
-              {t('victory.playAgain')}
-            </button>
-          </div>
+                ))}
+              </ul>
+              {/* <p className="rules-note">{rulesNote}</p> */}
+            </div>
+          ) : (
+            <>
+              <span className="trophy-icon">🏆</span>
+              <h1 className="victory-title ">{t('victory.title')}</h1>
+              <p className="subtitle">
+                {t('victory.subtitle')} <span className="celebration-icon">🎉</span>
+              </p>
+              <div className="ranking-container">
+                <h2 className="ranking-title">{t('victory.rankingTitle')}</h2>
+                <ol className="ranking-list">
+                  {ranking.map((player, index) => (
+                    <li key={player.name || index} className={`ranking-item${index === 0 ? ' first' : ''}`}>
+                      <span className="ranking-pos">{index + 1}.</span>
+                      <span className="ranking-name">{player.name}</span>
+                      <span className="ranking-score">{player.score} €</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div className="scoreboard-actions">
+                <button type="button" className="play-again-btn" onClick={onPlayAgain}>
+                  <span className="sparkles-icon">✨</span>
+                  {t('victory.playAgain')}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

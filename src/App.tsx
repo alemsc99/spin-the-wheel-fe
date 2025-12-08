@@ -668,11 +668,7 @@ function AppContent() {
     }
   }, [victory, pathname, localizedScoreboardPath, navigate]);
 
-  useEffect(() => {
-    if (!victory && pathname === localizedScoreboardPath && !showNewGameConfirm) {
-      navigate(localizedGamePath, { replace: true });
-    }
-  }, [victory, pathname, localizedScoreboardPath, localizedGamePath, showNewGameConfirm, navigate]);
+  // RIMOSSO: redirect automatico da /scoreboard a /game
 
   return (
     <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>

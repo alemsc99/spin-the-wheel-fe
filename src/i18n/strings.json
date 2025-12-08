@@ -96,7 +96,13 @@
   "victory.subtitle": "Hai indovinato la frase",
   "victory.rankingTitle": "Classifica finale",
   "victory.playAgain": "Gioca ancora",
-    "scoreboard.empty": "Nessun punteggio disponibile",
+  "scoreboard.rulesTitle": "Regole di assegnazione punteggio",
+  "scoreboard.rulesList": [
+    "Ogni lettera indovinata aumenta il punteggio del giocatore di un valore pari al numero di occorrenze della lettera moltiplicato per il valore della ruota.",
+    "I potenziamenti influenzano il punteggio in modi diversi a seconda del tipo di potenziamento acquistato.",
+    "I potenziamenti hanno un costo specifico che viene detratto dal punteggio del giocatore al momento dell'acquisto.",
+    "Il punteggio del giocatore che indovina la frase riceve un bonus fisso di 500 punti."
+  ],
   "overlay.attention": "Attenzione!",
   "game.newGame": "Nuova partita",
   "wheel.spin": "SPIN",
@@ -207,11 +213,17 @@
   "victory.subtitle": "You guessed the phrase",
   "victory.rankingTitle": "Final ranking",
   "victory.playAgain": "Play again",
-    "scoreboard.empty": "No scores yet",
+
   "overlay.attention": "Attention!",
   "game.newGame": "New game",
-  "wheel.spin": "SPIN"
-    ,
+  "wheel.spin": "SPIN",
+  "scoreboard.rulesTitle": "Scoring rules",
+  "scoreboard.rulesList": [
+    "Each correct letter increases the player's score by an amount equal to the number of occurrences of the letter multiplied by the wheel value.",
+    "Power-ups affect the score in different ways depending on the type of power-up purchased.",
+    "Power-ups have a specific cost that is deducted from the player's score at the time of purchase.",
+    "The score of the player who guesses the phrase receives a fixed bonus of 500 points."
+  ],
   "wheel.bankrupt": "Blackout",
   "wheel.bankruptLabel": "Blackout",
   "wheel.swap": "Swap",
