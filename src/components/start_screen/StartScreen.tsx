@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
 import './StartScreen.css';
-import { useTranslation } from '../../i18n/TranslationProvider';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 
 declare global {
   namespace JSX {
@@ -21,12 +22,28 @@ type StartScreenProps = {
 };
 
 export default function StartScreen({ onStart }: StartScreenProps): React.ReactElement {
-  const { lang, setLang, t } = useTranslation();
+  const { lang, t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const switchLanguage = (nextLang: Lang) => {
+    if (nextLang === lang) {
+      return;
+    }
+    const segments = location.pathname.split('/').filter(Boolean);
+    const restSegments = segments.slice(1);
+    const rest = restSegments.length ? `/${restSegments.join('/')}` : '';
+    const targetPath = `/${nextLang}${rest}`;
+    if (location.pathname !== targetPath) {
+      navigate(targetPath);
+    }
+  };
+  const openRulesPage = () => {
+    navigate('rules');
+  };
+
   const [players, setPlayers] = useState(MIN_PLAYERS);
   const [names, setNames] = useState([] as string[]);
   const [error, setError] = useState('');
-  const [showRules, setShowRules] = useState(false);
-  const [rulesPage, setRulesPage] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const n = Number(e.target.value);
@@ -68,22 +85,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     }
   };
 
-  // Use translations from strings.json instead of hardcoded rules.
   const rulesLabel = t('start.rules');
-  // rulesBody: array di oggetti { title, content }
-  const _rawRulesBody: any = (t('start.rulesBody') as any);
-  // fallback: se è stringa o array di stringhe legacy
-  const rulesBody: Array<{ title: string; content: string[] }> = Array.isArray(_rawRulesBody) && typeof _rawRulesBody[0] === 'object'
-    ? _rawRulesBody
-    : Array.isArray(_rawRulesBody)
-      ? _rawRulesBody.map((str: string, i: number) => ({ title: `Pagina ${i + 1}`, content: [str] }))
-      : typeof _rawRulesBody === 'string'
-        ? [{ title: 'Regole', content: _rawRulesBody.split('\n') }]
-        : [];
-  const disclaimer: any = (t('start.disclaimer') as any);
-
-  const totalRulesPages = Math.max(1, rulesBody.length);
-  const currentPage = rulesBody[rulesPage] || { title: '', content: [] };
 
   return (
     <div className="start-screen pretty-bg">
@@ -105,10 +107,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             type="button"
             className="rules-btn pretty-btn cute-rules-btn"
             aria-label={rulesLabel}
-            onClick={() => {
-              setRulesPage(0);
-              setShowRules(true);
-            }}
+            onClick={openRulesPage}
           >
             <span className="rules-btn-icon" role="img" aria-label="rules">📜</span>
             {rulesLabel}
@@ -160,75 +159,19 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             <button
               type="button"
               className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
-              onClick={() => setLang('it')}
+              onClick={() => switchLanguage('it')}
             >
                 {t('lang.it')}
             </button>
             <button
               type="button"
               className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-              onClick={() => setLang('en')}
+              onClick={() => switchLanguage('en')}
             >
                 {t('lang.en')}
             </button>
           </div>
         </div>
-        {showRules && (
-          <div
-            className="rules-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label={currentPage.title}
-            onClick={() => setShowRules(false)}
-          >
-            <div
-              className="rules-modal pretty-card"
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Decorative icon */}
-              <div className="rules-modal-icon-wrapper">
-                <span className="rules-modal-icon" role="img" aria-label="wheel">🎡</span>
-              </div>
-              <h2 className="rules-modal-title">{currentPage.title}</h2>
-              <div className="rules-content">
-                <ol className="rules-list">
-                  {currentPage.content.map((line, i) => (
-                    <li key={i} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }}></li>
-                  ))}
-                </ol>
-                <div className="rules-disclaimer">{disclaimer}</div>
-                <div className="rules-pagination">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                    <button
-                      className="pretty-btn rules-page-btn"
-                      disabled={rulesPage === 0}
-                      onClick={() => setRulesPage(p => Math.max(0, p - 1))}
-                      style={{ alignSelf: 'flex-start' }}
-                    >
-                      {lang === 'it' ? 'Indietro' : 'Previous'}
-                    </button>
-                    <button
-                      className="pretty-btn rules-page-btn"
-                      disabled={rulesPage >= totalRulesPages - 1}
-                      onClick={() => setRulesPage(p => Math.min(totalRulesPages - 1, p + 1))}
-                      style={{ alignSelf: 'flex-end' }}
-                    >
-                      {lang === 'it' ? 'Avanti' : 'Next'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="rules-modal-footer">
-                <button
-                  className="pretty-btn rules-close-btn"
-                  onClick={() => setShowRules(false)}
-                >
-                  {lang === 'it' ? 'Chiudi' : 'Close'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
