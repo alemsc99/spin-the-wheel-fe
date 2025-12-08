@@ -673,19 +673,6 @@ function AppContent() {
 
   return (
     <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
-      <Helmet>
-        <html lang={effectiveLang} />
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:locale" content={ogLocale} />
-        <link rel="alternate" hrefLang={effectiveLang} href={localizedPath || '/'} />
-        {alternateLang !== effectiveLang ? (
-          <link rel="alternate" hrefLang={alternateLang} href={`/${alternateLang}${restPathWithSlash}`} />
-        ) : null}
-        <link rel="alternate" hrefLang="x-default" href={`/en${restPathWithSlash}`} />
-      </Helmet>
       <Header />
 
       <Routes>

@@ -4,18 +4,26 @@ import { Helmet } from 'react-helmet-async';
 interface SEOProps {
   title: string;
   description: string;
-  lang: 'it' | 'en'; // o 'eng' se usi quello
-  path: string; // es: '/rules' o '/scoreboard'
+  lang: 'it' | 'en';
+  path: string; // es: "" (per home) oppure "/rules"
 }
+
 const DOMAIN = 'https://spinwords.pages.dev';
 
 export const SEO: React.FC<SEOProps> = ({ title, description, lang, path }) => {
+  // 1. Sicurezza: Assicuriamoci che il path inizi con uno slash se non è vuoto
+  // Questo evita url tipo "https://.../itrules" se ti dimentichi lo slash
+  const safePath = path && !path.startsWith('/') ? `/${path}` : path;
+
   // Costruiamo gli URL completi
-  const currentUrl = `${DOMAIN}/${lang}${path}`;
+  const currentUrl = `${DOMAIN}/${lang}${safePath}`;
   
-  // Calcoliamo l'URL dell'altra lingua per il tag alternate
-  const alternateLang = lang === 'it' ? 'en' : 'it'; // o 'eng'
-  const alternateUrl = `${DOMAIN}/${alternateLang}${path}`;
+  // Calcoliamo l'URL dell'altra lingua
+  const alternateLang = lang === 'it' ? 'en' : 'it';
+  const alternateUrl = `${DOMAIN}/${alternateLang}${safePath}`;
+
+  // URL Default (Inglese)
+  const defaultUrl = `${DOMAIN}/en${safePath}`;
 
   return (
     <Helmet>
@@ -24,23 +32,24 @@ export const SEO: React.FC<SEOProps> = ({ title, description, lang, path }) => {
       <meta name="description" content={description} />
       <html lang={lang} />
 
-      {/* Canonical: dice a Google "questo è l'URL ufficiale di questa pagina" */}
+      {/* Canonical */}
       <link rel="canonical" href={currentUrl} />
 
-      {/* Hreflang: dice a Google "questa pagina ha una versione tradotta qui" */}
       <link rel="alternate" hrefLang={lang} href={currentUrl} />
       <link rel="alternate" hrefLang={alternateLang} href={alternateUrl} />
-      
-      {/* x-default: rimanda alla versione inglese (o quella che preferisci) per utenti non IT/EN */}
-      <link rel="alternate" hrefLang="x-default" href={`${DOMAIN}/en${path}`} />
+      <link rel="alternate" hrefLang="x-default" href={defaultUrl} />
 
-      {/* Open Graph (per le anteprime su WhatsApp/Facebook) */}
+      {/* Open Graph */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:type" content="website" />
-      {/* Aggiungi un'immagine og-image.jpg in public/ se vuoi */}
-      {/* <meta property="og:image" content={`${DOMAIN}/og-image.jpg`} /> */}
+      
+      {/* 2. Immagine Scommentata: Ora WhatsApp mostrerà l'anteprima! */}
+      <meta property="og:image" content={`${DOMAIN}/og-image.jpg`} />
+      {/* Opzionale: dimensioni immagine per aiutare WhatsApp a caricarla subito */}
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
     </Helmet>
   );
 };
