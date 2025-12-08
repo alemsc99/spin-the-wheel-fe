@@ -1,6 +1,5 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { API_URL } from '../../constants/constants';
 
 interface SEOProps {
   title: string;
@@ -8,14 +7,15 @@ interface SEOProps {
   lang: 'it' | 'en'; // o 'eng' se usi quello
   path: string; // es: '/rules' o '/scoreboard'
 }
+const DOMAIN = 'https://spinwords.pages.dev';
 
 export const SEO: React.FC<SEOProps> = ({ title, description, lang, path }) => {
   // Costruiamo gli URL completi
-  const currentUrl = `${API_URL}/${lang}${path}`;
+  const currentUrl = `${DOMAIN}/${lang}${path}`;
   
   // Calcoliamo l'URL dell'altra lingua per il tag alternate
   const alternateLang = lang === 'it' ? 'en' : 'it'; // o 'eng'
-  const alternateUrl = `${API_URL}/${alternateLang}${path}`;
+  const alternateUrl = `${DOMAIN}/${alternateLang}${path}`;
 
   return (
     <Helmet>
@@ -32,7 +32,7 @@ export const SEO: React.FC<SEOProps> = ({ title, description, lang, path }) => {
       <link rel="alternate" hrefLang={alternateLang} href={alternateUrl} />
       
       {/* x-default: rimanda alla versione inglese (o quella che preferisci) per utenti non IT/EN */}
-      <link rel="alternate" hrefLang="x-default" href={`${API_URL}/en${path}`} />
+      <link rel="alternate" hrefLang="x-default" href={`${DOMAIN}/en${path}`} />
 
       {/* Open Graph (per le anteprime su WhatsApp/Facebook) */}
       <meta property="og:title" content={title} />
@@ -40,7 +40,7 @@ export const SEO: React.FC<SEOProps> = ({ title, description, lang, path }) => {
       <meta property="og:url" content={currentUrl} />
       <meta property="og:type" content="website" />
       {/* Aggiungi un'immagine og-image.jpg in public/ se vuoi */}
-      {/* <meta property="og:image" content={`${API_URL}/og-image.jpg`} /> */}
+      {/* <meta property="og:image" content={`${DOMAIN}/og-image.jpg`} /> */}
     </Helmet>
   );
 };
