@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 import './RulesPage.css';
 import translations from '../../i18n/strings.json';
+import { SEO } from '../SEO/SEO';
 
 type RulesSection = { title: string; content: string[] };
 
@@ -80,6 +81,14 @@ export default function RulesPage(): React.ReactElement {
 
   return (
     <div className="rules-page">
+        <SEO 
+            title={activeLang === 'it' ? "Regole di Giraparole - Guida Ufficiale" : "SpinWords Rules - Official Guide"}
+            description={activeLang === 'it'
+            ? "Scopri come giocare a Giraparole. Le regole del gioco, come funzionano i potenziamenti e i vari spicchi del tabellone."
+            : "Learn how to play SpinWords. Game rules, how power-ups work, and the different sections of the board."}
+            lang={activeLang as 'it' | 'en'}
+            path="/rules"
+        />
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
       <svg className="bg-decor bg-star star3" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>

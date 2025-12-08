@@ -3,6 +3,7 @@ import { useState } from 'react';
 import './StartScreen.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
+import { SEO } from '../SEO/SEO';
 
 declare global {
   namespace JSX {
@@ -89,6 +90,16 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
 
   return (
     <div className="start-screen pretty-bg">
+      <SEO 
+        title={lang === 'it' 
+          ? "Giraparole - Gioco di Parole Online Gratis" 
+          : "SpinWords - Free Online Word Puzzle Game"}
+        description={lang === 'it'
+          ? "Gioca a Giraparole online! Gira la ruota, scegli una consonante e indovina la frase segreta. Sfida gli amici o gioca da solo in questo puzzle game e metti alla prova le tue capacità di enigmistica."
+          : "Play SpinWords online! Spin the wheel, choose a consonant, and guess the secret phrase. Challenge your friends or play solo in this word puzzle game and test your word skills."}
+        lang={lang as 'it' | 'en'}
+        path=""
+      />
       {/* Elementi decorativi dinamici: stelle e cerchi */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>

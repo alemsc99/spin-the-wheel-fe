@@ -4,6 +4,7 @@ import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
 import GameCenter from './components/game_center/GameCenter.jsx';
+import { SEO } from './components/SEO/SEO';
 import { ErrorOverlay } from './components/overlays/Overlays.jsx';
 import StartScreenWrapper from './components/start_screen/StartScreenWrapper.tsx';
 import './App.css';
@@ -710,6 +711,15 @@ function AppContent() {
         <Route
           path="/:lang/game"
           element={(
+              <>
+                <SEO 
+                  title={lang === 'it' ? "Partita in corso - Giraparole" : "Playing SpinWords - Guess the Phrase"}
+                  description={lang === 'it'
+                    ? "Partita a Giraparole in corso. Gira la ruota e vinci!"
+                    : "SpinWords match in progress. Spin the wheel and win!"}
+                  lang={lang as 'it' | 'en'}
+                  path="/game"
+                />
             <main style={{ display: 'flex', gap: 40, marginTop: 50 }}>
               {/* LEFT COLUMN: players list with powerups below (separate component) */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
@@ -848,6 +858,7 @@ function AppContent() {
                 onWheelClick={handleWheelClick}
               />
             </main>
+              </>
           )}
         />
         <Route

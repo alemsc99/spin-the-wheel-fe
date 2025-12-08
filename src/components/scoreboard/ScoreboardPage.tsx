@@ -5,6 +5,7 @@ import strings from '../../i18n/strings.json';
 import '../start_screen/StartScreen.css';
 import '../overlays/Overlays.css';
 import './ScoreboardPage.css';
+import { SEO } from '../SEO/SEO';
 
 export type ScoreboardEntry = {
   name: string;
@@ -14,7 +15,7 @@ export type ScoreboardEntry = {
 export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: ScoreboardEntry[]; onPlayAgain: () => void; }): React.ReactElement {
   const { t } = useTranslation();
   const translate = t as unknown as (key: string, options?: Record<string, unknown>) => unknown;
-
+  
   // Se la pagina viene aperta senza ranking, mostra le regole
   const showRules = !ranking || ranking.length === 0;
   // Fix universale per i18next: usa returnObjects: true
@@ -53,6 +54,14 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
 
   return (
     <div className="scoreboard-page">
+      <SEO 
+        title={window.localStorage.getItem('lang') === 'it' ? "Regole punteggio di Giraparole - Guida Ufficiale" : "SpinWords Rules - Official Guide"}
+        description={window.localStorage.getItem('lang') === 'it'
+        ? "Scopri come funziona il punteggio a Giraparole. Le regole per guadagnare punti e vincere premi."
+        : "Learn how scoring works in SpinWords. Rules to earn points and win prizes."}
+        lang={window.localStorage.getItem('lang') as 'it' | 'en'}
+        path="/rules"
+      />
       <svg className="bg-star star1" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
       <svg className="bg-star star2" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
       <svg className="bg-star star3" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
@@ -68,21 +77,21 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
         <div className="scoreboard-card">
           {showRules ? (
             <div className="scoreboard-rules">
-              <h1 className="rules-title">
+              <h1 className="scoreboard-rules-title">
                 <span role="img" aria-label="lightbulb">💡</span>
                 {rulesTitle}
               </h1>
-              <ul className="rules-list">
+              <ul className="scoreboard-rules-list">
                 {rulesList.map((rule: any, idx: number) => (
                   <li key={idx}>
-                    <span className="rule-icon" aria-hidden="true">
+                    <span className="scoreboard-rule-icon" aria-hidden="true">
                       {idx === 0 && '🔠'}
                       {idx === 1 && '🛠️'}
                       {idx === 2 && '💸'}
                       {idx === 3 && '🎁'}
                       {idx > 3 && '⭐'}
                     </span>
-                    <span className="rule-desc" dangerouslySetInnerHTML={{ __html: rule }} />
+                    <span className="scoreboard-rule-desc" dangerouslySetInnerHTML={{ __html: rule }} />
                   </li>
                 ))}
               </ul>
@@ -90,6 +99,14 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
             </div>
           ) : (
             <>
+            <SEO 
+              title={window.localStorage.getItem('lang') === 'it' ? "Il vincitore di Giraparole - Classifica finale" : "SpinWords Winner - Final Ranking"}
+              description={window.localStorage.getItem('lang') === 'it'
+              ? "Chi ha vinto a Giraparole? Scopri la classifica finale dei giocatori."
+              : "Who won SpinWords? Check out the final player rankings."}
+              lang={window.localStorage.getItem('lang') as 'it' | 'en'}
+              path="/rules"
+            />
               <span className="trophy-icon">🏆</span>
               <h1 className="victory-title ">{t('victory.title')}</h1>
               <p className="subtitle">
