@@ -129,7 +129,9 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       {/* --- INIEZIONE JSON-LD --- */}
       <Helmet>
         <script type="application/ld+json">
-          {JSON.stringify(schemaData)}
+          {`
+            ${JSON.stringify(schemaData)}
+          `}
         </script>
       </Helmet>
       {/* ------------------------- */}
@@ -206,20 +208,23 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             {t('start.button')}
           </button>
           <div className="lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
-            <button
-              type="button"
+            {/* Link verso Italiano */}
+            <Link
+              to="/it"
               className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
-              onClick={() => switchLanguage('it')}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
             >
                 {t('lang.it')}
-            </button>
-            <button
-              type="button"
+            </Link>
+
+            {/* Link verso Inglese */}
+            <Link
+              to="/en"
               className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-              onClick={() => switchLanguage('en')}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
             >
                 {t('lang.en')}
-            </button>
+            </Link>
           </div>
         </div>
       </div>
