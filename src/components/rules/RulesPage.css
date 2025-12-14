@@ -6,25 +6,55 @@ html, body {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
 .rules-page {
-  position: relative;
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  box-sizing: border-box;
-  padding-top: 48px;
-  padding-bottom: 64px;
+  height: 100vh;
+  
+  overflow-y: auto; 
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  
   display: flex;
   flex-direction: column;
+  justify-content: flex-start; /* Impila tutto partendo dall'alto */
   align-items: center;
+  
+  /* Padding strategico: */
+  padding-top: 60px; /* Spazio per il titolo in alto */
+  padding-bottom: calc(100px + env(safe-area-inset-bottom)); /* Spazio per scrollare fino in fondo */
+  gap: 50px; /* Spazio ampio tra Titolo H1 e Box Regole (per farci stare l'icona) */
+  
   background: transparent;
-  color: #000000;
-  overflow-x: hidden;
+  z-index: 100;
+}
+
+.title.fancy-title {
+  position: relative;
+  font-size: 2.5rem;
+  color: #7a5c00;
+  text-shadow: 2px 2px 0px #fff;
+  margin: 0;
+  flex-shrink: 0; /* Impedisce che sparisca */
+  z-index: 5;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.rules-page .title {
+  position: relative; /* Non absolute! Così occupa spazio */
+  flex-shrink: 0; /* Impedisce che il titolo venga schiacciato */
+  z-index: 2; /* Sopra le decorazioni */
+  margin: 0; /* Resetta margini strani */
+  text-align: center;
 }
 
 .rules-page .bg-decor {
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
+  position: fixed; 
+  z-index: -1;
 }
 
 .bg-star {
@@ -67,25 +97,28 @@ html, body {
   width: 100%;
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .rules-modal {
-  max-width: 1000px;
-  width: 100%;
-  background: transparent;
-  padding: 28px 24px 32px;
+  max-width: 800px; /* Un po' più stretto per leggibilità */
+  width: 90%;
+  background: #fffbe6;
+  
+  /* Padding top aumentato per non far sovrapporre l'icona al testo dentro */
+  padding: 50px 24px 32px; 
+  
   border-radius: 18px;
   box-shadow: 0 6px 32px rgba(0,0,0,0.18);
   border: 3px solid #ffd700;
   position: relative;
-  overflow: auto;
-  max-height: 100vh;
-  min-height: 100px;
+  height: auto;
+  margin: 0 auto;
 }
 
 .rules-modal-icon-wrapper {
   position: absolute;
-  top: -38px;
+  top: -38px; /* Esce di 38px sopra il box */
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(90deg, #ffe680 0%, #ffd700 100%);
@@ -95,10 +128,9 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
   border: 2.5px solid #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
   z-index: 10;
-  margin-top: 50px;
 }
 
 .rules-modal-icon {
@@ -158,22 +190,28 @@ html, body {
   font-style: italic;
 }
 
+.rules-footer-action {
+  flex-shrink: 0;
+  margin-top: 10px;
+  z-index: 10;
+}
+
 .rules-modal-footer {
   text-align: center;
   margin-top: 24px;
 }
 
 .rules-close-btn {
-  background: linear-gradient(90deg, #ffe680 0%, #ffd700 100%);
-  color: #7a5c00;
-  font-weight: 700;
-  font-size: 16px;
-  border: none;
-  border-radius: 24px;
-  padding: 10px 32px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  background: linear-gradient(90deg, #ffd700 0%, #ffc107 100%);
+  color: #5d4037;
+  font-weight: 800;
+  font-size: 1.2rem;
+  border: 2px solid #fff;
+  border-radius: 50px;
+  padding: 14px 40px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   cursor: pointer;
-  transition: transform 0.1s;
+  transition: transform 0.2s;
 }
 
 .rules-close-btn:hover {
@@ -181,7 +219,7 @@ html, body {
 }
 
 .rules-close-btn:active {
-  transform: scale(1);
+  transform: scale(0.95);
 }
 
 .rules-overlay {

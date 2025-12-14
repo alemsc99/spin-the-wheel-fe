@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import Header from './components/header/Header.jsx';
 import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
@@ -673,8 +672,6 @@ function AppContent() {
 
   return (
     <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
-      <Header />
-
       <Routes>
         <Route path="/" element={<Navigate to={localizedStartPath} replace />} />
         <Route path="/game" element={<Navigate to={localizedGamePath} replace />} />
