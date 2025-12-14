@@ -40,7 +40,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     "url": "https://spinwords.pages.dev",
     "playMode": ["SinglePlayer", "Multiplayer"],
     "applicationCategory": "Game",
-    "image": "https://spinwords.pages.dev/og-image.jpg",
+    "image": "https://spinwords.pages.dev/og-image-v2.jpg",
     "operatingSystem": "Any",
     "inLanguage": ["it", "en"],
     "author": {

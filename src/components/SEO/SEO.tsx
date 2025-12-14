@@ -46,7 +46,7 @@ export const SEO: React.FC<SEOProps> = ({ title, description, lang, path }) => {
       <meta property="og:type" content="website" />
       
       {/* 2. Immagine Scommentata: Ora WhatsApp mostrerà l'anteprima! */}
-      <meta property="og:image" content={`${DOMAIN}/og-image.jpg`} />
+      <meta property="og:image" content={`${DOMAIN}/og-image-v2.jpg`} />
       {/* Opzionale: dimensioni immagine per aiutare WhatsApp a caricarla subito */}
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
