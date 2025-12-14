@@ -12,10 +12,9 @@
   "rules.backToStart": "Torna alla schermata iniziale",
   "start.title": "GiraParole",
   "start.rules": "Regole",
-  "start.rulesTitle": "Regole del gioco",
   "start.rulesBody": [
     {
-      "title": "Regole del gioco",
+      "title": "",
       "content": [
         "Indovina la frase misteriosa prima dei tuoi avversari!",
         "Il vincitore è il giocatore con lo score più alto alla fine della partita.",
@@ -130,10 +129,9 @@
   "rules.backToStart": "Back to start",
   "start.title": "SpinWords",
   "start.rules": "Rules",
-  "start.rulesTitle": "Game Rules",
   "start.rulesBody": [
     {
-      "title": "Game Rules",
+      "title": "",
       "content": [
         "Guess the mystery phrase before your opponents!",
         "The winner is the player with the highest score at the end of the game.",

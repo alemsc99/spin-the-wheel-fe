@@ -668,7 +668,7 @@ function AppContent() {
     }
   }, [victory, pathname, localizedScoreboardPath, navigate]);
 
-  // RIMOSSO: redirect automatico da /scoreboard a /game
+  const pageName = t('start.title');
 
   return (
     <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
@@ -704,6 +704,10 @@ function AppContent() {
                   lang={lang as 'it' | 'en'}
                   path="/game"
                 />
+            {/* 1. TITOLO PRINCIPALE (ESTERNO) */}
+            <h1 className="title fancy-title">
+              {pageName}
+            </h1>
             <main style={{ display: 'flex', gap: 40, marginTop: 50 }}>
               {/* LEFT COLUMN: players list with powerups below (separate component) */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>

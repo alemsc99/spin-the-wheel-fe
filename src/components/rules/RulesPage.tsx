@@ -76,6 +76,7 @@ export default function RulesPage(): React.ReactElement {
     navigate(`/${activeLang}`);
   };
 
+  const pageName = t('rules.pageHeading')
   return (
     <div className="rules-page">
       <SEO 
@@ -94,7 +95,7 @@ export default function RulesPage(): React.ReactElement {
 
       {/* 1. TITOLO PRINCIPALE (ESTERNO) */}
       <h1 className="title fancy-title">
-        {activeLang === 'it' ? 'Regole del Gioco' : 'Game Rules'}
+        {pageName}
       </h1>
 
       {/* 2. IL BOX DELLE REGOLE */}
@@ -105,8 +106,6 @@ export default function RulesPage(): React.ReactElement {
           <div className="rules-modal-icon-wrapper">
             <span className="rules-modal-icon" role="img" aria-label="wheel">🎡</span>
           </div>
-
-          <h2 className="rules-modal-title">{baseTitle}</h2>
           
           <div className="rules-content">
             {rulesPages.length > 0 ? (
