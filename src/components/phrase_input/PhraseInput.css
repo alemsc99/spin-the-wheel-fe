@@ -74,3 +74,14 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
+
+@media (max-width: 600px) {
+  .phrase-input {
+    width: 200px;
+    font-size: 16px;
+  }
+  .phrase-input-button {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}

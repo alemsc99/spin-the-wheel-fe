@@ -18,6 +18,16 @@
 	animation: pulse-category 1.2s infinite alternate;
 }
 
+@media (max-width: 960px) {
+	.category-label-fancy {
+		font-size: 1em;
+		padding: 8px 16px;
+	}
+	.category-icon {
+		font-size: 18px;
+	}
+}
+
 @keyframes pulse-category {
 	0% {
 		box-shadow: 0 2px 8px rgba(140, 197, 252, 0.18);

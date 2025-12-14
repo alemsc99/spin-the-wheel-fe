@@ -44,6 +44,20 @@ html, body {
   line-height: 1.2;
 }
 
+@media(max-width: 960px){
+  .title.fancy-title {
+  position: relative;
+  font-size: 1.5rem;
+  color: #7a5c00;
+  text-shadow: 2px 2px 0px #fff;
+  margin: 0;
+  flex-shrink: 0; /* Impedisce che sparisca */
+  z-index: 5;
+  text-align: center;
+  line-height: 1.2;
+}
+}
+
 .rules-page .title {
   position: relative; /* Non absolute! Così occupa spazio */
   flex-shrink: 0; /* Impedisce che il titolo venga schiacciato */

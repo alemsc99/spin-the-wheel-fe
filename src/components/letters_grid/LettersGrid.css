@@ -23,6 +23,13 @@
   transition: background 0.2s;
 }
 
+@media (max-width: 960px) {
+  .letter-btn {
+    font-size: 1.0rem;
+    padding: 8px 0;
+  }
+}
+
 .letter-btn:active {
   background: #b7b7b3;
 }
@@ -96,7 +103,7 @@
     width: 100%;
   }
   .letter-btn {
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     padding: 8px 0;
   }
 }
