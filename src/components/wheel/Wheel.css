@@ -4,17 +4,28 @@
   box-sizing: border-box;
 }
 
-body {
-  /* height: 100vh; */
-  display: grid;
-  place-items: center;
-}
+/* Removed body style that was centering everything */
 
 #wheelOfFortune {
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   overflow: visible;
-  padding-bottom: 40px; /* Spazio extra sotto la ruota */
+  padding-bottom: 0; /* Rimosso padding extra che sbilanciava la centratura verticale */
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto; /* Force centering */
+  left: 0; /* Reset any positioning */
+  right: 0;
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  #wheelOfFortune {
+    transform: translateX(-17%); /* Correzione manuale per centratura visiva */
+    margin-top: 50px; /* Sposta leggermente in basso */
+  }
 }
 
 
@@ -27,6 +38,12 @@ body {
   transform-origin: 50% 50%;
   will-change: transform;
   transition: transform 0.8s;
+  width: 100%; /* Occupa tutta la larghezza del contenitore */
+  height: auto; /* Mantiene l'aspect ratio */
+  display: block;
+  margin: 0 auto; /* Centered horizontally */
+  max-width: 100%;
+  min-width: 300px; /* Assicura una dimensione minima */
 }
 
 .wheel-canvas.wheel-rotating {
@@ -44,14 +61,15 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 30%;
-  height: 30%;
-  transform: translate(+55%, +70%);  /* centratura perfetta */
+  width: 25%; /* Reduced from 30% to not cover too much of the bigger wheel */
+  height: 25%; /* Reduced from 30% */
+  transform: translate(22%, -50%);  /* centratura perfetta */
   background: #fb0303;
   color: #fff;
   box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);
   border-radius: 50%;
   transition: 0.8s;
+  z-index: 5;
 }
 
 .spin-btn.spinning {
@@ -66,5 +84,3 @@ body {
   border-bottom-color: currentColor;
   border-top: none;
 }
-
-/* Removed duplicate #spin and #spin::after rules. All button styles are now in .spin-btn and .spin-btn::after. */

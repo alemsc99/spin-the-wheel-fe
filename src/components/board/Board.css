@@ -127,3 +127,24 @@
   display: flex;
   flex-direction: row;
 }
+
+@media (max-width: 600px) {
+  .ml6 {
+    font-size: 2em;
+  }
+  .board-cell {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  .board-separator.visible-separator {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  .board {
+    justify-content: center;
+  }
+}

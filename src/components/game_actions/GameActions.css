@@ -56,3 +56,13 @@
 .buy-vowel-btn:not(:disabled):hover {
   box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
 }
+
+@media (max-width: 600px) {
+  .game-actions-container {
+    flex-direction: column;
+    width: 100%;
+  }
+  .action-button {
+    width: 100%;
+  }
+}

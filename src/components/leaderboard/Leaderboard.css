@@ -114,3 +114,10 @@
   60%  { transform: translateY(-4px) scale(1.0); opacity: 1; }
   100% { transform: translateY(-10px) scale(1.0); opacity: 0; }
 }
+
+@media (max-width: 960px) {
+  .leaderboard-root {
+    flex: 1;
+    min-width: 280px;
+  }
+}

@@ -5,7 +5,9 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
-  margin: 16px 0;
+  margin: 16px auto; /* Centered horizontally */
+  justify-content: center;
+  max-width: 100%;
 }
 
 .letter-btn {
@@ -84,4 +86,17 @@
   z-index: 10;
   cursor: not-allowed;
   background: rgba(0,0,0,0);
+}
+
+@media (max-width: 600px) {
+  .letters-grid {
+    grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+    gap: 6px;
+    justify-content: center; /* Ensure grid items are centered */
+    width: 100%;
+  }
+  .letter-btn {
+    font-size: 1.2rem;
+    padding: 8px 0;
+  }
 }

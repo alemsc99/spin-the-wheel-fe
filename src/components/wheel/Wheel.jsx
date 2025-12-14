@@ -129,8 +129,8 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
   if (!canvas || !spinEl) return;
 
   // Use 360x360 canvas for a more compact display
-  canvas.width = 360;
-  canvas.height = 360;
+  canvas.width = 800;
+  canvas.height = 800;
 
     const rand = (m, M) => Math.random() * (M - m) + m;
     const tot = sectors.length;
@@ -177,11 +177,15 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
     
-      let fontSize = sector.raw === "Bancarotta" ? 12 : 14;
+      // Calcola font size in base al raggio per scalare con la ruota
+      const baseFontSize = Math.floor(rad * 0.085); // ~8.5% del raggio
+      let fontSize = sector.raw === "Bancarotta" ? Math.floor(baseFontSize * 0.85) : baseFontSize;
       ctx.font = `bold ${fontSize}px sans-serif`;
     
-      const maxWidth = rad * 0.7;
-      while (ctx.measureText(sector.label).width > maxWidth && fontSize > 8) {
+      const maxWidth = rad * 0.75;
+      const minFontSize = Math.floor(baseFontSize * 0.4);
+
+      while (ctx.measureText(sector.label).width > maxWidth && fontSize > minFontSize) {
         fontSize -= 1;
         ctx.font = `bold ${fontSize}px sans-serif`;
       }

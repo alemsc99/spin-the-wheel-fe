@@ -3,13 +3,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 150px;
-  width: 360px;
-  min-height: 600px;
+  gap: 50px;
+  width: 100%;
+  max-width: 400px; /* Slightly increased */
+  min-height: auto;
+  margin-top: 60px; /* Push down specifically for desktop */
 }
 
 .wheel-container {
-  width: 360px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,7 +24,12 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  left: -35px;
+  /* left: -35px; REMOVED to fix centering */
+  margin: 0 auto; /* Ensure no margin shifts it */
+  padding: 0;
+  left: 0;
+  right: 0;
+  justify-content: center;
 }
 
 .wheel-position {
@@ -48,11 +55,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  width: 360px;
+  gap: 12px; /* Reduced from 20px */
+  width: 100%;
+  max-width: 400px; /* Keep info bar compact */
   background: linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 16px;
-  padding: 20px;
+  padding: 16px; /* Reduced from 20px */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -166,4 +174,10 @@
 .new-game-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
+}
+
+@media (min-width: 961px) {
+  .wheel-wrapper {
+    transform: translateX(-20px);
+  }
 }
