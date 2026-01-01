@@ -5,6 +5,8 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async'; 
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 import { SEO } from '../SEO/SEO';
+import { API_URL } from '../../constants/constants';
+import LoadingSpinner from '../loading_spinner/LoadingSpinner';
 
 declare global {
   namespace JSX {
@@ -25,8 +27,17 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const { lang, t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isWakingUp, setIsWakingUp] = useState(false);
   
   const isIt = lang === 'it'; // Comodo per i check
+  const loadingPhrases = isIt 
+    ? []
+    : [
+      "Preparing the wheel...",
+      "Loading players...",
+      "Shuffling secret letters...",
+      "Recharging power-ups..."
+      ];
 
   // --- DEFINIZIONE DATI STRUTTURATI (JSON-LD) ---
   const schemaData = {
@@ -93,10 +104,9 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     setError('');
   };
 
-  const handleStart = () => {
-    if (players === 1) {
-      onStart(1);
-    } else {
+  const handleStart = async () => {
+    // 1. PRIMA fai le validazioni (nomi vuoti, duplicati, ecc.)
+    if (players > 1) {
       const empty = names.findIndex(name => !name.trim());
       if (empty !== -1) {
         setError(t('error.emptyNames'));
@@ -108,14 +118,59 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         setError(t('error.duplicateNames'));
         return;
       }
-      onStart(players, names);
     }
+
+    // 2. MOSTRA lo spinner e aspetta il server
+    setIsWakingUp(true);
+    let awake = false;
+    
+    while (!awake) {
+      try {
+        const res = await fetch(`${API_URL}/health`, { cache: 'no-store' });
+        if (res.ok) {
+          awake = true;
+        } else {
+          // Se il server risponde ma con errore, aspetta 2 secondi
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      } catch (err) {
+        // Se il fetch fallisce (server ancora "giù"), aspetta 2 secondi
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
+    
+    // 3. Una volta che il server è sveglio, togli lo spinner
+    setIsWakingUp(false);
+
+    // 4. SOLO ORA avvia il gioco
+    onStart(players, names.length > 0 ? names : undefined);
   };
 
   const rulesLabel = t('start.rules');
 
   return (
     <div className="start-screen pretty-bg">
+      {isWakingUp && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(255, 255, 255, 0.85)', // Increased transparency
+          backdropFilter: 'blur(8px)',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px'
+        }}>
+          <div style={{ marginBottom: '40px' }}>
+            <LoadingSpinner />
+          </div>
+        </div>
+      )}
       <SEO 
         title={isIt 
           ? "GiraParole - Gioco di Parole Online Gratis" 

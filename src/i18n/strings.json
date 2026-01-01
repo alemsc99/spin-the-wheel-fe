@@ -228,6 +228,12 @@
   "wheel.pass": "Next",
   "lang.it": "Italian",
   "lang.en": "English",
+  "loading": {
+    "p1": "Preparing the wheel...",
+    "p2": "Loading players...",
+    "p3": "Shuffling secret letters...",
+    "p4": "Recharging power-ups..."
+  },
   "start.langSelectionAria": "Language selection",
   "score.label": "Score:",
     "category.label": "Category:",
