@@ -40,10 +40,10 @@ export default function Leaderboard({ playerNames = [], playerScores = {}, first
                 <span className="leaderboard-name" title={name}>{name}</span>
                 {recentDeductions[name] > 0 && (
                  <span className="leaderboard-deduction" aria-live="polite">
-                   - {recentDeductions[name]} €
+                   - {recentDeductions[name]}🪙
                  </span>
                )}
-                <span className="leaderboard-score">{(playerScores[name] ?? 0)} €</span>
+                <span className="leaderboard-score">{(playerScores[name] ?? 0)}🪙</span>
               </div>
               {playerNames.length > 1 && (
               <div className="leaderboard-player-meta" aria-hidden={false}>

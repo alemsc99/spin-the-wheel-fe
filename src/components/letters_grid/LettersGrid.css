@@ -5,7 +5,9 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
-  margin: 16px 0;
+  margin: 16px auto; /* Centered horizontally */
+  justify-content: center;
+  max-width: 100%;
 }
 
 .letter-btn {
@@ -19,6 +21,13 @@
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   transition: background 0.2s;
+}
+
+@media (max-width: 960px) {
+  .letter-btn {
+    font-size: 1.0rem;
+    padding: 8px 0;
+  }
 }
 
 .letter-btn:active {
@@ -84,4 +93,17 @@
   z-index: 10;
   cursor: not-allowed;
   background: rgba(0,0,0,0);
+}
+
+@media (max-width: 600px) {
+  .letters-grid {
+    grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+    gap: 2px;
+    justify-content: center; /* Ensure grid items are centered */
+    width: 100%;
+  }
+  .letter-btn {
+    font-size: 0.8rem;
+    padding: 8px 0;
+  }
 }

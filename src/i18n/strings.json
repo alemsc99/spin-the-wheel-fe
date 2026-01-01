@@ -12,15 +12,14 @@
   "rules.backToStart": "Torna alla schermata iniziale",
   "start.title": "GiraParole",
   "start.rules": "Regole",
-  "start.rulesTitle": "Regole del gioco",
   "start.rulesBody": [
     {
-      "title": "Regole del gioco",
+      "title": "",
       "content": [
         "Indovina la frase misteriosa prima dei tuoi avversari!",
         "Il vincitore è il giocatore con lo score più alto alla fine della partita.",
         "Durante il tuo turno gira la ruota e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
-        "Le vocali si comprano sempre al costo fisso di 500€: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
+        "Le vocali si comprano sempre al costo fisso di 500🪙: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
         "Puoi provare a indovinare la frase nascosta in qualsiasi momento del tuo turno: se sbagli perdi il turno; se indovini vinci il round e ricevi 500 punti bonus sul tuo punteggio finale."
       ]
     },
@@ -81,7 +80,7 @@
   "common.yes": "Sì",
   "common.no": "No",
 
-  "buyVowel.lowMoney": "Devi avere almeno 500€ per comprare una vocale.",
+  "buyVowel.lowMoney": "Devi avere almeno 500🪙 per comprare una vocale.",
   "buyVowel.afterSpin": "Non puoi comprare una vocale dopo aver girato la ruota.",
 
   "wheel.mustSpinFirst": "Devi prima girare la ruota per poter indovinare una lettera.",
@@ -130,15 +129,14 @@
   "rules.backToStart": "Back to start",
   "start.title": "SpinWords",
   "start.rules": "Rules",
-  "start.rulesTitle": "Game Rules",
   "start.rulesBody": [
     {
-      "title": "Game Rules",
+      "title": "",
       "content": [
         "Guess the mystery phrase before your opponents!",
         "The winner is the player with the highest score at the end of the game.",
         "During your turn, spin the wheel and choose a consonant: if the chosen consonant is present in the phrase, all occurrences are revealed and you earn points equal to the wheel value multiplied by the number of occurrences; if the consonant is not present, the turn passes to the next player.",
-        "Vowels always cost a fixed price of €500: they are not influenced by the wheel value but reveal all occurrences if present.",
+        "Vowels always cost a fixed price of 500🪙: they are not influenced by the wheel value but reveal all occurrences if present.",
         "You can try to guess the hidden phrase at any time during your turn: if you are wrong you lose your turn; if you guess it you win the round and receive a 500-point bonus on your final score."
       ]
     },
@@ -198,7 +196,7 @@
   "common.yes": "Yes",
   "common.no": "No",
 
-  "buyVowel.lowMoney": "You need at least €500 to buy a vowel.",
+  "buyVowel.lowMoney": "You need at least 500🪙 to buy a vowel.",
   "buyVowel.afterSpin": "You can't buy a vowel after spinning the wheel.",
 
   "wheel.mustSpinFirst": "You must spin the wheel before guessing a letter.",
@@ -230,6 +228,12 @@
   "wheel.pass": "Next",
   "lang.it": "Italian",
   "lang.en": "English",
+  "loading": {
+    "p1": "Preparing the wheel...",
+    "p2": "Loading players...",
+    "p3": "Shuffling secret letters...",
+    "p4": "Recharging power-ups..."
+  },
   "start.langSelectionAria": "Language selection",
   "score.label": "Score:",
     "category.label": "Category:",

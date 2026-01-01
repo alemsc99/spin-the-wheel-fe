@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import Header from './components/header/Header.jsx';
 import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
@@ -173,7 +172,8 @@ function AppContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           num_players: players,
-          player_names: names
+          player_names: names,
+          language: lang
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -226,7 +226,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/reel-spin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId })
+        body: JSON.stringify({ game_id: gameId, language: lang })
       });
       const data: ReelSpinResponse = await res.json();
       debugLog(data)
@@ -669,12 +669,10 @@ function AppContent() {
     }
   }, [victory, pathname, localizedScoreboardPath, navigate]);
 
-  // RIMOSSO: redirect automatico da /scoreboard a /game
+  const pageName = t('start.title');
 
   return (
     <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
-      <Header />
-
       <Routes>
         <Route path="/" element={<Navigate to={localizedStartPath} replace />} />
         <Route path="/game" element={<Navigate to={localizedGamePath} replace />} />
@@ -707,9 +705,13 @@ function AppContent() {
                   lang={lang as 'it' | 'en'}
                   path="/game"
                 />
-            <main style={{ display: 'flex', gap: 40, marginTop: 50 }}>
+            {/* 1. TITOLO PRINCIPALE (ESTERNO) */}
+            <h1 className="title fancy-title">
+              {pageName}
+            </h1>
+            <main className="game-layout">
               {/* LEFT COLUMN: players list with powerups below (separate component) */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
+              <div className="game-sidebar">
                 <Leaderboard
                  playerNames={playerNames}
                  playerScores={playerScores}
@@ -719,7 +721,7 @@ function AppContent() {
                />
                 {/* POWERUPS: in its own container directly below the players list */}
                 {numPlayers > 1 && (
-                  <aside style={{ background: '#f7f7f7', borderRadius: 12, padding: 16, boxShadow: '0 2px 8px #eee', height: 'fit-content' }}>
+                  <aside className="powerups-container">
                     <Powerups
                       onUse={handlePowerupUse}
                       powerups={powerups}
@@ -732,7 +734,7 @@ function AppContent() {
                 )}
               </div>
               {/* LEFT: categoria, frase segreta, griglia lettere */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="game-main-content">
                 <GameInfo topic={topic} masked={masked} />
 
                 <LettersGrid

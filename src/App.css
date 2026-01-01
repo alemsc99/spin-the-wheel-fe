@@ -26,23 +26,6 @@
 	}
 }
 
-
-/* Powerups cards */
-.powerup-card {
-	transition: transform 120ms ease, box-shadow 120ms ease;
-}
-.powerup-card:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 6px 18px rgba(25, 118, 210, 0.08);
-}
-.powerup-btn {
-	font-weight: 700;
-}
-.powerup-btn:focus {
-	outline: 2px solid rgba(25,118,210,0.25);
-	outline-offset: 2px;
-}
-
 @keyframes scoreDecrease {
 	0% {
 		opacity: 0;
@@ -60,4 +43,165 @@
 		opacity: 0;
 		transform: translateY(50px) scale(0.8);
 	}
+}
+
+/* Game Layout */
+.game-layout {
+  display: flex;
+  gap: 35px;
+  margin-top: 5px;
+}
+
+.game-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 180px;
+}
+
+.powerups-container {
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px #eee;
+  height: fit-content;
+}
+
+.game-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 960px) {
+  .game-layout {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+    padding-bottom: 10px;
+  }
+
+  .game-sidebar {
+    min-width: auto;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    order: 3;
+  }
+
+  .powerups-container {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .game-main-content {
+    width: 100%;
+    order: 1;
+  }
+  
+  /* Target the GameCenter component which is a direct child */
+  .game-layout > .game-center-container {
+    order: 2;
+    width: 100% !important;
+    min-height: auto !important;
+    gap: 10px !important;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  .game-layout {
+    display: flex;
+    flex-direction: row; /* Changed to row to allow side-by-side elements */
+    flex-wrap: wrap;     /* Allow elements to wrap to next line */
+    gap: 10px; 
+    margin-top: 5px;
+    padding-bottom: 60px;
+  }
+
+  /* "Appiattisce" i contenitori per permettere il riordinamento globale dei figli */
+  .game-sidebar,
+  .game-main-content,
+  .game-center-container {
+    display: contents;
+  }
+
+  /* ORDINE ELEMENTI MOBILE */
+
+  /* 1. Categoria */
+  .category-label-fancy {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+    margin: 0 !important;
+  }
+
+  /* 2. Frase Nascosta */
+  .board {
+    order: 2;
+    width: 100%; /* Force full width */
+    margin: 0 !important;
+    justify-content: center;
+  }
+
+  /* 3. Griglia Lettere */
+  .letters-grid-container {
+    order: 3;
+    margin: -17px -1px !important;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* 4. Ruota */
+  .wheel-container {
+    order: 4;
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    width: 100%;
+    position: relative;
+    left: 0;
+    margin-bottom: 30px !important; /* Spazio extra per evitare sovrapposizioni con i powerups */
+  }
+
+  /* 5. Powerups */
+  .powerups-container {
+    order: 5;
+    width: calc(50% - 5px) !important; /* Fit half width minus gap */
+    min-width: 0 !important; /* Override the 280px min-width */
+    margin: 0 !important;
+    box-sizing: border-box; /* Ensure padding doesn't increase width */
+    flex: none !important; /* Prevent flex-grow from changing size */
+  }
+
+  .leaderboard-root {
+    order: 5;
+    width: calc(50% - 5px); /* Fit half width minus gap */
+    margin: 0 !important;
+    min-width: 0 !important;
+  }
+
+  /* 6. Game Center (Azioni di gioco e Score) */
+  .game-actions-container {
+    order: 6;
+    width: 100%; /* Force full width */
+    margin: 0 !important;
+    justify-content: center;
+  }
+  
+  .wheel-info-bar {
+    order: 7;
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  /* Gestione bottone nuova partita se presente */
+  .new-game-btn {
+    order: 7;
+  }
 }

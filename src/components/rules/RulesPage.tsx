@@ -8,9 +8,7 @@ import { SEO } from '../SEO/SEO';
 type RulesSection = { title: string; content: string[] };
 
 function isLiteralPlaceholder(sections: RulesSection[], placeholder: string): boolean {
-  if (sections.length === 0) {
-    return false;
-  }
+  if (sections.length === 0) return false;
   return sections.every(section => section.content.length === 1 && section.content[0] === placeholder);
 }
 
@@ -54,7 +52,6 @@ export default function RulesPage(): React.ReactElement {
     if (normalized.length > 0 && !isLiteralPlaceholder(normalized, 'start.rulesBody')) {
       return normalized;
     }
-
     const langMap = (translations as Record<string, Record<string, unknown>>)[activeLang] ?? {};
     return normalizeRulesBody(langMap['start.rulesBody']);
   }, [t, activeLang]);
@@ -79,59 +76,64 @@ export default function RulesPage(): React.ReactElement {
     navigate(`/${activeLang}`);
   };
 
+  const pageName = t('rules.pageHeading')
   return (
     <div className="rules-page">
-        <SEO 
-            title={activeLang === 'it' ? "Regole di GiraParole - Guida Ufficiale" : "SpinWords Rules - Official Guide"}
-            description={activeLang === 'it'
-            ? "Scopri come giocare a GiraParole. Le regole del gioco, come funzionano i potenziamenti e i vari spicchi del tabellone."
-            : "Learn how to play SpinWords. Game rules, how power-ups work, and the different sections of the board."}
-            lang={activeLang as 'it' | 'en'}
-            path="/rules"
-        />
-      <svg className="bg-decor bg-star star1" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
-      <svg className="bg-decor bg-star star2" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
-      <svg className="bg-decor bg-star star3" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
-      <svg className="bg-decor bg-star star4" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
-      <svg className="bg-decor bg-star star5" viewBox="0 0 38 38" aria-hidden="true" focusable="false"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
-      <div className="bg-decor bg-circle c1" aria-hidden="true" />
-      <div className="bg-decor bg-circle c2" aria-hidden="true" />
-      <div className="bg-decor bg-circle c3" aria-hidden="true" />
-      <div className="bg-decor bg-circle c4" aria-hidden="true" />
-      <div className="bg-decor bg-circle c5" aria-hidden="true" />
+      <SEO 
+        title={activeLang === 'it' ? "Regole di GiraParole" : "SpinWords Rules"}
+        description="Guida ufficiale."
+        lang={activeLang as 'it' | 'en'}
+        path="/rules"
+      />
+      
+      {/* Sfondo Decorativo */}
+      <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
+      <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
+      <div className="bg-decor bg-circle c1" />
+      <div className="bg-decor bg-circle c2" />
+      
+
+      {/* 1. TITOLO PRINCIPALE (ESTERNO) */}
+      <h1 className="title fancy-title">
+        {pageName}
+      </h1>
+
+      {/* 2. IL BOX DELLE REGOLE */}
       <div className="rules-page-wrapper">
         <div className="rules-modal pretty-card">
+          
+          {/* Icona che "esce" sopra */}
           <div className="rules-modal-icon-wrapper">
-            <span className="rules-modal-icon" role="img" aria-label="wheel">
-              🎡
-            </span>
+            <span className="rules-modal-icon" role="img" aria-label="wheel">🎡</span>
           </div>
-          <h2 className="rules-modal-title">{baseTitle}</h2>
+          
           <div className="rules-content">
             {rulesPages.length > 0 ? (
               rulesPages.map((section, sectionIdx) => (
-                <div className="rules-section" key={`${section.title || 'section'}-${sectionIdx}`}>
-                  {section.title && section.title !== baseTitle ? (
-                    <h3 className="rules-section-title">{section.title}</h3>
-                  ) : null}
+                <div className="rules-section" key={sectionIdx}>
+                  {section.title && section.title !== baseTitle && <h3 className="rules-section-title">{section.title}</h3>}
                   <ol className="rules-list">
                     {section.content.map((line, lineIdx) => (
-                      <li
-                        className="rules-list-item"
-                        key={`${sectionIdx}-${lineIdx}`}
-                        dangerouslySetInnerHTML={{ __html: line }}
-                      />
+                      <li key={lineIdx} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }} />
                     ))}
                   </ol>
                 </div>
               ))
             ) : (
-              emptyLabel ? <p className="rules-empty">{emptyLabel}</p> : null
+              emptyLabel && <p className="rules-empty">{emptyLabel}</p>
             )}
             {disclaimer && <div className="rules-disclaimer">{disclaimer}</div>}
           </div>
         </div>
       </div>
+
+      {/* 3. PULSANTE INDIETRO (SOTTO IL BOX) */}
+      <div className="rules-footer-action">
+        <button onClick={handleClose} className="rules-close-btn">
+            {activeLang === 'it' ? 'Indietro' : 'Back'}
+        </button>
+      </div>
+
     </div>
   );
 }

@@ -6,7 +6,7 @@
   position: absolute;
   top: 16px;
   right: 16px;
-  z-index: 2;
+  z-index: 6;
 }
 .rules-btn {
   display: flex;
@@ -372,4 +372,19 @@
   background: #1976d2;
   color: #fff;
   border-color: #1976d2;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Adjusted transparency for loading spinner overlay */
+.start-screen .loading-overlay {
+  background-color: rgba(255, 255, 255, 0.85); /* Increased transparency */
+}
+
+/* Ensure text below spinner is black */
+.start-screen .loading-text {
+  color: #000000; /* Black text */
 }
