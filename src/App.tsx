@@ -172,7 +172,8 @@ function AppContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           num_players: players,
-          player_names: names
+          player_names: names,
+          language: lang
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -225,7 +226,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/reel-spin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId })
+        body: JSON.stringify({ game_id: gameId, language: lang })
       });
       const data: ReelSpinResponse = await res.json();
       debugLog(data)
