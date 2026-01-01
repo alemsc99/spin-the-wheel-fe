@@ -26,23 +26,6 @@
 	}
 }
 
-
-/* Powerups cards */
-.powerup-card {
-	transition: transform 120ms ease, box-shadow 120ms ease;
-}
-.powerup-card:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 6px 18px rgba(25, 118, 210, 0.08);
-}
-.powerup-btn {
-	font-weight: 700;
-}
-.powerup-btn:focus {
-	outline: 2px solid rgba(25,118,210,0.25);
-	outline-offset: 2px;
-}
-
 @keyframes scoreDecrease {
 	0% {
 		opacity: 0;
@@ -131,8 +114,9 @@
   }
   .game-layout {
     display: flex;
-    flex-direction: column;
-    gap: 10px; /* Spaziatura equidistante verticale tra tutti gli elementi */
+    flex-direction: row; /* Changed to row to allow side-by-side elements */
+    flex-wrap: wrap;     /* Allow elements to wrap to next line */
+    gap: 10px; 
     margin-top: 5px;
     padding-bottom: 60px;
   }
@@ -157,6 +141,7 @@
   /* 2. Frase Nascosta */
   .board {
     order: 2;
+    width: 100%; /* Force full width */
     margin: 0 !important;
     justify-content: center;
   }
@@ -187,31 +172,36 @@
   /* 5. Powerups */
   .powerups-container {
     order: 5;
-    width: 100%;
+    width: calc(50% - 5px) !important; /* Fit half width minus gap */
+    min-width: 0 !important; /* Override the 280px min-width */
     margin: 0 !important;
+    box-sizing: border-box; /* Ensure padding doesn't increase width */
+    flex: none !important; /* Prevent flex-grow from changing size */
+  }
+
+  .leaderboard-root {
+    order: 5;
+    width: calc(50% - 5px); /* Fit half width minus gap */
+    margin: 0 !important;
+    min-width: 0 !important;
   }
 
   /* 6. Game Center (Azioni di gioco e Score) */
   .game-actions-container {
     order: 6;
+    width: 100%; /* Force full width */
     margin: 0 !important;
     justify-content: center;
   }
   
   .wheel-info-bar {
     order: 7;
+    width: 100%;
     margin: 0 !important;
   }
 
   /* Gestione bottone nuova partita se presente */
   .new-game-btn {
     order: 7;
-  }
-
-  /* 7. Scoreboard (Classifica) */
-  .leaderboard-root {
-    order: 8;
-    width: 100%;
-    margin: 0 !important;
   }
 }
