@@ -20,7 +20,7 @@ export function VictoryOverlay({ show, onNewGame, ranking }) {
               <li key={p.name} className={`victory-ranking-item${i === 0 ? ' first' : ''}`}>
                 <span className="victory-ranking-pos">{i + 1}.</span>
                 <span className="victory-ranking-name">{p.name}</span>
-                <span className="victory-ranking-score">{p.score} €</span>
+                <span className="victory-ranking-score">{p.score}🪙</span>
               </li>
             ))}
           </ol>

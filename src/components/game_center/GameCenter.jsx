@@ -53,12 +53,12 @@ export default function GameCenter({
           </div>
           <div className="wheel-info-item score-container">
             <span className="wheel-info-label">{t('score.label')}</span>
-            <span className="wheel-info-value score-big">{score} €</span>
+            <span className="wheel-info-value score-big">{score}🪙</span>
             {showScoreAnim && (
-              <span className="score-increment-anim">+{scoreIncrement} €</span>
+              <span className="score-increment-anim">+{scoreIncrement}🪙</span>
             )}
             {showScoreDecAnim && (
-              <span className="score-decrement-anim">-{scoreDecrement} €</span>
+              <span className="score-decrement-anim">-{scoreDecrement}🪙</span>
             )}
           </div>
         </div>

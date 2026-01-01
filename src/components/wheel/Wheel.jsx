@@ -216,7 +216,7 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
         if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) displayText = "😵‍💫";
         else if (ls === "Passa" || ls === t('wheel.pass')) displayText = "⏭️";
         else if (ls === "Scambia" || ls === "Swap" || ls === t('wheel.swap')) displayText = "🔀";
-        else displayText = `${lastSpinRef.current} €`;
+        else displayText = `${lastSpinRef.current}🪙`;
       } else {
         displayText = t('wheel.spin');
       }
@@ -428,7 +428,7 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) spinEl.textContent = "😵‍💫";
       else if (ls === "Passa" || ls === t('wheel.pass')) spinEl.textContent = "⏭️";
       else if (ls === "Scambia" || ls === "Swap" || ls === t('wheel.swap')) spinEl.textContent = "🔀";
-      else spinEl.textContent = `${lastSpin} €`;
+      else spinEl.textContent = `${lastSpin}🪙`;
     }
   }, [lastSpin, t]);
 

@@ -14,14 +14,14 @@
 	margin-bottom: 8px;
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 0px;
 	animation: pulse-category 1.2s infinite alternate;
 }
 
 @media (max-width: 960px) {
 	.category-label-fancy {
 		font-size: 1em;
-		padding: 8px 16px;
+		padding: 0px 16px;
 	}
 	.category-icon {
 		font-size: 18px;

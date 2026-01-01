@@ -119,7 +119,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
                     <li key={player.name || index} className={`ranking-item${index === 0 ? ' first' : ''}`}>
                       <span className="ranking-pos">{index + 1}.</span>
                       <span className="ranking-name">{player.name}</span>
-                      <span className="ranking-score">{player.score} €</span>
+                      <span className="ranking-score">{player.score}🪙</span>
                     </li>
                   ))}
                 </ol>

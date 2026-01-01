@@ -98,12 +98,12 @@
 @media (max-width: 600px) {
   .letters-grid {
     grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
-    gap: 6px;
+    gap: 2px;
     justify-content: center; /* Ensure grid items are centered */
     width: 100%;
   }
   .letter-btn {
-    font-size: 1.0rem;
+    font-size: 0.8rem;
     padding: 8px 0;
   }
 }
