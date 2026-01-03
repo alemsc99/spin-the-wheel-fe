@@ -380,11 +380,27 @@
 }
 
 /* Adjusted transparency for loading spinner overlay */
-.start-screen .loading-overlay {
-  background-color: rgba(255, 255, 255, 0.85); /* Increased transparency */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0); /* semi-transparent white */
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-/* Ensure text below spinner is black */
-.start-screen .loading-text {
-  color: #000000; /* Black text */
+.loading-text {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: #111111;
+  text-align: center;
+  min-height: 7.5em;
+  font-weight: 500;
 }
