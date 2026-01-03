@@ -15,18 +15,18 @@ export default function PhraseInput({ value, onChange, onSubmit, onCancel, disab
       />
       <div className="phrase-input-buttons">
         <button
-          className="phrase-input-button confirm-btn"
-          onClick={onSubmit}
-          disabled={!value || disabled}
-        >
-          {t('phrase.confirm')}
-        </button>
-        <button
           className="phrase-input-button cancel-btn"
           onClick={onCancel}
           disabled={disabled}
         >
           {t('phrase.cancel')}
+        </button>
+        <button
+          className="phrase-input-button confirm-btn"
+          onClick={onSubmit}
+          disabled={!value || disabled}
+        >
+          {t('phrase.confirm')}
         </button>
       </div>
     </div>

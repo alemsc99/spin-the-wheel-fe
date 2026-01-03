@@ -621,6 +621,10 @@ function AppContent() {
   async function confirmNewGameNo() {
     // Start a new game with the same players (scores will be reset by newGame)
     setShowNewGameConfirm(false);
+    const targetPath = localizedGamePath;
+    if (location.pathname !== targetPath) {
+      navigate(targetPath);
+    }
     await newGame(numPlayers, playerNames);
   }
 
@@ -643,7 +647,6 @@ function AppContent() {
   const localizedGamePath = `${localizedStartPath}/game`;
   const localizedRulesPath = `${localizedStartPath}/rules`;
   const localizedScoreboardPath = `${localizedStartPath}/scoreboard`;
-  const localizedPath = `${localizedStartPath}${restPathWithSlash}`;
   const isGameRoute = restPath === 'game';
   const isRulesRoute = restPath === 'rules';
   const isScoreboardRoute = restPath === 'scoreboard';

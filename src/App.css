@@ -203,6 +203,7 @@
   /* Gestione bottone nuova partita se presente */
   .new-game-btn {
     order: 7;
+    width: 48px;
   }
 }
 

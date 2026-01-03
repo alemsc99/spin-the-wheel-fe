@@ -1,238 +1,159 @@
 import { useEffect, useRef } from "react";
-import "./Wheel.css"; // import CSS
+import "./Wheel.css"; 
 import { useTranslation } from '../../i18n/TranslationProvider';
 
 export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayers }) {
   const { t } = useTranslation();
-  // Keep a ref to the latest onSpin so the init effect can run once
+  
+  const angRef = useRef(0);
+  const angVelRef = useRef(0);
+  
   const onSpinRef = useRef(onSpin);
-  // Keep a ref to the latest lastSpin so closures can read the up-to-date value
   const lastSpinRef = useRef(lastSpin);
   const onSpinEndRef = useRef(onSpinEnd);
 
-  // Update the ref whenever the prop changes
-  useEffect(() => {
-    onSpinRef.current = onSpin;
-  }, [onSpin]);
-
-  // Update lastSpin ref whenever parent changes it
-  useEffect(() => {
-    lastSpinRef.current = lastSpin;
-  }, [lastSpin]);
-
-  // Update onSpinEnd ref
-  useEffect(() => { onSpinEndRef.current = onSpinEnd }, [onSpinEnd])
+  useEffect(() => { onSpinRef.current = onSpin; }, [onSpin]);
+  useEffect(() => { lastSpinRef.current = lastSpin; }, [lastSpin]);
+  useEffect(() => { onSpinEndRef.current = onSpinEnd; }, [onSpinEnd]);
 
   useEffect(() => {
-  // Generate base values without "Bancarotta" and "Passa"
+    // 1. Sector Generation
     const baseValues = [
-      ...Array(4).fill("100"),
-      ...Array(3).fill("200"),
-      ...Array(3).fill("300"),
-      ...Array(2).fill("400"),
-      ...Array(2).fill("500"),
-      ...Array(2).fill("600"),
-      ...Array(1).fill("700"),
-      ...Array(1).fill("800")
+      ...Array(4).fill("100"), ...Array(3).fill("200"),
+      ...Array(3).fill("300"), ...Array(2).fill("400"),
+      ...Array(2).fill("500"), ...Array(2).fill("600"),
+      ...Array(1).fill("700"), ...Array(1).fill("800")
     ];
-  // Shuffle base values
     const shuffledValues = baseValues.sort(() => Math.random() - 0.5);
 
     let finalValues;
     if (numPlayers > 1) {
-      // Choose the first position for "Bancarotta"
-      const firstBankruptcyPos = 0;
-      // Choose the first position for "Passa" far from bankruptcies
-      const firstPassaPos = 3;
-      //Choose the first position for "Swap"
-      const firstSwapPos = 5;
-      // Choose the second position for "Bancarotta" far from the first
-      const secondBankruptcyPos = 7;
-      // Choose the second position for "Passa" far from the first two
-      const secondPassaPos = 10;
-      // Choose the second position for "Swap"
-      const secondSwapPos = 14;
-      // Insert special values in the calculated positions
-      // Create pos/label pairs to alternate Bancarotta/Passa
       finalValues = [...shuffledValues];
       const specialPairs = [
-        { pos: firstBankruptcyPos, label: "Bancarotta" },
-        { pos: firstPassaPos, label: "Passa" },
-        { pos: secondBankruptcyPos, label: "Bancarotta" },
-        { pos: secondPassaPos, label: "Passa" },
-        { pos: firstSwapPos, label: "Swap" },
-        { pos: secondSwapPos, label: "Swap" }
+        { pos: 0, label: "Bancarotta" }, { pos: 3, label: "Passa" },
+        { pos: 7, label: "Bancarotta" }, { pos: 10, label: "Passa" },
+        { pos: 5, label: "Swap" }, { pos: 14, label: "Swap" }
       ];
-      // Sort by descending index before splice to avoid index shifting
       specialPairs.sort((a, b) => b.pos - a.pos).forEach(p => {
         finalValues.splice(p.pos, 0, p.label);
       });
     } else {
-      // Choose the first position for "Bancarotta"
-      const firstBankruptcyPos = 7;
-      // Choose the second position for "Bancarotta" far from the first
-      const secondBankruptcyPos = 15;
       finalValues = [...shuffledValues];
-      const specialPositions = [firstBankruptcyPos, secondBankruptcyPos].sort((a, b) => b - a);
-      const specialLabels = ["Bancarotta", "Bancarotta"];
-      specialPositions.forEach((pos, i) => {
-        finalValues.splice(pos, 0, specialLabels[i]);
+      const specialPositions = [7, 15].sort((a, b) => b - a);
+      specialPositions.forEach((pos) => {
+        finalValues.splice(pos, 0, "Bancarotta");
       });
     }
     
     const colorPalette = [
-      "#E5243B",
-      "#DDA63A", 
-      "#C5192D",
-      "#FF3A21",
-      "#FCC30B",
-      "#FD6925",
-      "#DD1367",
-      "#FD9D24",
-      "#BF8B2E",
-      "#3F7E44",
-      "#0ad9b7ff",
-      "#56C02B",
-      "#51c4fdff",
-      "#19486A",
-      "#8E24AA",
-      "#2E7D32",
-      "#F57C00",
-      "#5D4037",
-      "#37474F",
-      "#6A1B9A"
+      "#E5243B", "#DDA63A", "#C5192D", "#FF3A21", "#FCC30B",
+      "#FD6925", "#DD1367", "#FD9D24", "#BF8B2E", "#3F7E44",
+      "#0ad9b7ff", "#56C02B", "#51c4fdff", "#19486A", "#8E24AA",
+      "#2E7D32", "#F57C00", "#5D4037", "#37474F", "#6A1B9A"
     ];
     
-    // Build sectors with raw value and a translated/display label
     const sectors = finalValues.map((value, i) => {
-      const color =
-      value === "Bancarotta" ? "#000000" :
-      value === "Passa" ? "#1976d2" :
-      value === "Swap" ? "#d025ffff" :
-      colorPalette[i % colorPalette.length];
+      const color = value === "Bancarotta" ? "#000000" :
+                    value === "Passa" ? "#1976d2" :
+                    value === "Swap" ? "#d025ffff" :
+                    colorPalette[i % colorPalette.length];
 
-      const displayLabel =
-      value === "Bancarotta"
-        ? (t('wheel.bankruptLabel'))
-        : value === "Passa"
-        ? (t('wheel.pass'))
-        : value === "Swap"
-        ? (t('wheel.swap'))
-        : value;
+      const displayLabel = value === "Bancarotta" ? t('wheel.bankruptLabel') : 
+                           value === "Passa" ? t('wheel.pass') : 
+                           value === "Swap" ? t('wheel.swap') : value;
 
       return { raw: value, color, label: displayLabel };
     });
 
-  const canvas = document.getElementById("wheel");
-  const spinEl = document.getElementById("spin");
+    const canvas = document.getElementById("wheel");
+    const spinEl = document.getElementById("spin");
+    if (!canvas || !spinEl) return;
 
-  if (!canvas || !spinEl) return;
-
-  // Use 360x360 canvas for a more compact display
-  canvas.width = 800;
-  canvas.height = 800;
-
-    const rand = (m, M) => Math.random() * (M - m) + m;
-    const tot = sectors.length;
+    canvas.width = 800;
+    canvas.height = 800;
     const ctx = canvas.getContext("2d");
-  // Remove inline styles, use CSS classes instead
-  ctx.canvas.classList.add('wheel-canvas');
-    const dia = ctx.canvas.width;
-    const rad = dia / 2;
+    const tot = sectors.length;
+    const rad = canvas.width / 2;
     const PI = Math.PI;
     const TAU = 2 * PI;
-    const arc = TAU / sectors.length;
-
+    const arc = TAU / tot;
     const friction = 0.991;
-    let angVel = 0;
-    let ang = 0;
 
-    const getIndex = () => Math.floor(tot - (ang / TAU) * tot) % tot;
+    // 2. Updated Index Logic
+    const getIndex = () => {
+      const normalizedAng = ((angRef.current % TAU) + TAU) % TAU;
+      // We subtract 0.5/tot to ensure we are looking at the center of the sector at the pointer
+      return Math.floor(tot - (normalizedAng / TAU) * tot) % tot;
+    };
 
+    // 3. Updated Draw Logic (Starting from Top)
     function drawSector(sector, i) {
-      const startAng = arc * i;
+      // Offset the drawing by -PI/2 so index 0 is at the top
+      const startAng = (arc * i) - (PI / 2);
       const angleMid = startAng + arc / 2;
+      
       ctx.save();
-    
-      // disegna lo spicchio
       ctx.beginPath();
       ctx.fillStyle = sector.color;
       ctx.moveTo(rad, rad);
       ctx.arc(rad, rad, rad, startAng, startAng + arc);
       ctx.closePath();
       ctx.fill();
-    
-      // trasla al centro e ruota sulla bisettrice
+      
       ctx.translate(rad, rad);
-    
-      // Normalizza l'angolo in [0, TAU)
-      const normalized = (angleMid % TAU + TAU) % TAU;
-      ctx.rotate(normalized);
-    
-      // Ruota sempre di 180° per scrivere dall'esterno verso l'interno
-      ctx.rotate(Math.PI);
-    
-      // Stile testo e adattamento larghezza
+      ctx.rotate(angleMid);
+      ctx.rotate(PI);
+      
       ctx.fillStyle = "#fff";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
-    
-      // Calcola font size in base al raggio per scalare con la ruota
-      const baseFontSize = Math.floor(rad * 0.085); // ~8.5% del raggio
+      
+      const baseFontSize = Math.floor(rad * 0.085);
       let fontSize = sector.raw === "Bancarotta" ? Math.floor(baseFontSize * 0.85) : baseFontSize;
       ctx.font = `bold ${fontSize}px sans-serif`;
-    
+      
       const maxWidth = rad * 0.75;
-      const minFontSize = Math.floor(baseFontSize * 0.4);
-
-      while (ctx.measureText(sector.label).width > maxWidth && fontSize > minFontSize) {
+      while (ctx.measureText(sector.label).width > maxWidth && fontSize > 10) {
         fontSize -= 1;
         ctx.font = `bold ${fontSize}px sans-serif`;
       }
-    
-      // posizione: lungo il raggio, sempre negativa per scrivere dall'esterno verso il centro
-      const textRadius = Math.floor(rad * 0.65);
-      ctx.fillText(sector.label, -textRadius, 0);
-    
+      ctx.fillText(sector.label, -Math.floor(rad * 0.65), 0);
       ctx.restore();
     }
 
     function rotate() {
       const sector = sectors[getIndex()];
-      // Debug: report current angle and angular velocity
-      console.log('rotate() ang(rad):', ang, 'angVel:', angVel, 'sector:', sector.label);
-      ctx.canvas.setAttribute('data-rotation', ang - PI / 2); // for debugging/testing
-      ctx.canvas.style.setProperty('--wheel-rotation', `${ang - PI / 2}rad`);
-      ctx.canvas.classList.add('wheel-rotating');
-      const isSpinning = !!angVel;
-      // When spinning show the current sector, otherwise show the latest value from parent (if any)
+      const isSpinning = !!angVelRef.current || canvas.classList.contains('css-spinning');
+      
+      // Removed the PI/2 offset here so 0rad is the visual starting state
+      canvas.style.setProperty('--wheel-rotation', `${angRef.current}rad`);
+      
       let displayText;
       if (isSpinning) {
-        // During spin, show emoji if the sector is Bancarotta/Passa/Swap (support localized/raw)
-        const isSwapSector = sector.raw === "Swap" || sector.raw === "Scambia" || sector.raw === t('wheel.swap');
-        displayText = sector.raw === "Bancarotta" ? "😵‍💫" : sector.raw === "Passa" ? "⏭️" : isSwapSector ? "🔀" : sector.label;
+        const isSwap = sector.raw === "Swap" || sector.raw === t('wheel.swap');
+        displayText = sector.raw === "Bancarotta" ? "😵‍💫" : 
+                      sector.raw === "Passa" ? "⏭️" : 
+                      isSwap ? "🔀" : sector.label;
       } else if (lastSpinRef.current) {
         const ls = String(lastSpinRef.current);
         if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) displayText = "😵‍💫";
         else if (ls === "Passa" || ls === t('wheel.pass')) displayText = "⏭️";
-        else if (ls === "Scambia" || ls === "Swap" || ls === t('wheel.swap')) displayText = "🔀";
-        else displayText = `${lastSpinRef.current}🪙`;
+        else if (ls === "Swap" || ls === t('wheel.swap')) displayText = "🔀";
+        else displayText = `${ls}🪙`;
       } else {
         displayText = t('wheel.spin');
       }
+      
       spinEl.textContent = displayText;
       spinEl.setAttribute('data-sector-color', sector.color);
       spinEl.classList.toggle('spinning', isSpinning);
     }
 
     function frame() {
-      // Debug: show that frame is running and current angVel
-      if (angVel) console.log('frame running angVel:', angVel);
-      if (!angVel) return;
-      angVel *= friction;
-      if (angVel < 0.002) angVel = 0;
-      ang += angVel;
-      ang %= TAU;
+      if (!angVelRef.current) return;
+      angVelRef.current *= friction;
+      if (angVelRef.current < 0.002) angVelRef.current = 0;
+      angRef.current += angVelRef.current;
       rotate();
     }
 
@@ -243,201 +164,87 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       if (engineRunning) rafId = requestAnimationFrame(engine);
     }
 
-    // Helper: build a list of possible raw values to search the sectors array
-    function buildSearchCandidates(val) {
-      const v = String(val);
-      const candidates = new Set();
-      // localized labels (could match server locale)
-      candidates.add(t('wheel.swap'));
-      candidates.add(t('wheel.pass'));
-      candidates.add(t('wheel.bankrupt'));
-      // lower/upper variants
-      candidates.add(v.toLowerCase());
-      candidates.add(v.toUpperCase());
-      return Array.from(candidates).map(x => String(x));
-    }
+    const startSpinVisual = (targetIndex, spinResult) => {
+      engineRunning = false;
+      canvas.classList.add('css-spinning');
 
-    // Normalize server-provided value to canonical raw keys used in sectors
-    function normalizeServerValue(val) {
-      const s = String(val);
-      // direct canonical matches
-      if ( s === t('wheel.swap')) return 'Swap';
-      if (s === t('wheel.pass')) return 'Passa';
-      if ( s === t('wheel.bankrupt')) return 'Bancarotta';
-      // numeric values might be strings or numbers, return as-is
-      return s;
-    }
+      const totalFullTurns = 4;
+      
+      // Since we draw starting at Top, 0rad = index 0 at top.
+      const targetAngleInCircle = (1 - (targetIndex + 0.5) / tot) * TAU;
+      const currentAngleInCircle = ((angRef.current % TAU) + TAU) % TAU;
+      
+      let distanceToTarget = targetAngleInCircle - currentAngleInCircle;
+      if (distanceToTarget <= 0) distanceToTarget += TAU;
 
-    function init() {
-      sectors.forEach(drawSector);
-      rotate();
-      engine();
+      const finalAng = angRef.current + distanceToTarget + (totalFullTurns * TAU);
+      const duration = 3000 + Math.floor(Math.random() * 1000);
 
-      // This flag marks when we animate via CSS transition to land on specific sector
-      let cssSpinning = false;
+      canvas.style.transition = `transform ${duration}ms cubic-bezier(0.1, 0, 0.1, 1)`;
+      canvas.style.transform = `rotate(${finalAng}rad)`;
 
-      const onSpinClick = () => {
-        console.log('spin button clicked, angVel before:', angVel);
-        if (cssSpinning) { console.log('CSS spin in progress, ignore click'); return }
-        if (angVel) { console.log('ignored: already spinning by physics'); return }
+      const onTransitionEnd = (ev) => {
+        if (ev.target !== canvas) return;
+        canvas.removeEventListener('transitionend', onTransitionEnd);
+        
+        angRef.current = finalAng;
+        canvas.style.transition = '';
+        canvas.style.transform = `rotate(${angRef.current}rad)`;
+        canvas.classList.remove('css-spinning');
+        
+        engineRunning = true;
+        engine();
+        if (onSpinEndRef.current) onSpinEndRef.current(spinResult);
+      };
 
-        // Add some random variation to starting angle to make each spin look different
-        const startAngleVariation = Math.random() * 0.5; // Small random starting variation
-        ang += startAngleVariation;
-        ang %= TAU;
-        rotate(); // Update display with new starting position
+      canvas.addEventListener('transitionend', onTransitionEnd);
+    };
 
-        const startSpinVisual = (targetIndex, spinResult) => {
-          // Stop the RAF-driven engine while CSS animation runs
-          engineRunning = false;
-          cssSpinning = true;
+    const onSpinClick = () => {
+      if (canvas.classList.contains('css-spinning') || angVelRef.current) return;
 
-          // Add much more randomness to the rotation but keep precision
-          const extraSpins = 8 + Math.floor(Math.random() * 8); // 8..15 spins for more variation
-          // Keep precise center positioning but add full rotations for randomness
-          const additionalFullRotations = Math.floor(Math.random() * 4); // 0-3 additional full rotations
-          // Center of target sector: (targetIndex + 0.5)/tot - NO random offset to maintain precision
-          const targetPosition = (targetIndex + 0.5) / tot;
-          // Calculate final angle from current angle to ensure precise landing
-          const currentAngle = ang % TAU;
-          const targetAngle = TAU * (1 - targetPosition);
-          // Calculate the shortest path to target, then add the extra spins
-          let angleDifference = targetAngle - currentAngle;
-          if (angleDifference < 0) angleDifference += TAU;
-          const finalAng = currentAngle + (extraSpins + additionalFullRotations) * TAU + angleDifference;
-          // Vary duration more significantly
-          const duration = 2000 + Math.floor(Math.random() * 2000); // 2s to 4s for more variation
-
-          // Attach transitionend to canvas
-          const onTransitionEnd = (ev) => {
-            ctx.canvas.removeEventListener('transitionend', onTransitionEnd);
-            // Normalize angle
-            ang = finalAng % TAU;
-            // Clear CSS transition so future RAF updates can control transform
-            ctx.canvas.style.transition = '';
-            // Ensure final transform applied
-            ctx.canvas.setAttribute('data-rotation', ang - PI / 2);
-            ctx.canvas.style.setProperty('--wheel-rotation', `${ang - PI / 2}rad`);
-            ctx.canvas.classList.add('wheel-rotating');
-            cssSpinning = false;
-            // Resume RAF engine to keep UI consistent (but angVel is zero)
-            engineRunning = true;
-            engine();
-            // Notify parent that spin finished
-            try { if (onSpinEndRef.current) onSpinEndRef.current(spinResult); } catch(e){ console.error('onSpinEnd threw', e) }
-          };
-
-          // Start CSS transition with varied easing
-          const easingVariations = [
-            'cubic-bezier(.2,.8,.2,1)',
-            'cubic-bezier(.1,.7,.3,1)',
-            'cubic-bezier(.25,.46,.45,.94)',
-            'cubic-bezier(.165,.84,.44,1)'
-          ];
-          const randomEasing = easingVariations[Math.floor(Math.random() * easingVariations.length)];
-          ctx.canvas.style.transition = `transform ${duration}ms ${randomEasing}`;
-          // force repaint
-          // @ts-ignore
-          void ctx.canvas.offsetWidth;
-          ctx.canvas.addEventListener('transitionend', onTransitionEnd);
-          // apply final transform
-          ctx.canvas.style.transform = `rotate(${finalAng - PI / 2}rad)`;
-
-          // Keep button text as the localized "spin" text during spinning instead of showing dots
-          spinEl.textContent = t('wheel.spin');
+      if (typeof onSpinRef.current === 'function') {
+        const res = onSpinRef.current();
+        const handleResult = (spinResult) => {
+          if (!spinResult) return;
+          const val = String(spinResult.value);
+          const norm = (val === t('wheel.swap')) ? 'Swap' : (val === t('wheel.pass')) ? 'Passa' : (val === t('wheel.bankrupt')) ? 'Bancarotta' : val;
+          const targetIndex = sectors.findIndex(s => String(s.raw) === norm);
+          startSpinVisual(targetIndex >= 0 ? targetIndex : Math.floor(Math.random() * tot), spinResult);
         };
 
-        const startSpinFallback = () => { 
-          // Add more variation to the fallback angular velocity
-          angVel = rand(0.2, 0.6); // Increased range from 0.25-0.45 to 0.2-0.6
-          console.log('starting fallback spin, angVel:', angVel); 
-        };
-
-        if (typeof onSpinRef.current === 'function') {
-          try {
-            const res = onSpinRef.current();
-            if (res && typeof res.then === 'function') {
-              // Awaiting server-side chosen value
-              res.then((spinResult) => {
-                if (!spinResult) {
-                  console.log('onSpin resolved falsy, abort spin');
-                  return;
-                }
-                const val = spinResult.value;
-                const norm = normalizeServerValue(val);
-                const candidates = buildSearchCandidates(val);
-                // Prefer exact match against normalized canonical key, fall back to candidates
-                const targetIndex = sectors.findIndex(s => String(s.raw) === norm) >= 0
-                  ? sectors.findIndex(s => String(s.raw) === norm)
-                  : sectors.findIndex(s => candidates.includes(String(s.raw)));
-                startSpinVisual(targetIndex >= 0 ? targetIndex : Math.floor(Math.random()*tot), spinResult);
-              }).catch((e) => { console.log('onSpin promise rejected', e); startSpinFallback(); });
-            } else if (res) {
-              const spinResult = res;
-              const val = spinResult.value;
-              const norm = normalizeServerValue(val);
-              const candidates = buildSearchCandidates(val);
-              const targetIndex = sectors.findIndex(s => String(s.raw) === norm) >= 0
-                ? sectors.findIndex(s => String(s.raw) === norm)
-                : sectors.findIndex(s => candidates.includes(String(s.raw)));
-              startSpinVisual(targetIndex >= 0 ? targetIndex : Math.floor(Math.random()*tot), spinResult);
-            } else {
-              console.log('onSpin returned falsy non-promise', res);
-            }
-          } catch (e) {
-            console.log('onSpin threw', e);
-            // If onSpin throws, do not start the spin
-          }
+        if (res instanceof Promise) {
+          res.then(handleResult).catch(() => { angVelRef.current = 0.4; });
         } else {
-          startSpinFallback();
+          handleResult(res);
         }
-      };
+      } else {
+        angVelRef.current = 0.4;
+      }
+    };
 
-      spinEl.addEventListener("click", onSpinClick);
+    sectors.forEach(drawSector);
+    // Apply exact current rotation (initially 0rad) without the offset
+    canvas.style.transform = `rotate(${angRef.current}rad)`;
+    rotate();
+    engine();
 
-      // Cleanup when unmounting: remove listener and stop RAF
-      const cleanup = () => {
-        spinEl.removeEventListener("click", onSpinClick);
-        if (rafId) cancelAnimationFrame(rafId);
-        engineRunning = false;
-      };
-
-      // Attach cleanup to element for outer scope removal if needed
-      // Not the most React-ish but keeps the code simple in this vanilla DOM implementation
-      // Store on the element so the outer effect cleanup can call it
-      // @ts-ignore
-      spinEl._cleanup = cleanup;
-    }
-
-    init();
-
+    spinEl.addEventListener("click", onSpinClick);
     return () => {
-      // Call cleanup if set
-      if (spinEl && spinEl._cleanup) try { spinEl._cleanup(); } catch (e) {}
+      engineRunning = false;
+      cancelAnimationFrame(rafId);
+      spinEl.removeEventListener("click", onSpinClick);
     };
   }, [numPlayers, t]);
 
-  // Update button text when parent lastSpin changes (so the button shows the latest value when not spinning)
-  useEffect(() => {
-    const spinEl = document.getElementById("spin");
-    if (!spinEl) return;
-    if (!lastSpin) {
-      spinEl.textContent = t('wheel.spin') || "SPIN";
-    } else {
-      const ls = String(lastSpin);
-      if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) spinEl.textContent = "😵‍💫";
-      else if (ls === "Passa" || ls === t('wheel.pass')) spinEl.textContent = "⏭️";
-      else if (ls === "Scambia" || ls === "Swap" || ls === t('wheel.swap')) spinEl.textContent = "🔀";
-      else spinEl.textContent = `${lastSpin}🪙`;
-    }
-  }, [lastSpin, t]);
-
-    return (
+  return (
     <div className="wheel-container">
-        <div id="wheelOfFortune" className="wheel-wrapper">
+      <div id="wheelOfFortune" className="wheel-wrapper">
         <canvas id="wheel" className="wheel-canvas" />
-        <button id="spin" className="spin-btn" disabled={disabled}>{t('wheel.spin') || 'SPIN'}</button>
-        </div>
+        <button id="spin" className="spin-btn" disabled={disabled}>
+          {t('wheel.spin') || 'SPIN'}
+        </button>
       </div>
-    );
+    </div>
+  );
 }

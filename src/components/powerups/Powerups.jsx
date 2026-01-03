@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './Powerups.css';
 import { POWERUP_PRICES } from '../../constants/constants';
 import { IMAGES } from '../../constants/constants';
+import { useTranslation } from '../../i18n/TranslationProvider';
 
 /**
  * @param {{ onUse: (powerup: string, target?: string|null) => Promise<void> | void, powerups?: Record<string, string[]>, isSpinning?: boolean, canGuess?: boolean, playerNames?: string[], currentPlayerIdx?: number }} props
@@ -9,6 +10,7 @@ import { IMAGES } from '../../constants/constants';
 export default function Powerups({ onUse, powerups = {}, isSpinning = false, canGuess = false, playerNames = [], currentPlayerIdx = undefined }) {
   // accept powerups prop (default empty) to satisfy TS usage from App.tsx
   // when used it can be read to mark active powerups in the UI if desired
+  const { t } = useTranslation();
   const items = [ 'Skip', 'Double', 'Lose', 'Shield'];
   const disabled = isSpinning || canGuess; // disabilita dopo che si è girata la ruota o durante lo spin
 
@@ -73,7 +75,7 @@ export default function Powerups({ onUse, powerups = {}, isSpinning = false, can
               {otherPlayers.map((name) => (
                 <button key={name} className="target-btn" onClick={() => handleSelectTarget(name)}>{name}</button>
               ))}
-              <button className="target-cancel-btn" onClick={handleCancelTarget}>Annulla</button>
+              <button className="target-cancel-btn" onClick={handleCancelTarget}>{t('phrase.cancel')}</button>
             </div>
           </div>
         </div>
