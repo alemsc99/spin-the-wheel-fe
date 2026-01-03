@@ -31,13 +31,27 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   
   const isIt = lang === 'it'; // Comodo per i check
   const loadingPhrases = isIt 
-    ? []
+    ? [
+      "Preparando la ruota...",
+      "Caricando i giocatori...",
+      "Mescolando le lettere segrete...",
+      "Ricaricando i power-up..."
+    ]
     : [
       "Preparing the wheel...",
       "Loading players...",
       "Shuffling secret letters...",
       "Recharging power-ups..."
       ];
+  // State for cycling loading phrases
+  const [loadingPhraseIdx, setLoadingPhraseIdx] = useState(0);
+  React.useEffect(() => {
+    if (!isWakingUp || loadingPhrases.length === 0) return;
+    const interval = setInterval(() => {
+      setLoadingPhraseIdx(idx => (idx + 1) % loadingPhrases.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [isWakingUp, loadingPhrases.length]);
 
   // --- DEFINIZIONE DATI STRUTTURATI (JSON-LD) ---
   const schemaData = {
@@ -151,23 +165,16 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   return (
     <div className="start-screen pretty-bg">
       {isWakingUp && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(255, 255, 255, 0.85)', // Increased transparency
-          backdropFilter: 'blur(8px)',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '20px'
-        }}>
-          <div style={{ marginBottom: '40px' }}>
-            <LoadingSpinner />
+        <div className="loading-overlay">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <LoadingSpinner />
+            </div>
+            {loadingPhrases.length > 0 && (
+              <div className="loading-text">
+                {loadingPhrases[loadingPhraseIdx]}
+              </div>
+            )}
           </div>
         </div>
       )}
