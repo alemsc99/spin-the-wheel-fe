@@ -237,12 +237,28 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
     };
   }, [numPlayers, t]);
 
+  useEffect(() => {
+    const spinEl = document.getElementById("spin");
+    if (!spinEl) return;
+    let displayText;
+    if (lastSpin) {
+      const ls = String(lastSpin);
+      if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) displayText = "😵‍💫";
+      else if (ls === "Passa" || ls === t('wheel.pass')) displayText = "⏭️";
+      else if (ls === "Swap" || ls === t('wheel.swap')) displayText = "🔀";
+      else displayText = `${ls}🪙`;
+    } else {
+      displayText = t('wheel.spin');
+    }
+    spinEl.textContent = displayText;
+  }, [lastSpin, t]);
+
   return (
     <div className="wheel-container">
       <div id="wheelOfFortune" className="wheel-wrapper">
         <canvas id="wheel" className="wheel-canvas" />
         <button id="spin" className="spin-btn" disabled={disabled}>
-          {t('wheel.spin') || 'SPIN'}
+          {t('wheel.spin')}
         </button>
       </div>
     </div>
