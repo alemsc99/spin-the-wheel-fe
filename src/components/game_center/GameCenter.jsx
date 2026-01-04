@@ -62,7 +62,7 @@ export default function GameCenter({
             )}
           </div>
         </div>
-        <button className="new-game-btn" onClick={onNewGame}>
+        <button className="new-game-btn-gc" onClick={onNewGame}>
           <span role="img" aria-label="sparkles" className="new-game-icon">✨</span>
           {t('game.newGame')}
         </button>
