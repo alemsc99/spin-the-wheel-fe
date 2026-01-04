@@ -54,12 +54,11 @@
         "<strong>Salta 🚫</strong> permette di indicare un giocatore che salterà il suo prossimo turno.",
         "<strong>Doppio 💰</strong> raddoppia il valore ottenuto girando la ruota per il turno corrente.",
         "<strong>Scudo 🛡️</strong> protegge da un effetto di Blackout, Prossimo, Salta o nel caso di consonante sbagliata. Rimane attivo finché non viene utilizzato.",
-        "<strong>Inferno</strong> permette di indicare un giocatore a cui azzerare il punteggio."
+        "<strong>Inferno 🔥</strong> permette di indicare un giocatore a cui azzerare il punteggio."
       ]
     }
   ],
   "start.wheelSectors": "Settori della ruota",
-  "start.disclaimer": "Nota: gli importi mostrati in euro sono a scopo ludico e non rappresentano premi in denaro reale o ricompense in contanti.",
   "players.label": "Numero di giocatori:",
   "player.placeholder": "Nome giocatore",
   "players.defaultName": "Giocatore",
@@ -170,11 +169,11 @@
         "You cannot purchase the same power-up if it is already active.",
         "<strong>Skip 🚫</strong> allows you to designate a player who will skip their next turn.",
         "<strong>Double 💰</strong> doubles the value obtained by spinning the wheel for the current turn.",
-        "<strong>Shield 🛡️</strong> protects against the effect of Blackout, Next, Skip, or a wrong consonant. It remains active until used."
+        "<strong>Shield 🛡️</strong> protects against the effect of Blackout, Next, Skip, or a wrong consonant. It remains active until used.",
+        "<strong> Hell 🔥</strong> allows you to designate a player whose score will be reset."
     ]
     }
     ],
-  "start.disclaimer": "Note: The amounts shown in euros are for entertainment purposes only and do not represent real cash prizes or rewards.",
   "players.label": "Number of players:",
   "player.placeholder": "Player name",
   "players.defaultName": "Player",

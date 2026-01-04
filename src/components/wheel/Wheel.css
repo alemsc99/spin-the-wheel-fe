@@ -26,6 +26,26 @@
     transform: translateX(-17%); /* Correzione manuale per centratura visiva */
     margin-top: 50px; /* Sposta leggermente in basso */
   }
+  .spin-btn, .spin {
+    font: 1em / 0 sans-serif;
+    user-select: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50% !important;
+    width: 25%; /* Reduced from 30% to not cover too much of the bigger wheel */
+    height: 25%; /* Reduced from 30% */
+    transform: translate(22%, -50%);  /* centratura perfetta */
+    background: #fb0303;
+    color: #fff;
+    box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    transition: 0.8s;
+    z-index: 5;
+  }
 }
 
 
@@ -70,10 +90,6 @@
   border-radius: 50%;
   transition: 0.8s;
   z-index: 5;
-}
-
-.spin-btn.spinning {
-  /* This class can be toggled for spinning state */
 }
 
 .spin-btn::after {

@@ -10,6 +10,7 @@ export default function GameActions({
   guessInput,
   onShowPhraseInput,
   onBuyVowel,
+  onShowRules,
   onGuessInputChange,
   onGuessPhrase,
   onHidePhraseInput
@@ -26,7 +27,7 @@ export default function GameActions({
             disabled={victory}
           >
             <span role="img" aria-label="lightbulb" className="action-icon">💡</span>
-            {t('actions.guessPhrase')}
+            <span className="btn-text">{t('actions.guessPhrase')}</span>
           </button>
 
           {/* Button to buy a vowel */}
@@ -36,8 +37,18 @@ export default function GameActions({
             disabled={victory || score < 500 || canGuess}
           >
             <span role="img" aria-label="vowel" className="action-icon">🅰️</span>
-            {t('actions.buyVowel')}
+            <span className="btn-text">{t('actions.buyVowel')}</span> {/* Testo avvolto */}
           </button>
+          {/* Button to show rules */}
+          <button
+            className="action-button show-rules-btn"
+            onClick={onShowRules}
+            disabled={victory}
+          >
+            <span role="img" aria-label="rules" className="action-icon">📜</span>
+            <span className="btn-text">{t('start.rules')}</span> {/* Testo avvolto */}
+          </button>
+
         </>
       )}
 

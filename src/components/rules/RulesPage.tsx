@@ -56,16 +56,6 @@ export default function RulesPage(): React.ReactElement {
     return normalizeRulesBody(langMap['start.rulesBody']);
   }, [t, activeLang]);
 
-  const disclaimer = useMemo(() => {
-    const maybe = t('start.disclaimer');
-    if (typeof maybe === 'string' && maybe !== 'start.disclaimer') {
-      return maybe;
-    }
-    const langMap = (translations as Record<string, Record<string, unknown>>)[activeLang] ?? {};
-    const fallback = langMap['start.disclaimer'];
-    return typeof fallback === 'string' ? fallback : '';
-  }, [t, activeLang]);
-
   const baseTitle =
     typeof t('start.rulesTitle') === 'string' ? t('start.rulesTitle') : 'Rules';
   const emptyLabel = typeof t('rules.empty') === 'string' && t('rules.empty') !== 'rules.empty'
@@ -73,6 +63,10 @@ export default function RulesPage(): React.ReactElement {
     : '';
 
   const handleClose = (): void => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
     navigate(`/${activeLang}`);
   };
 
@@ -122,7 +116,6 @@ export default function RulesPage(): React.ReactElement {
             ) : (
               emptyLabel && <p className="rules-empty">{emptyLabel}</p>
             )}
-            {disclaimer && <div className="rules-disclaimer">{disclaimer}</div>}
           </div>
         </div>
       </div>

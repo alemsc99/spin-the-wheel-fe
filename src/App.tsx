@@ -254,7 +254,9 @@ function AppContent() {
     applyReelResult();
   }
 
-
+  async function handleShowRules() {
+    navigate(localizedRulesPath);
+  }
 
   async function handleBuyVowel() {
     if (!gameId) return;
@@ -760,6 +762,7 @@ function AppContent() {
                   guessInput={guessInput}
                   onShowPhraseInput={() => setShowPhraseInput(true)}
                   onBuyVowel={handleBuyVowel}
+                  onShowRules={handleShowRules}
                   onGuessInputChange={setGuessInput}
                   onGuessPhrase={handleGuessPhrase}
                   onHidePhraseInput={() => setShowPhraseInput(false)}

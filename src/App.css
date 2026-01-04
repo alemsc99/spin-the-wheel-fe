@@ -169,9 +169,23 @@
     margin-bottom: 30px !important; /* Spazio extra per evitare sovrapposizioni con i powerups */
   }
 
+  /* 6. Game Center (Azioni di gioco e Score) */
+  .game-actions-container {
+    order: 5;
+    width: 100%;
+    flex-direction: row !important; /* ALLINEAMENTO ORIZZONTALE */
+    flex-wrap: wrap !important;     /* Permette di andare a capo se lo schermo è molto stretto */
+    gap: 8px !important;            /* Spazio tra i bottoni */
+    margin: 0 !important;
+    justify-content: center;
+    align-items: center !important;
+    display: flex !important;
+    gap: 15px !important;
+  }
+
   /* 5. Powerups */
   .powerups-container {
-    order: 5;
+    order: 6;
     width: calc(50% - 5px) !important; /* Fit half width minus gap */
     min-width: 0 !important; /* Override the 280px min-width */
     margin: 0 !important;
@@ -180,20 +194,12 @@
   }
 
   .leaderboard-root {
-    order: 5;
+    order: 6;
     width: calc(50% - 5px); /* Fit half width minus gap */
     margin: 0 !important;
     min-width: 0 !important;
   }
 
-  /* 6. Game Center (Azioni di gioco e Score) */
-  .game-actions-container {
-    order: 6;
-    width: 100%; /* Force full width */
-    margin: 0 !important;
-    justify-content: center;
-  }
-  
   .wheel-info-bar {
     order: 7;
     width: 100%;
@@ -202,7 +208,7 @@
 
   /* Gestione bottone nuova partita se presente */
   .new-game-btn {
-    order: 7;
+    order: 8;
     width: 48px;
   }
 }

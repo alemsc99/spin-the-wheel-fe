@@ -26,11 +26,29 @@
 
 @media (max-width: 960px) {
   .action-button {
-    font-size: 16px;
-    padding: 10px 20px;
+    display: flex !important;          /* FONDAMENTALE per il posizionamento */
+    justify-content: center !important; /* Centra orizzontalmente */
+    align-items: center !important;     /* Centra verticalmente */
+    
+    width: 60px !important;
+    height: 60px !important;
+    padding: 0 !important;             /* Rimuovi il padding che sposta l'icona */
+    border-radius: 50% !important;     /* Lo rende tondo */
+    
+    line-height: 0 !important;         /* Evita che l'altezza del testo sposti l'emoji */
   }
+
   .action-icon {
-    font-size: 16px;
+    font-size: 26px !important;        /* Dimensione dell'emoji (un po' più grande) */
+    display: inline-block !important;
+    margin: 0 !important;              /* Rimuove eventuali margini */
+    padding: 0 !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
+    transform: translateY(1px);        /* A volte le emoji sembrano leggermente alte */
+  }
+
+  .btn-text {
+    display: none !important;          /* Nasconde il testo */
   }
 }
 
@@ -48,19 +66,36 @@
 }
 
 .guess-phrase-btn {
-  background: linear-gradient(90deg, #ffb347 0%, #ffcc80 100%);
-  color: #333;
-  box-shadow: 0 2px 8px rgba(255, 188, 66, 0.18);
-}
-
-.guess-phrase-btn:not(:disabled):hover {
-  box-shadow: 0 4px 12px rgba(255, 188, 66, 0.25);
+  /* Gradiente dall'arancio-oro al giallo acceso */
+  background: linear-gradient(135deg, #a036fc 0%, #fc4e4e 100%) !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 4px 12px rgba(245, 159, 0, 0.3) !important;
+  color: #ffffff;
 }
 
 .buy-vowel-btn {
-  background: linear-gradient(90deg, #80d8ff 0%, #b3e5fc 100%);
-  color: #333;
-  box-shadow: 0 2px 8px rgba(66, 188, 255, 0.18);
+  /* Gradiente dal rosso scuro al corallo vivace */
+  background: linear-gradient(135deg, #036e04 0%, #0cc402 100%) !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 4px 12px rgba(224, 49, 49, 0.3) !important;
+  color: #ffffff;
+}
+
+.show-rules-btn {
+  /* 1. Rendiamo il gradiente più profondo (blu più saturo) */
+  background: linear-gradient(135deg, #1971c2 0%, #4dabf7 100%) !important;
+  
+  /* 2. Un bordo bianco sottile crea un distacco netto */
+  border: 2px solid #ffffff !important;
+  
+  /* 3. Ombra più definita per dare profondità al bottone */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  
+  color: #ffffff; /* Testo/Icona bianca se non è un'emoji */
+}
+
+.guess-phrase-btn:not(:disabled):hover {
+  box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
 }
 
 .buy-vowel-btn:not(:disabled):hover {
