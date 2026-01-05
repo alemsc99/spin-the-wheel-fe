@@ -724,6 +724,17 @@ function AppContent() {
                  powerups={powerups}
                  recentDeductions={recentDeductions}
                />
+               {/* POWERUPS: in its own container directly below the players list */}
+                {numPlayers > 1 && (
+                    <Powerups
+                      onUse={handlePowerupUse}
+                      powerups={powerups}
+                      isSpinning={isSpinning}
+                      canGuess={canGuess}
+                      playerNames={playerNames}
+                      currentPlayerIdx={firstPlayerIdx ?? undefined}
+                    />
+                )}
               </div>
               {/* LEFT: categoria, frase segreta, griglia lettere */}
               <div className="game-main-content">
@@ -755,20 +766,6 @@ function AppContent() {
                   onGuessPhrase={handleGuessPhrase}
                   onHidePhraseInput={() => setShowPhraseInput(false)}
                 />
-
-                {/* POWERUPS: in its own container directly below the players list */}
-                {numPlayers > 1 && (
-                    <Powerups
-                      onUse={handlePowerupUse}
-                      powerups={powerups}
-                      isSpinning={isSpinning}
-                      canGuess={canGuess}
-                      playerNames={playerNames}
-                      currentPlayerIdx={firstPlayerIdx ?? undefined}
-                    />
-                )}
-
-                
               </div>
 
               
