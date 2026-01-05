@@ -20,7 +20,7 @@ export default function GameActions({
   return (
     <div className="game-actions-container">
       {!showPhraseInput && (
-        <>
+        <div className="actions-buttons-grid">
           {/* Button to guess the phrase */}
           <button
             className="action-button guess-phrase-btn"
@@ -55,10 +55,10 @@ export default function GameActions({
             onClick={onNewGame}
             disabled={victory}
           >
-            <span role="img" aria-label="sparkles" className="new-game-icon">✨</span>
+            <span role="img" aria-label="sparkles" className="action-icon">✨</span>
             <span className="btn-text">{t('game.newGame')}</span> {/* Testo avvolto */}
           </button>
-        </>
+        </div>
       )}
 
       {showPhraseInput && (

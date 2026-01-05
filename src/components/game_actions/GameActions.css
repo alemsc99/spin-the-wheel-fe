@@ -1,9 +1,15 @@
 .game-actions-container {
   margin-top: 32px;
   display: flex;
-  flex-direction: row;
+  justify-content: center;
   align-items: center;
+}
+
+.actions-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
+  justify-items: center;
 }
 
 .action-icon {
@@ -16,15 +22,25 @@
   font-size: 18px;
   font-weight: bold;
   border: none;
-  border-radius: 24px;
+  border-radius: 24px !important;
+  justify-content: center !important;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
   outline: none;
   position: relative;
   letter-spacing: 1px;
+  width: 100% !important
 }
 
 @media (max-width: 960px) {
+  .actions-buttons-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+  }
+
   .action-button {
     width: 60px !important;  /* Ridotto un po' per sicurezza su schermi stretti */
     height: 60px !important;
@@ -42,7 +58,7 @@
     margin: 0 !important;              /* Rimuove eventuali margini */
     padding: 0 !important;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
-    transform: translateY(1px);        /* A volte le emoji sembrano leggermente alte */
+    transform: translateY(1px) !important;        /* A volte le emoji sembrano leggermente alte */
   }
 
   .btn-text {
@@ -97,7 +113,7 @@
   background: linear-gradient(135deg, #d50202 0%, #ffa05d 100%) !important;
   border: 2px solid #ffffff !important;
   box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3) !important;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .guess-phrase-btn:not(:disabled):hover {
