@@ -74,6 +74,7 @@
   "overlay.wrongAnswerSingle": "Risposta sbagliata! Riprova!",
 
   "players.title": "Giocatori",
+  "powerups.title": "Potenziamenti",
 
   "newgame.confirmTitle": "Vuoi cambiare il numero, il nome dei giocatori o la lingua?",
   "common.yes": "Sì",
@@ -188,6 +189,7 @@
   "overlay.wrongAnswerSingle": "Wrong answer! Try again!",
 
   "players.title": "Players",
+  "powerups.title": "Powerups",
   "buyPowerup.lowMoney": "Your score is not enough to buy this powerup.",
   "buyPowerup.cannotUseNow": "This powerup is already in use",
 

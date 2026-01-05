@@ -36,8 +36,8 @@
 
   .spin-btn {
     /* RESET PERFETTO PER MOBILE */
-    width: 60px !important;   /* Dimensione fissa per il centro */
-    height: 60px !important;
+    width: 50px !important;   /* Dimensione fissa per il centro */
+    height: 50px !important;
     left: 50% !important;     /* Posiziona al centro esatto */
     top: 50% !important;
     transform: translate(-50%, -50%) !important; /* Centratura matematica */

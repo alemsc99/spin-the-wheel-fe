@@ -1,8 +1,27 @@
 /* Desktop Layout for Powerups - 2x2 Grid */
+.powerups-wrapper {
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px #eee;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.powerups-title {
+  margin: 0 0 10px 0;
+  font-weight: 700;
+  color: #d14c4c;
+  font-size: 18px;
+  text-align: center;
+}
+
 .game-actions-right-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
+  gap: 8px;
   width: 100%;
 }
 
@@ -13,17 +32,44 @@
   flex-direction: column;
   align-items: center;
 }
-
-.powerups-title {
-  margin: 0 0 14px 0;
-  color: #1976d2;
-  font-size: 20px;
-  letter-spacing: 1px;
-  font-weight: 700;
-  text-shadow: 0 2px 8px rgba(25,118,210,0.08);
-}
-
 @media (max-width: 960px) {
+  /* Override wrapper styles for mobile to match "Right Column" layout */
+  .powerups-wrapper {
+    /* Reset container styles */
+    background: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+
+    /* Positioning relative to Wheel (order 5) and Left Actions (order 4) */
+    order: 6 !important; 
+    width: 15% !important; /* Fits next to wheel (62%) and left actions (15%) */
+    margin: 0 !important;
+    
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: auto !important;
+  }
+  
+  .powerups-title {
+    display: none !important;
+  }
+
+  /* Force inner container to stack vertically */
+  .game-actions-right-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    width: 100% !important;
+    grid-template-columns: none !important; /* Disable grid */
+    flex: column !important;
+  }
+
+  /* Adjust existing grid/card styles if necessary */
   .powerups-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -31,7 +77,6 @@
   }
   .powerup-card {
     background: none;
-    border: 2px solid #ffffff !important;;
     box-shadow: none;
     gap: 0;
     cursor: pointer;
@@ -58,19 +103,20 @@
     overflow: visible !important;
     font-weight: 700;
     font-size: 0.9rem;
-    width: 60px !important;  /* Ridotto un po' per sicurezza su schermi stretti */
-    height: 60px !important;
+    width: 75px !important;  /* Ridotto un po' per sicurezza su schermi stretti */
+    height: 75px !important;
     border-radius: 50% !important;
     flex-shrink: 0 !important; /* Impedisce che si schiaccino */
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     padding: 0 !important;
+    border: 2px solid #ffffff !important;
   }
 
   .powerup-image {
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: contain;
     border-radius: 50% !important;
     display: block;

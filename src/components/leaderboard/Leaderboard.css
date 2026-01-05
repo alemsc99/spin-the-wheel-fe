@@ -17,26 +17,29 @@
   text-align: center; /* Titolo centrato rispetto alle colonne */
 }
 
-/* LISTA ORIZZONTALE */
+/* LISTA VERTICALE (DESKTOP) */
 .leaderboard-list {
   display: flex;
-  flex-direction: row; /* AFFIANCATI */
-  justify-content: space-around; /* Distribuisce i giocatori */
+  flex-direction: column;
   gap: 8px;
   width: 100%;
 }
 
-/* SINGOLA COLONNA GIOCATORE */
+/* SINGOLA COLONNA GIOCATORE (Desktop Grid Layout) */
 .leaderboard-entry {
-  display: flex;
-  flex-direction: column; /* Elementi interni uno sotto l'altro */
-  align-items: center;    /* Centra tutto nella colonna */
-  padding: 8px 4px;
+  display: grid;
+  grid-template-areas: 
+    "name score"
+    "icons .";
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 8px 12px;
   border-radius: 10px;
-  flex: 1;                /* Ogni colonna occupa lo stesso spazio */
-  min-width: 0;           /* Evita che nomi lunghi rompano il layout */
+  width: 100%;
+  min-width: 0;
   transition: all 0.2s ease;
   border: 2px solid transparent;
+  box-sizing: border-box;
 }
 
 .leaderboard-entry.active {
@@ -47,18 +50,20 @@
 
 /* NOME (SOPRA) */
 .leaderboard-player {
+  grid-area: name;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 4px;
+  align-items: flex-start;
+  width: auto;
+  margin-bottom: 0;
+  position: relative; /* Added relative context for deduction */
 }
 
 .leaderboard-name {
   font-weight: 700;
   color: #333;
-  font-size: 13px;
-  text-align: center;
+  font-size: 14px;
+  text-align: left;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -67,10 +72,12 @@
 
 /* EMOTICON (CENTRO) */
 .leaderboard-player-meta {
+  grid-area: icons;
   display: flex;
   gap: 4px;
-  justify-content: center;
-  margin-bottom: 6px;
+  justify-content: flex-start;
+  margin-bottom: 0;
+  margin-top: 4px;
 }
 
 .status-icon {
@@ -85,9 +92,10 @@
 
 /* PUNTEGGIO (SOTTO) */
 .leaderboard-score-container {
-  width: 100%;
+  grid-area: score;
+  width: auto;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .leaderboard-score {
@@ -116,17 +124,54 @@
 @media (max-width: 960px) {
   .leaderboard-root {
     order: 8; /* Per la tua griglia mobile */
-    margin: 5px 0 !important;
-    padding: 8px;
+    margin: 0px 0 !important;
+    padding: 0px;
     width: 100% !important;
   }
+
+  /* Ripristina layout orizzontale su mobile */
+  .leaderboard-list {
+    flex-direction: row;
+    justify-content: space-around;
+  }
   
+  /* Reset: Ripristina layout a colonna per singolo elemento */
+  .leaderboard-entry {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     padding: 8px 4px;
+     width: auto;
+     flex: 1;
+     gap: 0;
+  }
+
+  .leaderboard-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
   .leaderboard-title {
     font-size: 14px;
   }
 
   .leaderboard-name {
     font-size: 11px;
+    text-align: center;
+  }
+
+  .leaderboard-player-meta {
+    justify-content: center;
+    margin-top: 0;
+    margin-bottom: 6px;
+  }
+  
+  .leaderboard-score-container {
+    width: 100%;
+    justify-content: center;
   }
 
   .leaderboard-score {

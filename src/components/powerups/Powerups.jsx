@@ -45,11 +45,13 @@ export default function Powerups({ onUse, powerups = {}, isSpinning = false, can
   const otherPlayers = playerNames.filter((_, idx) => idx !== currentPlayerIdx);
 
   return ( 
-    <div className="game-actions-right-container">
-      
-        {items.map((p) => (
-          <button
-            key={p}
+    <aside className="powerups-wrapper">
+      <h3 className="powerups-title">{t('powerups.title')}</h3>
+      <div className="game-actions-right-container">
+        
+          {items.map((p) => (
+            <button
+              key={p}
             className={`powerup-card powerup-btn ${disabled ? 'disabled' : ''}`}
             onClick={() => handlePowerupClick(p)}
             disabled={disabled}
@@ -79,6 +81,7 @@ export default function Powerups({ onUse, powerups = {}, isSpinning = false, can
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </aside>
   );
 }
