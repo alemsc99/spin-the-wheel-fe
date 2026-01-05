@@ -45,13 +45,12 @@ export default function Powerups({ onUse, powerups = {}, isSpinning = false, can
   const otherPlayers = playerNames.filter((_, idx) => idx !== currentPlayerIdx);
 
   return ( 
-    <div className="powerups-root">
-      <h4 className="powerups-title">Powerups</h4>
-      <div className="powerups-grid">
+    <div className="game-actions-right-container">
+      
         {items.map((p) => (
           <button
             key={p}
-            className={`powerup-card vertical powerup-button ${disabled ? 'disabled' : ''}`}
+            className={`powerup-card powerup-btn ${disabled ? 'disabled' : ''}`}
             onClick={() => handlePowerupClick(p)}
             disabled={disabled}
             title={disabled ? 'I powerup sono disponibili solo prima di girare la ruota' : ''}
@@ -60,10 +59,10 @@ export default function Powerups({ onUse, powerups = {}, isSpinning = false, can
             <div className="powerup-img-wrapper">
               <img className="powerup-image" src={IMAGES[p]} alt="" />
             </div>
-            <span className="powerup-price">{POWERUP_PRICES[p]} 🪙</span>
+            <span className="powerup-price">{POWERUP_PRICES[p]}🪙</span>
+
           </button>
         ))}
-      </div>
 
       {/* Target selection overlay (appears when Skip or Lose clicked) */}
       {showTargetOverlay && (

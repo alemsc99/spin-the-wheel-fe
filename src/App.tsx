@@ -724,19 +724,6 @@ function AppContent() {
                  powerups={powerups}
                  recentDeductions={recentDeductions}
                />
-                {/* POWERUPS: in its own container directly below the players list */}
-                {numPlayers > 1 && (
-                  <aside className="powerups-container">
-                    <Powerups
-                      onUse={handlePowerupUse}
-                      powerups={powerups}
-                      isSpinning={isSpinning}
-                      canGuess={canGuess}
-                      playerNames={playerNames}
-                      currentPlayerIdx={firstPlayerIdx ?? undefined}
-                    />
-                  </aside>
-                )}
               </div>
               {/* LEFT: categoria, frase segreta, griglia lettere */}
               <div className="game-main-content">
@@ -763,11 +750,28 @@ function AppContent() {
                   onShowPhraseInput={() => setShowPhraseInput(true)}
                   onBuyVowel={handleBuyVowel}
                   onShowRules={handleShowRules}
+                  onNewGame={handleNewGameRequest}
                   onGuessInputChange={setGuessInput}
                   onGuessPhrase={handleGuessPhrase}
                   onHidePhraseInput={() => setShowPhraseInput(false)}
                 />
+
+                {/* POWERUPS: in its own container directly below the players list */}
+                {numPlayers > 1 && (
+                    <Powerups
+                      onUse={handlePowerupUse}
+                      powerups={powerups}
+                      isSpinning={isSpinning}
+                      canGuess={canGuess}
+                      playerNames={playerNames}
+                      currentPlayerIdx={firstPlayerIdx ?? undefined}
+                    />
+                )}
+
+                
               </div>
+
+              
 
               {/* CENTER: ruota e score */}
               <GameCenter

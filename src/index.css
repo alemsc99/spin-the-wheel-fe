@@ -178,7 +178,7 @@
 html, body, #root { height: 100%; }
 body { font-family: Inter, system-ui, sans-serif; }
 
-.app-root { max-width: 1400px; margin: 24px auto; font-family: Inter, system-ui, sans-serif; }
+.app-root { max-width: 1400px; margin: 0px auto; font-family: Inter, system-ui, sans-serif; }
 header { display:flex; justify-content:space-between; align-items:center }
 .top-info { display:flex; gap:16px }
 .main { padding: 16px }

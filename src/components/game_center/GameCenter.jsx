@@ -38,35 +38,6 @@ export default function GameCenter({
           </div>
         </div>
       </div>
-      
-      {/* Score box */}
-      <div className="wheel-info-bar">
-        <div className="wheel-info-row">
-          <div className="wheel-info-item">
-            <span className="wheel-info-label">{t('players.title').replace(/s?$/,'') + ':'}</span>
-            <span
-              className="wheel-info-value"
-              title={playerName}
-            >
-              {playerName || '—'}
-            </span>
-          </div>
-          <div className="wheel-info-item score-container">
-            <span className="wheel-info-label">{t('score.label')}</span>
-            <span className="wheel-info-value score-big">{score}🪙</span>
-            {showScoreAnim && (
-              <span className="score-increment-anim">+{scoreIncrement}🪙</span>
-            )}
-            {showScoreDecAnim && (
-              <span className="score-decrement-anim">-{scoreDecrement}🪙</span>
-            )}
-          </div>
-        </div>
-        <button className="new-game-btn-gc" onClick={onNewGame}>
-          <span role="img" aria-label="sparkles" className="new-game-icon">✨</span>
-          {t('game.newGame')}
-        </button>
-      </div>
     </div>
   );
 }

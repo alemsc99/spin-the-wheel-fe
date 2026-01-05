@@ -26,16 +26,14 @@
 
 @media (max-width: 960px) {
   .action-button {
-    display: flex !important;          /* FONDAMENTALE per il posizionamento */
-    justify-content: center !important; /* Centra orizzontalmente */
-    align-items: center !important;     /* Centra verticalmente */
-    
-    width: 60px !important;
+    width: 60px !important;  /* Ridotto un po' per sicurezza su schermi stretti */
     height: 60px !important;
-    padding: 0 !important;             /* Rimuovi il padding che sposta l'icona */
-    border-radius: 50% !important;     /* Lo rende tondo */
-    
-    line-height: 0 !important;         /* Evita che l'altezza del testo sposti l'emoji */
+    border-radius: 50% !important;
+    flex-shrink: 0 !important; /* Impedisce che si schiaccino */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
   }
 
   .action-icon {
@@ -94,20 +92,18 @@
   color: #ffffff; /* Testo/Icona bianca se non è un'emoji */
 }
 
+.new-game-btn {
+  /* Gradiente dal viola al rosa acceso */
+  background: linear-gradient(135deg, #d50202 0%, #ffa05d 100%) !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3) !important;
+  color: #ffffff;
+}
+
 .guess-phrase-btn:not(:disabled):hover {
   box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
 }
 
 .buy-vowel-btn:not(:disabled):hover {
   box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
-}
-
-@media (max-width: 600px) {
-  .game-actions-container {
-    flex-direction: column;
-    width: 100%;
-  }
-  .action-button {
-    width: 100%;
-  }
 }

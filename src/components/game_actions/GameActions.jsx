@@ -11,6 +11,7 @@ export default function GameActions({
   onShowPhraseInput,
   onBuyVowel,
   onShowRules,
+  onNewGame,
   onGuessInputChange,
   onGuessPhrase,
   onHidePhraseInput
@@ -48,7 +49,15 @@ export default function GameActions({
             <span role="img" aria-label="rules" className="action-icon">📜</span>
             <span className="btn-text">{t('start.rules')}</span> {/* Testo avvolto */}
           </button>
-
+          {/* Button to start a new game */}
+          <button
+            className="action-button new-game-btn"
+            onClick={onNewGame}
+            disabled={victory}
+          >
+            <span role="img" aria-label="sparkles" className="new-game-icon">✨</span>
+            <span className="btn-text">{t('game.newGame')}</span> {/* Testo avvolto */}
+          </button>
         </>
       )}
 

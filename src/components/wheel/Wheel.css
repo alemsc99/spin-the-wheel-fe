@@ -4,71 +4,62 @@
   box-sizing: border-box;
 }
 
-/* Removed body style that was centering everything */
-
 #wheelOfFortune {
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   overflow: visible;
-  padding-bottom: 0; /* Rimosso padding extra che sbilanciava la centratura verticale */
   width: 100%;
   max-width: 100%;
-  margin: 0 auto; /* Force centering */
-  left: 0; /* Reset any positioning */
-  right: 0;
+  margin: 0 auto;
   text-align: center;
 }
 
+/* --- REGOLE MOBILE (960px) --- */
 @media (max-width: 960px) {
   #wheelOfFortune {
-    transform: translateX(-17%); /* Correzione manuale per centratura visiva */
-    margin-top: 50px; /* Sposta leggermente in basso */
+    width: 100% !important;
+    max-width: none !important; /* Toglie il limite precedente */
+    margin: 0 !important;
+    display: flex !important;
   }
-  .spin-btn, .spin {
-    font: 1em / 0 sans-serif;
-    user-select: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 50%;
-    left: 50% !important;
-    width: 25%; /* Reduced from 30% to not cover too much of the bigger wheel */
-    height: 25%; /* Reduced from 30% */
-    transform: translate(22%, -50%);  /* centratura perfetta */
-    background: #fb0303;
-    color: #fff;
-    box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);
-    border-radius: 50%;
-    transition: 0.8s;
-    z-index: 5;
+
+  .wheel-canvas {
+    min-width: 0 !important;       /* CAMBIATO DA 250px A 0 */
+    width: 100% !important;        /* Si adatta al contenitore */
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    aspect-ratio: 1 / 1;           /* Mantiene la ruota perfettamente tonda */
+  }
+
+  .spin-btn {
+    /* RESET PERFETTO PER MOBILE */
+    width: 60px !important;   /* Dimensione fissa per il centro */
+    height: 60px !important;
+    left: 50% !important;     /* Posiziona al centro esatto */
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important; /* Centratura matematica */
+    font-size: 0.8rem !important;
   }
 }
 
-
+/* --- REGOLE GENERALI / DESKTOP --- */
 #wheel {
   display: block;
 }
 
 .wheel-canvas {
-  /* Remove inline transformOrigin and willChange, use CSS */
   transform-origin: 50% 50%;
   will-change: transform;
   transition: transform 0.8s;
-  width: 100%; /* Occupa tutta la larghezza del contenitore */
-  height: auto; /* Mantiene l'aspect ratio */
+  width: 100%;
+  height: auto;
   display: block;
-  margin: 0 auto; /* Centered horizontally */
+  margin: 0 auto;
   max-width: 100%;
-  min-width: 300px; /* Assicura una dimensione minima */
-}
-
-.wheel-canvas.wheel-rotating {
-  /* This class can be toggled for JS-driven rotation */
-  /* The actual transform is set inline by JS, but you can add effects here if needed */
+  min-width: 300px; /* Questo viene sovrascritto dallo 0 nella media query */
 }
 
 .spin-btn, .spin {
@@ -81,9 +72,11 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 25%; /* Reduced from 30% to not cover too much of the bigger wheel */
-  height: 25%; /* Reduced from 30% */
-  transform: translate(22%, -50%);  /* centratura perfetta */
+  width: 25%;
+  height: 25%;
+  /* Attenzione: questo translate(22%) su desktop sposta il tasto. 
+     Se su desktop lo vuoi al centro, usa translate(-50%, -50%) */
+  transform: translate(22%, -50%); 
   background: #fb0303;
   color: #fff;
   box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);
