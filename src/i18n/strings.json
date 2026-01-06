@@ -114,7 +114,10 @@
   "start.langSelectionAria": "Selezione lingua",
   "score.label": "Punteggio:",
     "category.label": "Categoria:",
-    "board.placeholder": "—"
+    "board.placeholder": "—",
+    "start.mode.single": "Single Player",
+    "start.mode.local": "Multiplayer Locale",
+    "start.mode.online": "Multiplayer Online"
   },
   "en": {
   "seo.home.title": "SpinWords | Online Wheel Game",
@@ -238,6 +241,9 @@
   "start.langSelectionAria": "Language selection",
   "score.label": "Score:",
     "category.label": "Category:",
-    "board.placeholder": "—"
+    "board.placeholder": "—",
+    "start.mode.single": "Single Player",
+    "start.mode.local": "Local Multiplayer",
+    "start.mode.online": "Online Multiplayer"
   }
 }

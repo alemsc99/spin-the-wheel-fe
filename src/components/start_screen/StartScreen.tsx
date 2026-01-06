@@ -94,9 +94,23 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
 
 
+  type GameMode = 'single' | 'local' | 'online';
+  const [gameMode, setGameMode] = useState<GameMode>('single');
   const [players, setPlayers] = useState(MIN_PLAYERS);
   const [names, setNames] = useState([] as string[]);
   const [error, setError] = useState('');
+
+  const handleModeChange = (mode: GameMode) => {
+    setGameMode(mode);
+    setError('');
+    if (mode === 'single' || mode === 'online') {
+      setPlayers(1);
+      setNames([]);
+    } else if (mode === 'local') {
+      setPlayers(2);
+      setNames(['', '']);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const n = Number(e.target.value);
@@ -227,29 +241,52 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         {/* ------------------------------------------------ */}
 
         <h1 className="title fancy-title">{t('start.title')}</h1>
+
+        <div className="game-mode-toggles">
+          <button 
+            className={`mode-btn ${gameMode === 'single' ? 'active' : ''}`} 
+            onClick={() => handleModeChange('single')}
+          >
+            {t('start.mode.single')}
+          </button>
+          <button 
+            className={`mode-btn ${gameMode === 'local' ? 'active' : ''}`} 
+            onClick={() => handleModeChange('local')}
+          >
+            {t('start.mode.local')}
+          </button>
+          <button 
+            className={`mode-btn ${gameMode === 'online' ? 'active' : ''}`} 
+            onClick={() => handleModeChange('online')}
+          >
+            {t('start.mode.online')}
+          </button>
+        </div>
         
         {/* ... Il resto del form (select players, inputs) rimane invariato ... */}
-        <div className="players-select pretty-select">
-          <div className="players-select-label-group">
-            <label htmlFor="players" className="players-label">
-              {t('players.label')}
-            </label>
-            <div className="custom-dropdown-wrapper">
-              <select
-                id="players"
-                value={players}
-                onChange={handleChange}
-                className="select-dropdown custom-dropdown"
-              >
-                {Array.from({ length: MAX_PLAYERS - MIN_PLAYERS + 1 }, (_, i) => (
-                  <option key={i + MIN_PLAYERS} value={i + MIN_PLAYERS}>
-                    {i + MIN_PLAYERS}
-                  </option>
-                ))}
-              </select>
+        {gameMode !== 'single' && (
+          <div className="players-select pretty-select">
+            <div className="players-select-label-group">
+              <label htmlFor="players" className="players-label">
+                {t('players.label')}
+              </label>
+              <div className="custom-dropdown-wrapper">
+                <select
+                  id="players"
+                  value={players}
+                  onChange={handleChange}
+                  className="select-dropdown custom-dropdown"
+                >
+                  {Array.from({ length: 3 }, (_, i) => (
+                    <option key={i + 2} value={i + 2}>
+                      {i + 2}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         {(
           <div className="players-names">
             {Array.from({ length: players }, (_, i) => (
