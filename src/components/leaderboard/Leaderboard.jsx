@@ -8,7 +8,8 @@ import { useTranslation } from '../../i18n/TranslationProvider';
    firstPlayerIdx?: number | null,
    playerStatuses?: Record<string, { shield: boolean; banned: boolean }>,
    powerups?: Record<string, string[]>,
-   recentDeductions?: Record<string, number>
+   recentDeductions?: Record<string, number>,
+   scoreChanges?: Record<string, number>
  }} props
  */
 
@@ -18,9 +19,11 @@ export default function Leaderboard({
   firstPlayerIdx = null, 
   playerStatuses = {}, 
   powerups = {}, 
-  recentDeductions = {} 
+  recentDeductions = {}, 
+  scoreChanges 
 }) {
   const { t } = useTranslation();
+  const changes = scoreChanges ?? recentDeductions ?? {};
 
   return (
     <aside className="leaderboard-root">
@@ -39,16 +42,21 @@ export default function Leaderboard({
               double: (powerups.Double || []).includes(name),
             };
           }
+          
+          const changeVal = changes[name];
 
           return (
             <div key={idx} className={`leaderboard-entry ${isActive ? 'active' : ''}`}>
               
-              {/* 1. PARTE SUPERIORE: Nome e Animazione Deduzione */}
+              {/* 1. PARTE SUPERIORE: Nome e Animazione Punteggio */}
               <div className="leaderboard-player">
                 <span className="leaderboard-name" title={name}>{name}</span>
-                {recentDeductions[name] > 0 && (
-                  <span className="leaderboard-deduction" aria-live="polite">
-                    - {recentDeductions[name]}🪙
+                {changeVal !== undefined && changeVal !== 0 && (
+                  <span 
+                    className={`leaderboard-change ${changeVal > 0 ? 'positive' : 'negative'}`} 
+                    aria-live="polite"
+                  >
+                    {changeVal > 0 ? '+' : ''}{changeVal}🪙
                   </span>
                 )}
               </div>

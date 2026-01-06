@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
@@ -57,7 +57,48 @@ function AppContent() {
   const [showPhraseInput, setShowPhraseInput] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [powerups, setPowerups] = useState<Record<string, string[]>>({});
-  const [recentDeductions, setRecentDeductions] = useState<Record<string, number>>({});
+  const [recentDeductions, setRecentDeductions] = useState<Record<string, number>>({}); // Deprecated in favor of scoreChanges, but keeping for compatibility if needed or removing
+  const [scoreChanges, setScoreChanges] = useState<Record<string, number>>({});
+  const prevPlayerScores = useRef<Record<string, number>>({});
+
+  useEffect(() => {
+    const changes: Record<string, number> = {};
+    let hasChanges = false;
+    
+    // Compare current scores with previous scores
+    for (const name in playerScores) {
+      if (prevPlayerScores.current[name] !== undefined) {
+        const oldVal = prevPlayerScores.current[name];
+        const newVal = playerScores[name];
+        if (newVal !== oldVal) {
+          const diff = newVal - oldVal;
+          if (diff !== 0) {
+             changes[name] = diff;
+             hasChanges = true;
+          }
+        }
+      }
+    }
+
+    if (hasChanges) {
+      setScoreChanges(prev => ({ ...prev, ...changes }));
+      // Clear changes after animation duration
+      setTimeout(() => {
+        setScoreChanges(prev => {
+          const next = { ...prev };
+          for (const key in changes) {
+             // Only delete if it matches the current change (simple debounce)
+             // or just delete it.
+             delete next[key];
+          }
+          return next;
+        });
+      }, 2000);
+    }
+
+    prevPlayerScores.current = playerScores;
+  }, [playerScores]);
+
   const scoreManager = useScoreManager({ API_URL, gameId, playerNames, firstPlayerIdx, setPlayerScores, setScore });
   const { incrementPlayerScore, setPlayerScoreAbsolute } = scoreManager;
   const [showReel, setShowReel] = useState(false);
@@ -179,6 +220,11 @@ function AppContent() {
       if (!res.ok) throw new Error(`Server error ${res.status}`)
       const data: NewGameResp & { num_players?: number, player_names?: string[], player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, last_spin?: string | number, masked?: string, complete?: boolean, phrase?: string } = await res.json()
       debugLog('data:', data);
+      
+      // Reset score tracking to avoid "deduction" animations when resetting scores
+      prevPlayerScores.current = {}; 
+      setScoreChanges({});
+
       // Accept and apply server-provided authoritative state fields when present.
       setGameId(data.game_id ?? null)
       if (typeof data.topic === 'string') setTopic(data.topic)
@@ -324,23 +370,7 @@ function AppContent() {
       setTimeout(() => setShowScoreDecAnim(false), 1200);
 
       // Se Lose colpisce un target e il server restituisce player_scores, calcola la detrazione
-     if (powerup === 'Lose' && targetPlayer && data.player_scores) {
-       const before = prevScores[targetPlayer] ?? 0;
-       const after = data.player_scores[targetPlayer] ?? before;
-       const delta = after - before; // negativo se tolto
-       if (delta < 0) {
-         const amount = Math.abs(delta);
-         setRecentDeductions(prev => ({ ...prev, [targetPlayer]: amount }));
-         // rimuovi il badge dopo breve tempo
-         setTimeout(() => {
-           setRecentDeductions(prev => {
-             const copy = { ...prev };
-             delete copy[targetPlayer];
-             return copy;
-           });
-         }, 1400);
-       }
-     }
+     // (Automatic score change detection will handle the visuals)
 
       if (data.player_scores) {
         setPlayerScores(data.player_scores);
@@ -722,7 +752,7 @@ function AppContent() {
                  playerScores={playerScores}
                  firstPlayerIdx={firstPlayerIdx}
                  powerups={powerups}
-                 recentDeductions={recentDeductions}
+                 scoreChanges={scoreChanges}
                />
                {/* POWERUPS: in its own container directly below the players list */}
                 {numPlayers > 1 && (

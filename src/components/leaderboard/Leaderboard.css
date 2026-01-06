@@ -108,16 +108,36 @@
   white-space: nowrap;
 }
 
-/* DEDUZIONE (Animazione sopra la colonna) */
-.leaderboard-deduction {
+/* CHANGE (Animazione: positivo o negativo) */
+.leaderboard-change {
   position: absolute;
-  top: -10px;
+  top: -14px;
+  /* Centering trick */
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+
   font-size: 11px;
-  background: #ffebee;
-  color: #b71c1c;
   padding: 1px 5px;
   border-radius: 4px;
-  animation: lb-pop-float 1.2s ease forwards;
+  font-weight: 700;
+  animation: lb-pop-float 2s ease forwards;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.leaderboard-change.positive {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.leaderboard-change.negative {
+  background: #ffebee;
+  color: #b71c1c;
+  border: 1px solid #ffcdd2;
 }
 
 /* MEDIA QUERY PER MOBILE */
