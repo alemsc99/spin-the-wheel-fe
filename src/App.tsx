@@ -14,7 +14,8 @@ import { useTranslation, type Lang } from './i18n/TranslationProvider';
 import TurnOverlay from './components/overlays/TurnOverlay.tsx';
 import Powerups from './components/powerups/Powerups.jsx';
 import Leaderboard from './components/leaderboard/Leaderboard';
-import { GuessPhraseResp, GuessResp, NewGameResp, ReelSpinResponse, SpinResp } from './types/api.ts';
+import Lobby from './components/lobby/Lobby.jsx';
+import { CreateRoomResponse, GuessPhraseResp, GuessResp, NewGameResp, ReelSpinResponse, SpinResp } from './types/api.ts';
 import { debugLog } from './utils/utils.ts';
 import { API_URL } from './constants/constants.jsx';
 import useScoreManager from './hooks/ScoreManager.ts';
@@ -219,7 +220,6 @@ function AppContent() {
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
       const data: NewGameResp & { num_players?: number, player_names?: string[], player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, last_spin?: string | number, masked?: string, complete?: boolean, phrase?: string } = await res.json()
-      debugLog('data:', data);
       
       // Reset score tracking to avoid "deduction" animations when resetting scores
       prevPlayerScores.current = {}; 
@@ -263,6 +263,50 @@ function AppContent() {
       }
     }catch(err){
       console.error(err)
+    }
+  }
+
+  async function createRoom(players: number, language: string, host_name: string) {
+    try {
+      const res = await fetch(`${API_URL}/create-room`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          host_name: host_name,
+          capacity: players,
+          language: language
+        })
+      });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const data: CreateRoomResponse = await res.json();
+      console.log('Room created:', data);
+      
+      const targetLang = data.language || language || lang;
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name } });
+    } catch (err) {
+      console.error(err);
+      showErrorMessage('Failed to create room');
+    }
+  }
+
+  async function joinRoom(roomCode: string, playerName: string) {
+    try {
+      const res = await fetch(`${API_URL}/join-room`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          room_code: roomCode,
+          player_name: playerName
+        })
+      });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const data = await res.json();
+      console.log('Joined room:', data);
+      const targetLang = data.language || lang;
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName } });
+    } catch (err) {
+      console.error(err);
+      showErrorMessage('Failed to join room');
     }
   }
   // Fetch the reel result from backend
@@ -718,6 +762,8 @@ function AppContent() {
           element={
             <StartScreenWrapper
               newGame={newGame}
+              createRoom={createRoom}
+              joinRoom={joinRoom}
               setNumPlayers={setNumPlayers}
               setPlayerNames={setPlayerNames}
               setPlayerScores={setPlayerScores}
@@ -725,6 +771,20 @@ function AppContent() {
               setTurnOverlayMsg={setTurnOverlayMsg}
               setTurnOverlayIsError={setTurnOverlayIsError}
               setShowTurnOverlay={setShowTurnOverlay}
+            />
+          }
+        />
+        <Route
+          path="/:lang/lobby"
+          element={
+            <Lobby
+              setGameId={setGameId}
+              setPlayerNames={setPlayerNames}
+              setNumPlayers={setNumPlayers}
+              setTopic={setTopic}
+              setMasked={setMasked}
+              setPlayerScores={setPlayerScores}
+              setFirstPlayerIdx={setFirstPlayerIdx}
             />
           }
         />

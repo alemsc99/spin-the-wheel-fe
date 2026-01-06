@@ -64,4 +64,12 @@ type GuessPhraseResp = {
 	can_guess?: boolean;
 }
 
-export { NewGameResp, SpinResp, GuessResp, GuessPhraseResp, ReelSpinResponse};
+export type CreateRoomResponse = {
+    room_code: string;
+    players: string[];
+    capacity: number;
+    language: string;
+    is_host: boolean;
+}
+
+export { NewGameResp, SpinResp, GuessResp, GuessPhraseResp, ReelSpinResponse, CreateRoomResponse};

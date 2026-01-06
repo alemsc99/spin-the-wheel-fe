@@ -117,7 +117,18 @@
     "board.placeholder": "—",
     "start.mode.single": "Single Player",
     "start.mode.local": "Multiplayer Locale",
-    "start.mode.online": "Multiplayer Online"
+    "start.mode.online": "Multiplayer Online",
+    "start.submode.create": "Crea stanza",
+    "start.submode.join": "Entra nella stanza",
+    "start.roomCode.label": "Codice stanza",
+    "start.roomCode.placeholder": "Inserisci codice...",
+    "start.button.create": "Crea stanza",
+    "start.button.join": "Entra",
+    "lobby.waiting": "In attesa che tutti i giocatori entrino nella stanza...",
+    "lobby.roomCode": "Codice Stanza",
+    "lobby.players": "Giocatori",
+    "lobby.back": "Indietro",
+    "error.emptyRoomCode": "Inserisci un codice stanza"
   },
   "en": {
   "seo.home.title": "SpinWords | Online Wheel Game",
@@ -244,6 +255,17 @@
     "board.placeholder": "—",
     "start.mode.single": "Single Player",
     "start.mode.local": "Local Multiplayer",
-    "start.mode.online": "Online Multiplayer"
+    "start.mode.online": "Online Multiplayer",
+    "start.submode.create": "Create Room",
+    "start.submode.join": "Join Room",
+    "start.roomCode.label": "Room Code",
+    "start.roomCode.placeholder": "Enter code...",
+    "start.button.create": "Create Room",
+    "start.button.join": "Join",
+    "lobby.waiting": "Waiting for all players to join the room...",
+    "lobby.roomCode": "Room Code",
+    "lobby.players": "Players",
+    "lobby.back": "Back",
+    "error.emptyRoomCode": "Enter a room code"
   }
 }
