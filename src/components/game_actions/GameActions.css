@@ -64,6 +64,54 @@
   .btn-text {
     display: none !important;          /* Nasconde il testo */
   }
+
+  .buy-vowel-price {
+    position: absolute !important;
+    bottom: -5px !important;  /* Lo sposta sul bordo inferiore */
+    right: -5px !important;   /* Lo sposta verso destra */
+    background: #333 !important; /* Sfondo scuro per contrasto */
+    color: #ffd700 !important;   /* Oro per la moneta */
+    font-size: 9px !important;   /* Testo molto piccolo */
+    padding: 2px 30px !important;
+    border-radius: 10px !important;
+    border: 1px solid white !important;
+    white-space: nowrap !important;
+    z-index: 10 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    font-weight: bold !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important; /* Centra verticalmente numero e moneta */
+    justify-content: center !important;
+    gap: 2px !important;            /* Spazio preciso tra numero e moneta */
+    font-size: 1.0rem !important;
+    scale: calc(0.67) !important;
+    transform: translate(-74%, 2px) !important;
+  }
+
+  .buy-vowel-button.disabled .buy-vowel-price {
+    background: #888 !important;
+    color: #eee !important;
+  }
+}
+
+/* Small price tag centered at the bottom of each powerup card */
+.buy-vowel-price {
+  position: absolute;
+  left: 50%;
+  transform: translate(-40%, 4px);
+  bottom: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 3px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.55);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  pointer-events: none; /* let clicks pass through to the button */
+  z-index: 3;
+  letter-spacing: 0.2px;
+  scale: calc(1.1);
 }
 
 .action-button:disabled {
@@ -114,6 +162,7 @@
   border: 2px solid #ffffff !important;
   box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3) !important;
   color: #ffffff !important;
+  justify-content: center !important;
 }
 
 .guess-phrase-btn:not(:disabled):hover {
