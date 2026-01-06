@@ -99,11 +99,11 @@
 .buy-vowel-price {
   position: absolute;
   left: 50%;
-  transform: translate(-40%, 4px);
+  transform: translate(-52%, 6px);
   bottom: 6px;
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 3px 3px;
+  padding: 0px 3px;
   border-radius: 999px;
   color: #ffffff;
   background: rgba(0, 0, 0, 0.55);
@@ -111,7 +111,7 @@
   pointer-events: none; /* let clicks pass through to the button */
   z-index: 3;
   letter-spacing: 0.2px;
-  scale: calc(1.1);
+  scale: calc(1.0);
 }
 
 .action-button:disabled {
