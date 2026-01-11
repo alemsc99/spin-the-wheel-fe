@@ -135,7 +135,8 @@
     "lobby.back": "Indietro",
     "lobby.copy": "Copia",
     "lobby.copied": "Copiato",
-    "lobby.playerLeft": " è uscito dal gioco. Ritorno alla home.",
+    "lobby.playerLeft": " è uscito dal gioco.",
+    "lobby.youLeft": "Hai lasciato la partita.",
     "error.emptyRoomCode": "Inserisci un codice stanza"
   },
   "en": {
@@ -280,7 +281,8 @@
     "lobby.back": "Back",
     "lobby.copy": "Copy",
     "lobby.copied": "Copied",
-    "lobby.playerLeft": " has left the game. Going back home.",
+    "lobby.playerLeft": " has left the game.",
+    "lobby.youLeft": "You have left the game.",
     "error.emptyRoomCode": "Enter a room code"
   }
 }

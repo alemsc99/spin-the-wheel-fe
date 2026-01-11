@@ -94,6 +94,13 @@ function AppContent() {
           break;
         case 'PLAYER_LEFT':
           console.log("Received PLAYER_LEFT via WebSocket");
+          if (payload.player === myName) {
+            setTurnOverlayIsError(true);
+            setShowTurnOverlay(true);
+            setTurnOverlayMsg(t('lobby.youLeft'));
+            navigate(`/${lang}`);            
+            break;
+          }
           setTurnOverlayIsError(true);
           setTurnOverlayMsg(`${payload.player}` + t('lobby.playerLeft'));
           setShowTurnOverlay(true);
@@ -866,6 +873,21 @@ function AppContent() {
   function confirmNewGameYes() {
     // Return to start screen so user can change players/names
     setShowNewGameConfirm(false);
+    // Chiudi la connessione WebSocket se attiva
+    if (socketRef.current) {
+      console.log("Closing WebSocket connection...");
+
+      if (socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          action: "close",
+          room_code: roomCode,
+          player: myName
+        }));
+      }
+      socketRef.current.close();
+      socketRef.current = null;
+    }
+
     const targetPath = localizedStartPath;
     if (location.pathname !== targetPath) {
       navigate(targetPath);
