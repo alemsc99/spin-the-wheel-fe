@@ -58,7 +58,6 @@ function AppContent() {
   const [showPhraseInput, setShowPhraseInput] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [powerups, setPowerups] = useState<Record<string, string[]>>({});
-  const [recentDeductions, setRecentDeductions] = useState<Record<string, number>>({}); // Deprecated in favor of scoreChanges, but keeping for compatibility if needed or removing
   const [scoreChanges, setScoreChanges] = useState<Record<string, number>>({});
   const prevPlayerScores = useRef<Record<string, number>>({});
   const [pendingSpinData, setPendingSpinData] = useState<any>(null);
@@ -131,6 +130,14 @@ function AppContent() {
           
           // 3. Fermiamo il loop infinito della ruota (inizia il rallentamento)
           setIsSpinning(false); 
+          break;
+
+        case "BUY_VOWEL":
+          console.log("Received BUY_VOWEL via WebSocket");
+          setUsedLetters(payload.used_letters);
+          setPlayerScores(payload.player_scores);
+          setFirstPlayerIdx(payload.current_player_idx);
+          setMasked(payload.masked);
           break;
       }
     };
