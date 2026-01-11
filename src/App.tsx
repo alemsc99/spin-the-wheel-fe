@@ -62,6 +62,8 @@ function AppContent() {
   const prevPlayerScores = useRef<Record<string, number>>({});
   const [pendingSpinData, setPendingSpinData] = useState<any>(null);
   const [myName, setMyName] = useState<string>("");
+  const [roomCode, setRoomCode] = useState<string>("");
+  const [roomHost, setRoomHost] = useState<string>("");
 
   // 1. Aggiungi questo Ref in AppContent
   const socketRef = useRef<WebSocket | null>(null);
@@ -69,6 +71,7 @@ function AppContent() {
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
   const connectWebSocket = (roomCode: string, playerName: string) => {
     setMyName(playerName);
+    setRoomCode(roomCode);
     const wsBase = API_URL.replace(/\/$/, "").replace(/^http/, 'ws');
     const ws = new WebSocket(`${wsBase}/ws`);
 
@@ -89,6 +92,38 @@ function AppContent() {
         case 'ROOM_STATE':
           setPlayerNames(payload.player_names);
           break;
+        case 'PLAYER_LEFT':
+          console.log("Received PLAYER_LEFT via WebSocket");
+          setTurnOverlayIsError(true);
+          setTurnOverlayMsg(`${payload.player}` + t('lobby.playerLeft'));
+          setShowTurnOverlay(true);
+          navigate(`/${lang}`);
+          break;
+        case 'NEW_GAME':
+          console.log("Received NEW_GAME via WebSocket");
+          // Reset score tracking to avoid "deduction" animations when resetting scores
+          setScoreChanges({});
+
+          // Accept and apply server-provided authoritative state fields when present.
+          setGameId(payload.game_id ?? null)
+          if (typeof payload.topic === 'string') setTopic(payload.topic)
+          if (typeof payload.masked === 'string') setMasked(payload.masked)
+          if (payload.powerups) setPowerups(payload.powerups);
+          setPlayerNames(payload.player_names);
+          setNumPlayers(payload.player_names.length);
+          setFirstPlayerIdx(payload.current_player_idx ?? 0);
+          setPlayerScores(payload.player_scores ?? {});
+          setLastSpin(payload.last_spin !== undefined ? payload.last_spin : 0)
+          setUsedLetters(payload.used_letters ?? {})
+          setGuessInput('')
+          setVictory(!!payload.complete)
+          setDefeat(false)
+          setCanGuess(false)
+          setCanBuyVowel(false)
+          setIsSpinning(false)
+          setShowPhraseInput(false)
+          setWrongLetters({})
+          break;
         case 'START_GAME':
           console.log("Received START_GAME via WebSocket");
           // 1. Salviamo TUTTI i dati della partita nello stato di App.tsx
@@ -99,6 +134,9 @@ function AppContent() {
           setNumPlayers(payload.player_names.length);
           setPlayerScores(payload.player_scores);
           setFirstPlayerIdx(payload.current_player_idx);
+          setIsSpinning(false);   
+          setCanGuess(false);      
+          setLastSpin(""); 
 
           // 2. Navighiamo verso la pagina della partita
           // Poiché siamo in App.tsx, navigate funzionerà correttamente
@@ -151,6 +189,13 @@ function AppContent() {
           if (payload.used_letters) setUsedLetters(payload.used_letters);
           setCanGuess(false);
           setPlayerScores(payload.player_scores);
+          break;
+        
+        case "USE_POWERUP":
+          console.log("Received USE_POWERUP via WebSocket");
+          setPlayerScores(payload.player_scores);
+          setPowerups(payload.powerups);
+          setFirstPlayerIdx(payload.current_player_idx);
           break;
       }
     };
@@ -311,7 +356,9 @@ function AppContent() {
         body: JSON.stringify({
           num_players: players,
           player_names: names,
-          language: lang
+          language: lang,
+          room_code: roomCode,
+          player_name: myName
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -377,6 +424,7 @@ function AppContent() {
       const data: CreateRoomResponse = await res.json();
       console.log('Room created:', data);
       setPlayerNames(data.players);
+      setRoomHost(host_name);
       const targetLang = data.language || language || lang;
       navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name } });
     } catch (err) {
@@ -451,9 +499,13 @@ function AppContent() {
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId })
+        body: JSON.stringify({ game_id: gameId, player_name: myName })
       });
       if (!res.ok) {
+        if (res.status == 403){
+          showErrorMessage(t('buyVowelNotYourTurn'));
+          return;
+        }
         const text = await res.text();
         let json: any = {};
         try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
@@ -493,11 +545,13 @@ function AppContent() {
       const res = await fetch(`${API_URL}/use-powerup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer })
+        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: myName })
       });
       if (!res.ok) {
         if (res.status === 409){
           showErrorMessage(t('buyPowerup.cannotUseNow'));
+        }else if (res.status == 403){
+          showErrorMessage(t('buyPowerupNotYourTurn'));
         }else{
           console.log(t('buyPowerup.lowMoney'))
           showErrorMessage(t('buyPowerup.lowMoney'));
@@ -796,15 +850,17 @@ function AppContent() {
     }
   }
 
-  // Handler invoked from GameCenter "Nuova partita" button.
-  // If multiplayer, show confirmation overlay; otherwise start a new game immediately.
   async function handleNewGameRequest() {
     // Always show confirmation overlay (singleplayer and multiplayer)
-    // Hide victory/turn overlays so the confirmation is on top
     setVictory(false);
     setShowTurnOverlay(false);
+    if (roomCode){
+      if (roomHost !== myName){
+        showErrorMessage(t('newGame.onlyHostCanStart'));
+        return;
+      }
+    }
     setShowNewGameConfirm(true);
-    // User will decide Yes/No in the overlay
   }
 
   function confirmNewGameYes() {
@@ -939,7 +995,7 @@ function AppContent() {
                       isSpinning={isSpinning}
                       canGuess={canGuess}
                       playerNames={playerNames}
-                      currentPlayerIdx={firstPlayerIdx ?? undefined}
+                      playerName={myName}
                     />
                 )}
               </div>

@@ -67,6 +67,7 @@
   "error.duplicateNames": "I nomi dei giocatori devono essere diversi!",
   "buyPowerup.lowMoney": "Il tuo score non è sufficiente per acquistare questo potenziamento.",
   "buyPowerup.cannotUseNow": "Questo potenziamento è già in uso",
+  "buyPowerupNotYourTurn": "Aspetta il tuo turno per comprare un potenziamento.",
   "overlay.turnSpin": "Gira la ruota!",
   "overlay.changeTurn": "Cambio turno!",
   "overlay.swapPlayers": "Punteggio scambiato con:",
@@ -77,11 +78,14 @@
   "powerups.title": "Potenziamenti",
 
   "newgame.confirmTitle": "Vuoi cambiare il numero, il nome dei giocatori o la lingua?",
+  "newGame.onlyHostCanStart": "Solo l'host della stanza può avviare una nuova partita.",
   "common.yes": "Sì",
   "common.no": "No",
+  
 
   "buyVowel.lowMoney": "Devi avere almeno 500🪙 per comprare una vocale.",
   "buyVowel.afterSpin": "Non puoi comprare una vocale dopo aver girato la ruota.",
+  "buyVowelNotYourTurn": "Aspetta il tuo turno per comprare una vocale.",
 
   "wheel.mustSpinFirst": "Devi prima girare la ruota per poter indovinare una lettera.",
   "wheel.notYourTurn": "Non è il tuo turno per girare la ruota.",
@@ -131,6 +135,7 @@
     "lobby.back": "Indietro",
     "lobby.copy": "Copia",
     "lobby.copied": "Copiato",
+    "lobby.playerLeft": " è uscito dal gioco. Ritorno alla home.",
     "error.emptyRoomCode": "Inserisci un codice stanza"
   },
   "en": {
@@ -209,12 +214,15 @@
   "powerups.title": "Powerups",
   "buyPowerup.lowMoney": "Your score is not enough to buy this powerup.",
   "buyPowerup.cannotUseNow": "This powerup is already in use",
+  "buyPowerupNotYourTurn": "Wait for your turn to buy a powerup.",
 
   "newgame.confirmTitle": "Would you like to change players, their names or the language?",
+  "newGame.onlyHostCanStart": "Only the room host can start a new game.",
   "common.yes": "Yes",
   "common.no": "No",
 
   "buyVowel.lowMoney": "You need at least 500🪙 to buy a vowel.",
+  "buyVowelNotYourTurn": "Wait for your turn to buy a vowel.",
   "buyVowel.afterSpin": "You can't buy a vowel after spinning the wheel.",
 
   "wheel.mustSpinFirst": "You must spin the wheel before guessing a letter.",
@@ -272,6 +280,7 @@
     "lobby.back": "Back",
     "lobby.copy": "Copy",
     "lobby.copied": "Copied",
+    "lobby.playerLeft": " has left the game. Going back home.",
     "error.emptyRoomCode": "Enter a room code"
   }
 }

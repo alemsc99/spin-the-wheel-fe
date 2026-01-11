@@ -5,9 +5,9 @@ import { IMAGES } from '../../constants/constants';
 import { useTranslation } from '../../i18n/TranslationProvider';
 
 /**
- * @param {{ onUse: (powerup: string, target?: string|null) => Promise<void> | void, powerups?: Record<string, string[]>, isSpinning?: boolean, canGuess?: boolean, playerNames?: string[], currentPlayerIdx?: number }} props
+ * @param {{ onUse: (powerup: string, target?: string|null) => Promise<void> | void, powerups?: Record<string, string[]>, isSpinning?: boolean, canGuess?: boolean, playerNames?: string[], playerName?: string }} props
 */
-export default function Powerups({ onUse, powerups = {}, isSpinning = false, canGuess = false, playerNames = [], currentPlayerIdx = undefined }) {
+export default function Powerups({ onUse, powerups = {}, isSpinning = false, canGuess = false, playerNames = [], playerName = undefined }) {
   // accept powerups prop (default empty) to satisfy TS usage from App.tsx
   // when used it can be read to mark active powerups in the UI if desired
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ export default function Powerups({ onUse, powerups = {}, isSpinning = false, can
   }
 
   // Build list of other players (exclude current)
-  const otherPlayers = playerNames.filter((_, idx) => idx !== currentPlayerIdx);
+  const otherPlayers = playerNames.filter(name => name !== playerName);
 
   return ( 
     <aside className="powerups-wrapper">
