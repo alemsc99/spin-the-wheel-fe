@@ -204,6 +204,13 @@ function AppContent() {
           setPowerups(payload.powerups);
           setFirstPlayerIdx(payload.current_player_idx);
           break;
+        
+        case "GUESS_PHRASE":
+          console.log("Received GUESS_PHRASE via WebSocket");
+          setMasked(payload.masked);
+          setVictory(payload.complete);
+          setPlayerScores(payload.player_scores);
+          break;
       }
     };
 
