@@ -91,19 +91,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
   // ----------------------------------------------
 
-  const switchLanguage = (nextLang: Lang) => {
-    if (nextLang === lang) {
-      return;
-    }
-    const segments = location.pathname.split('/').filter(Boolean);
-    const restSegments = segments.slice(1);
-    const rest = restSegments.length ? `/${restSegments.join('/')}` : '';
-    const targetPath = `/${nextLang}${rest}`;
-    if (location.pathname !== targetPath) {
-      navigate(targetPath);
-    }
-  };
-
 
   const [gameMode, setGameMode] = useState<GameMode>('single');
   const [onlineSubMode, setOnlineSubMode] = useState<OnlineSubMode>('create');

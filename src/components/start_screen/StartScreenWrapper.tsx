@@ -66,7 +66,3 @@ export default function StartScreenWrapper({
     />
   );
 }
-// end of StartScreenWrapper component
-  // language is handled by TranslationProvider (localStorage + context)
-
-

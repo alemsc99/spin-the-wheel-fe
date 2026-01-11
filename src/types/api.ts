@@ -64,7 +64,7 @@ type GuessPhraseResp = {
 	can_guess?: boolean;
 }
 
-export type CreateRoomResponse = {
+type CreateRoomResponse = {
     room_code: string;
     players: string[];
     capacity: number;

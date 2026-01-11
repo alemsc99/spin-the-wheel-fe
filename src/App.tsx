@@ -61,6 +61,79 @@ function AppContent() {
   const [recentDeductions, setRecentDeductions] = useState<Record<string, number>>({}); // Deprecated in favor of scoreChanges, but keeping for compatibility if needed or removing
   const [scoreChanges, setScoreChanges] = useState<Record<string, number>>({});
   const prevPlayerScores = useRef<Record<string, number>>({});
+  const [pendingSpinData, setPendingSpinData] = useState<any>(null);
+  const [myName, setMyName] = useState<string>("");
+
+  // 1. Aggiungi questo Ref in AppContent
+  const socketRef = useRef<WebSocket | null>(null);
+
+  // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
+  const connectWebSocket = (roomCode: string, playerName: string) => {
+    setMyName(playerName);
+    const wsBase = API_URL.replace(/\/$/, "").replace(/^http/, 'ws');
+    const ws = new WebSocket(`${wsBase}/ws`);
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        action: "join",
+        room_code: roomCode,
+        player: playerName
+      }));
+    };
+
+    ws.onmessage = (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+      console.log("WebSocket message received:", data);
+      // GESTIONE DEI MESSAGGI DAL BACKEND
+      switch (data.type) { 
+        case 'START_GAME':
+          console.log("Received START_GAME via WebSocket");
+          // 1. Salviamo TUTTI i dati della partita nello stato di App.tsx
+          setGameId(data.game_id);
+          setTopic(data.topic);
+          setMasked(data.masked);
+          setPlayerNames(data.players);
+          setNumPlayers(data.players.length);
+          setPlayerScores(data.player_scores);
+          setFirstPlayerIdx(data.current_player_idx);
+
+          // 2. Navighiamo verso la pagina della partita
+          // Poiché siamo in App.tsx, navigate funzionerà correttamente
+          navigate(`/${lang}/game`);
+          break;
+
+        case "START_SPIN":
+          console.log("Received START_SPIN via WebSocket");
+          // 1. RESETTA lastSpin a null ogni volta che inizia un nuovo giro
+          setLastSpin(""); 
+          
+          // 2. Resetta anche i dati pendenti
+          setPendingSpinData(null);
+          
+          setFirstPlayerIdx(data.current_player_idx);
+          setMasked(data.masked_phrase);
+
+          setIsSpinning(true); 
+          break;
+
+        case "END_SPIN":
+          console.log("Received END_SPIN via WebSocket");
+          const result = data.data;
+          
+          // 1. Diciamo alla ruota su che valore fermarsi
+          setLastSpin(result.value); 
+          
+          // 2. Salviamo il risultato "nel cassetto" (senza applicarlo alla UI ancora)
+          setPendingSpinData(result); 
+          
+          // 3. Fermiamo il loop infinito della ruota (inizia il rallentamento)
+          setIsSpinning(false); 
+          break;
+      }
+    };
+
+    socketRef.current = ws;
+  };
 
   useEffect(() => {
     const changes: Record<string, number> = {};
@@ -280,7 +353,7 @@ function AppContent() {
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data: CreateRoomResponse = await res.json();
       console.log('Room created:', data);
-      
+      setPlayerNames(data.players);
       const targetLang = data.language || language || lang;
       navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name } });
     } catch (err) {
@@ -482,37 +555,63 @@ function AppContent() {
     }
   }
 
-  async function handleSpin(): Promise<SpinResp | false>{
-    if(!gameId) return false
-    if (isSpinning) {
+  async function handleSpin(): Promise<SpinResp | false> {
+    // 1. Controlli di guardia (uguali a prima)
+    if (!gameId) return false;
+    if (isSpinning || canGuess) {
       showErrorMessage(t('wheel.mustSpinFirst'));
       return false;
     }
-    if (canGuess) {
-      showErrorMessage(t('wheel.mustSpinFirst'));
-      return false;
+
+    // Capiamo se siamo in modalità Online o Locale
+    const isOnline = socketRef.current !== null;
+
+    // 2. Se siamo in SINGLE PLAYER, facciamo partire la ruota visivamente SUBITO
+    if (!isOnline) {
+      setIsSpinning(true);
+      setLastSpin(""); // Resettiamo per permettere a React di sentire il cambiamento dopo
+      setPendingSpinData(null);
     }
-    setIsSpinning(true);
-    try{
+
+    try {
       const res = await fetch(`${API_URL}/spin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId })
-      })
+        body: JSON.stringify({ 
+          game_id: gameId,
+          player_name: myName || playerNames[firstPlayerIdx || 0] 
+        })
+      });
+
       if (!res.ok) {
         const text = await res.text();
         let json: any = {};
         try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
-        setIsSpinning(false);
+        
+        if (!isOnline) setIsSpinning(false); // Fermiamo la ruota se c'è errore
         return false;
       }
-      const data: SpinResp= await res.json();
-      return data
-    }catch(err){
-      console.error(err)
-      setIsSpinning(false);
-      return false
+
+      const data: SpinResp = await res.json();
+
+      // 3. GESTIONE DIFFERENZIATA
+      if (!isOnline) {
+        // MODALITÀ SINGLE PLAYER:
+        setLastSpin(data.value);
+        setPendingSpinData(data); // Salviamo i dati per usarli in onSpinEnd
+        setIsSpinning(false);    // Questo triggera lo stop visivo in Wheel.jsx
+      } else {
+        // MODALITÀ ONLINE:
+        console.log("Dati inviati al server, attesa eventi WebSocket...");
+      }
+
+      return data;
+
+    } catch (err) {
+      console.error(err);
+      if (!isOnline) setIsSpinning(false);
+      return false;
     }
   }
 
@@ -778,13 +877,8 @@ function AppContent() {
           path="/:lang/lobby"
           element={
             <Lobby
-              setGameId={setGameId}
-              setPlayerNames={setPlayerNames}
-              setNumPlayers={setNumPlayers}
-              setTopic={setTopic}
-              setMasked={setMasked}
-              setPlayerScores={setPlayerScores}
-              setFirstPlayerIdx={setFirstPlayerIdx}
+              connectWebSocket={connectWebSocket} 
+              playerNames={playerNames} // la lista nomi aggiornata
             />
           }
         />
@@ -873,72 +967,69 @@ function AppContent() {
                 canGuess={canGuess}
                 numPlayers={numPlayers}
                 onSpin={handleSpin}
-                onSpinEnd={(spinResult: SpinResp) => {
-                  debugLog('onSpinEnd -> spinResult', spinResult);
-                  const { value, old_score, new_score } = spinResult as any;
+                onSpinEnd={() => {
+                  // Recuperiamo i dati che il WebSocket ci ha salvato poco fa
+                  const result = pendingSpinData; 
+                  if (!result) return;
 
-                  // Prefer server-provided last_spin if present, otherwise use value
-                  const serverLast = (spinResult as any).last_spin !== undefined ? (spinResult as any).last_spin : value;
-                  setLastSpin(serverLast);
+                  debugLog('onSpinEnd -> applico dati pendenti', result);
+                  
+                  const { value, old_score } = result;
 
-                  // Keep animations for special outcomes (visual only). Do NOT apply turn/score logic locally based solely on the value.
-                  if (value === 'Bancarotta') {
+                  // --- 1. ANIMAZIONI VISIVE (Bancarotta, ecc.) ---
+                  if (value === 'Bancarotta' || value === 'bancarotta') {
                     setScoreDecrement(old_score ?? 0);
                     setShowScoreDecAnim(true);
                     setTimeout(() => setShowScoreDecAnim(false), 1200);
                   }
 
-                  // Apply server authoritative fields when present. Do not infer turn/score from `value`.
-                  const server = spinResult as any;
-                  if (server.player_scores) {
-                    setPlayerScores(server.player_scores);
-                    if (typeof server.current_player_idx === 'number') {
-                      const idx = server.current_player_idx
-                      const curr = playerNames[idx]
-                      setScore(server.player_scores[curr] ?? 0)
+                  // --- 2. AGGIORNAMENTO STATO AUTOREVOLE ---
+                  if (result.player_scores) {
+                    setPlayerScores(result.player_scores);
+                    if (typeof result.current_player_idx === 'number') {
+                      const idx = result.current_player_idx;
+                      const curr = playerNames[idx];
+                      // Aggiorna lo score visualizzato nel centro per il giocatore corrente
+                      setScore(result.player_scores[curr] ?? 0);
                     }
                   }
 
-                  if (server.used_letters) {
-                    setUsedLetters(server.used_letters)
-                  }
+                  if (result.used_letters) setUsedLetters(result.used_letters);
+                  if (result.masked) setMasked(result.masked);
+                  if (result.complete) setVictory(true);
+                  if (typeof result.can_guess === 'boolean') setCanGuess(result.can_guess);
+                  if (result.powerups) setPowerups(result.powerups);
+                  if (result.last_spin) setLastSpin(result.last_spin);
 
-                  if (typeof server.current_player_idx === 'number') {
-                    const serverIdx = server.current_player_idx
-                    // Show turn overlay only if the server changed the active player.
-                    const prevIdx = firstPlayerIdx
-                    setFirstPlayerIdx(serverIdx)
+                  // --- 3. CAMBIO TURNO E OVERLAYS ---
+                  if (typeof result.current_player_idx === 'number') {
+                    const serverIdx = result.current_player_idx;
+                    const prevIdx = firstPlayerIdx;
+                    setFirstPlayerIdx(serverIdx);
+
+                    // Mostra l'overlay solo se il turno è effettivamente passato
                     if (playerNames.length > 1 && serverIdx !== prevIdx) {
-                      setTurnOverlayMsg('overlay.changeTurn')
-                      setTurnOverlayIsError(false)
-                      setCurrentOverlayPlayerName(playerNames[serverIdx] ?? '')
-                      setShowTurnOverlay(true)
+                      setTurnOverlayMsg('overlay.changeTurn');
+                      setTurnOverlayIsError(false);
+                      setCurrentOverlayPlayerName(playerNames[serverIdx] ?? '');
+                      setShowTurnOverlay(true);
                     }
                   }
 
-                  
-                  // Show swap overlay when server includes swapped_player (name or index)
-                  if (server.swapped_player !== undefined && server.swapped_player !== null) {
-                    const s = server.swapped_player;
-                    // get overlay.swapPlayer value translated
+                  // --- 4. GESTIONE SWAP ---
+                  if (result.swapped_player !== undefined && result.swapped_player !== null) {
+                    const s = result.swapped_player;
                     let overlayMsg = t('overlay.swapPlayers');
-                    // append swapped player name if string
-                    if (typeof s === 'string') {
-                      overlayMsg += ` ${s}`;
-                    }
+                    if (typeof s === 'string') overlayMsg += ` ${s}`;
+                    
                     setTurnOverlayMsg(overlayMsg);
                     setTurnOverlayIsError(false);
                     setCurrentOverlayPlayerName(s);
                     setShowTurnOverlay(true);
                   }
 
-                  // Respect server-provided masked/complete/can_guess (if present). Do not derive them from value.
-                  if (server.masked) setMasked(server.masked)
-                  if (server.complete) setVictory(true)
-                  if (typeof server.can_guess === 'boolean') setCanGuess(server.can_guess)
-
-                  setIsSpinning(false);
-                  setPowerups((spinResult as any).powerups || powerups);
+                  // IMPORTANTE: puliamo il cassetto per il prossimo giro
+                  setPendingSpinData(null);
                 }}
                 onNewGame={handleNewGameRequest}
                 onWheelClick={handleWheelClick}
