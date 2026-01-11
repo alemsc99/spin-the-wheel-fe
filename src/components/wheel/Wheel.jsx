@@ -46,7 +46,7 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
         displayText = "😵‍💫";
       } else if (lsLower === "passa") {
         displayText = "⏭️";
-      } else if (lsLower === "swap") {
+      } else if (lsLower === "scambia") {
         displayText = "🔀";
       } else {
         // Se non è uno dei tre sopra, è un numero: aggiungiamo la moneta
@@ -77,7 +77,7 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       setIsStopping(true);
       
       const val = String(typeof lastSpin === 'object' ? lastSpin.value : lastSpin);
-      const norm = (val === "Swap" || val === t('wheel.swap')) ? 'Swap' : 
+      const norm = (val === "Scambia" || val === t('wheel.swap')) ? 'Swap' : 
                    (val === "Passa" || val === t('wheel.pass')) ? 'Passa' : 
                    (val === "Bancarotta" || val === t('wheel.bankrupt')) ? 'Bancarotta' : val;
       

@@ -84,18 +84,22 @@ function AppContent() {
     ws.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
       console.log("WebSocket message received:", data);
+      const payload = data.payload;
       // GESTIONE DEI MESSAGGI DAL BACKEND
-      switch (data.type) { 
+      switch (data.event) { 
+        case 'ROOM_STATE':
+          setPlayerNames(payload.player_names);
+          break;
         case 'START_GAME':
           console.log("Received START_GAME via WebSocket");
           // 1. Salviamo TUTTI i dati della partita nello stato di App.tsx
           setGameId(data.game_id);
-          setTopic(data.topic);
-          setMasked(data.masked);
-          setPlayerNames(data.players);
-          setNumPlayers(data.players.length);
-          setPlayerScores(data.player_scores);
-          setFirstPlayerIdx(data.current_player_idx);
+          setTopic(payload.topic);
+          setMasked(payload.masked);
+          setPlayerNames(payload.player_names);
+          setNumPlayers(payload.player_names.length);
+          setPlayerScores(payload.player_scores);
+          setFirstPlayerIdx(payload.current_player_idx);
 
           // 2. Navighiamo verso la pagina della partita
           // Poiché siamo in App.tsx, navigate funzionerà correttamente
@@ -110,21 +114,20 @@ function AppContent() {
           // 2. Resetta anche i dati pendenti
           setPendingSpinData(null);
           
-          setFirstPlayerIdx(data.current_player_idx);
-          setMasked(data.masked_phrase);
+          setFirstPlayerIdx(payload.current_player_idx);
+          setMasked(payload.masked);
 
           setIsSpinning(true); 
           break;
 
         case "END_SPIN":
           console.log("Received END_SPIN via WebSocket");
-          const result = data.data;
           
           // 1. Diciamo alla ruota su che valore fermarsi
-          setLastSpin(result.value); 
+          setLastSpin(payload.value); 
           
           // 2. Salviamo il risultato "nel cassetto" (senza applicarlo alla UI ancora)
-          setPendingSpinData(result); 
+          setPendingSpinData(payload); 
           
           // 3. Fermiamo il loop infinito della ruota (inizia il rallentamento)
           setIsSpinning(false); 
@@ -587,7 +590,7 @@ function AppContent() {
         const text = await res.text();
         let json: any = {};
         try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
-        showErrorMessage(json.error || json.message || `Server error ${res.status}`);
+        showErrorMessage(t('wheel.notYourTurn'));
         
         if (!isOnline) setIsSpinning(false); // Fermiamo la ruota se c'è errore
         return false;
