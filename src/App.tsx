@@ -139,6 +139,19 @@ function AppContent() {
           setFirstPlayerIdx(payload.current_player_idx);
           setMasked(payload.masked);
           break;
+
+        case "GUESS_LETTER":
+          console.log("Received GUESS_LETTER via WebSocket");
+          setMasked(payload.masked);
+          setPowerups(payload.powerups);
+          setFirstPlayerIdx(payload.current_player_idx);
+          setScoreIncrement(payload.added_score);
+          setShowScoreAnim(true);
+          setTimeout(() => setShowScoreAnim(false), 1200);
+          if (payload.used_letters) setUsedLetters(payload.used_letters);
+          setCanGuess(false);
+          setPlayerScores(payload.player_scores);
+          break;
       }
     };
 
