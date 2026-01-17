@@ -211,6 +211,16 @@ function AppContent() {
           setVictory(payload.complete);
           setPlayerScores(payload.player_scores);
           break;
+
+        case "REEL_SPIN":
+          console.log("Received REEL_SPIN via WebSocket");
+          console.log("Reel spin result:", payload.value);
+          console.log("Full payload:", payload);
+          // Only store result; apply effects when reel animation ends
+          setReelResult(payload.value);
+          setPendingReelPayload(payload);
+          setShowReel(true);
+          break;
       }
     };
 
