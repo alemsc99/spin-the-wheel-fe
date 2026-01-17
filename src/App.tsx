@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
@@ -64,12 +64,23 @@ function AppContent() {
   const [myName, setMyName] = useState<string>("");
   const [roomCode, setRoomCode] = useState<string>("");
   const [roomHost, setRoomHost] = useState<string>("");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // 1. Aggiungi questo Ref in AppContent
   const socketRef = useRef<WebSocket | null>(null);
 
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
-  const connectWebSocket = (roomCode: string, playerName: string) => {
+  const connectWebSocket = useCallback((roomCode: string, playerName: string) => {
+    if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
+      console.log("WebSocket connection already active/pending.");
+      return;
+    }
+
+    // Pulisce eventuale socket precedente chiuso male
+    if (socketRef.current) {
+      socketRef.current.close();
+    }
     setMyName(playerName);
     setRoomCode(roomCode);
     const wsBase = API_URL.replace(/\/$/, "").replace(/^http/, 'ws');
@@ -94,7 +105,7 @@ function AppContent() {
           break;
         case 'PLAYER_LEFT':
           console.log("Received PLAYER_LEFT via WebSocket");
-          if (payload.player === myName) {
+          if (payload.player === playerName) {
             setTurnOverlayIsError(true);
             setShowTurnOverlay(true);
             setTurnOverlayMsg(t('lobby.youLeft'));
@@ -106,6 +117,12 @@ function AppContent() {
           setShowTurnOverlay(true);
           navigate(`/${lang}`);
           break;
+
+        case 'PLAYER_JOINED':
+          console.log("Received PLAYER_JOINED via WebSocket");
+          setPlayerNames(payload.players);
+          break;
+
         case 'NEW_GAME':
           console.log("Received NEW_GAME via WebSocket");
           // Reset score tracking to avoid "deduction" animations when resetting scores
@@ -225,7 +242,7 @@ function AppContent() {
     };
 
     socketRef.current = ws;
-  };
+  }, [lang, navigate, t]);
 
   useEffect(() => {
     const changes: Record<string, number> = {};
@@ -271,8 +288,6 @@ function AppContent() {
   const [reelResult, setReelResult] = useState<string | null>(null);
   const [pendingShowReel, setPendingShowReel] = useState(false);
   const [pendingReelPayload, setPendingReelPayload] = useState<ReelSpinResponse | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const pathname = location.pathname;
   const pathSegments = useMemo(() => pathname.split('/').filter(Boolean), [pathname]);
@@ -878,12 +893,12 @@ function AppContent() {
     // Always show confirmation overlay (singleplayer and multiplayer)
     setVictory(false);
     setShowTurnOverlay(false);
-    if (roomCode){
-      if (roomHost !== myName){
-        showErrorMessage(t('newGame.onlyHostCanStart'));
-        return;
-      }
-    }
+    // if (roomCode){
+    //   if (roomHost !== myName){
+    //     showErrorMessage(t('newGame.onlyHostCanStart'));
+    //     return;
+    //   }
+    // }
     setShowNewGameConfirm(true);
   }
 
