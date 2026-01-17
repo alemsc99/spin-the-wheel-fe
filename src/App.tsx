@@ -66,8 +66,7 @@ function AppContent() {
   const [roomHost, setRoomHost] = useState<string>("");
   const navigate = useNavigate();
   const location = useLocation();
-
-  // 1. Aggiungi questo Ref in AppContent
+ 
   const socketRef = useRef<WebSocket | null>(null);
 
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
@@ -96,7 +95,6 @@ function AppContent() {
 
     ws.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
-      console.log("WebSocket message received:", data);
       const payload = data.payload;
       // GESTIONE DEI MESSAGGI DAL BACKEND
       switch (data.event) { 
@@ -104,18 +102,20 @@ function AppContent() {
           setPlayerNames(payload.player_names);
           break;
         case 'PLAYER_LEFT':
-          console.log("Received PLAYER_LEFT via WebSocket");
+          console.log("Received PLAYER_LEFT via WebSocket: ", payload);
+          if (socketRef.current) {
+            socketRef.current.close();
+            socketRef.current = null;
+          }
           if (payload.player === playerName) {
             setTurnOverlayIsError(true);
             setShowTurnOverlay(true);
-            setTurnOverlayMsg(t('lobby.youLeft'));
-            navigate(`/${lang}`);            
+            setTurnOverlayMsg(t('lobby.youLeft'));            
             break;
           }
           setTurnOverlayIsError(true);
-          setTurnOverlayMsg(`${payload.player}` + t('lobby.playerLeft'));
           setShowTurnOverlay(true);
-          navigate(`/${lang}`);
+          setTurnOverlayMsg(`${payload.player}` + t('lobby.playerLeft'));          
           break;
 
         case 'PLAYER_JOINED':
@@ -147,7 +147,9 @@ function AppContent() {
           setIsSpinning(false)
           setShowPhraseInput(false)
           setWrongLetters({})
+          navigate(`/${lang}/game`);
           break;
+
         case 'START_GAME':
           console.log("Received START_GAME via WebSocket");
           // 1. Salviamo TUTTI i dati della partita nello stato di App.tsx
@@ -826,9 +828,13 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-phrase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, guess: guessInput })
+        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName })
       })
       if (!res.ok) {
+        if (res.status == 403){
+          showErrorMessage(t('actions.notYourTurnToGuess'));          
+          return;
+        }
         const text = await res.text();
         let json: any = {};
         try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
@@ -919,7 +925,6 @@ function AppContent() {
       socketRef.current.close();
       socketRef.current = null;
     }
-
     const targetPath = localizedStartPath;
     if (location.pathname !== targetPath) {
       navigate(targetPath);
@@ -1017,7 +1022,10 @@ function AppContent() {
         />
         <Route
           path="/:lang/game"
-          element={(
+          element={
+            !gameId ? (
+              <Navigate to={localizedStartPath} replace />
+            ) :(
               <>
                 <SEO 
                   title={lang === 'it' ? "Partita in corso - GiraParole" : "Playing SpinWords - Guess the Phrase"}
@@ -1075,7 +1083,14 @@ function AppContent() {
                   score={score}
                   canGuess={canGuess}
                   guessInput={guessInput}
-                  onShowPhraseInput={() => setShowPhraseInput(true)}
+                  onShowPhraseInput={() => {
+                    if (myName !== playerNames[firstPlayerIdx || 0]) {
+                      showErrorMessage(t('actions.notYourTurnToGuess'));
+                      return;
+                    }
+                    setShowPhraseInput(true);
+                    return;
+                  }}
                   onBuyVowel={handleBuyVowel}
                   onShowRules={handleShowRules}
                   onNewGame={handleNewGameRequest}
@@ -1104,8 +1119,6 @@ function AppContent() {
                   // Recuperiamo i dati che il WebSocket ci ha salvato poco fa
                   const result = pendingSpinData; 
                   if (!result) return;
-
-                  debugLog('onSpinEnd -> applico dati pendenti', result);
                   
                   const { value, old_score } = result;
 

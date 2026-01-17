@@ -89,9 +89,9 @@
 
   "wheel.mustSpinFirst": "Devi prima girare la ruota per poter indovinare una lettera.",
   "wheel.notYourTurn": "Non è il tuo turno per girare la ruota.",
-  "lettersGrid.selectVowel": "Seleziona una vocale da acquistare."
-  ,
+  "lettersGrid.selectVowel": "Seleziona una vocale da acquistare.",
   "actions.guessPhrase": "Indovina la frase",
+  "actions.notYourTurnToGuess": "Aspetta il tuo turno per indovinare la frase.",
   "actions.buyVowel": "Compra una vocale",
   "phrase.placeholder": "Indovina la frase...",
   "phrase.confirm": "Conferma",
@@ -228,9 +228,9 @@
 
   "wheel.mustSpinFirst": "You must spin the wheel before guessing a letter.",
   "wheel.notYourTurn": "It's not your turn to spin the wheel.",
-  "lettersGrid.selectVowel": "Select a vowel to buy."
-  ,
+  "lettersGrid.selectVowel": "Select a vowel to buy.",
   "actions.guessPhrase": "Guess phrase",
+  "actions.notYourTurnToGuess": "Wait for your turn to guess the phrase.",
   "actions.buyVowel": "Buy a vowel",
   "phrase.placeholder": "Guess the phrase...",
   "phrase.confirm": "Confirm",
