@@ -38,13 +38,11 @@ export function VictoryOverlay({ show, onNewGame, ranking }) {
 export function ErrorOverlay({ show, message }) {
   if (!show) return null;
 
-  const { t } = useTranslation();
-
   return (
     <div className="overlay error-overlay">
       <div className="overlay-box error-box">
   <span role="img" aria-label="warning" className="overlay-warning-icon">⚠️</span>
-        <h2 className="overlay-title error-title">{t('overlay.attention')}</h2>
+        {/* <h2 className="overlay-title error-title">{t('overlay.attention')}</h2> */}
         <p className="overlay-text">{message}</p>
       </div>
     </div>

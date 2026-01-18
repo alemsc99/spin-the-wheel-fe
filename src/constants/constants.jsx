@@ -19,4 +19,24 @@ const POWERUP_PRICES = {
   Shield: 750,
 };
 
-export { IMAGES, POWERUP_PRICES };
+// 1. DEFINIZIONE LAYOUT FISSI (Fuori dal componente così non cambiano mai)
+const MULTIPLAYER_LAYOUT = [
+  "Bancarotta", "100", "500", "Passa", "200", "400", "Swap", "300", "600", 
+  "Bancarotta", "100", "700", "Passa", "200", "800", "Swap", "400", "500", 
+  "100", "200", "300", "400", "500", "600"
+];
+
+const SINGLEPLAYER_LAYOUT = [
+  "Bancarotta", "100", "300", "500", "200", "400", "600", 
+  "Bancarotta", "100", "300", "500", "200", "400", "600",
+  "700", "800", "100", "200", "300", "500"
+];
+
+const COLORS = [
+  "#E5243B", "#DDA63A", "#C5192D", "#FF3A21", "#FCC30B", "#FD6925", "#DD1367", 
+  "#FD9D24", "#BF8B2E", "#3F7E44", "#0ad9b7ff", "#56C02B", "#51c4fdff", "#19486A", 
+  "#8E24AA", "#2E7D32", "#F57C00", "#5D4037", "#37474F", "#6A1B9A"
+];
+
+
+export { IMAGES, POWERUP_PRICES, MULTIPLAYER_LAYOUT, SINGLEPLAYER_LAYOUT, COLORS };

@@ -19,8 +19,19 @@ declare global {
 const MIN_PLAYERS = 1;
 const MAX_PLAYERS = 4;
 
+export type GameMode = 'single' | 'local' | 'online';
+export type OnlineSubMode = 'create' | 'join';
+
+export interface StartGameOptions {
+  players: number;
+  names: string[];
+  mode: GameMode;
+  onlineSubMode?: OnlineSubMode;
+  roomCode?: string;
+}
+
 type StartScreenProps = {
-  onStart: (players: number, names?: string[]) => void;
+  onStart: (options: StartGameOptions) => void;
 };
 
 export default function StartScreen({ onStart }: StartScreenProps): React.ReactElement {
@@ -80,32 +91,61 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
   // ----------------------------------------------
 
-  const switchLanguage = (nextLang: Lang) => {
-    if (nextLang === lang) {
-      return;
+
+  const [gameMode, setGameMode] = useState<GameMode>('single');
+  const [onlineSubMode, setOnlineSubMode] = useState<OnlineSubMode>('create');
+  const [players, setPlayers] = useState(MIN_PLAYERS);
+  const [names, setNames] = useState([] as string[]);
+  const [roomCode, setRoomCode] = useState('');
+  const [error, setError] = useState('');
+
+  const handleModeChange = (mode: GameMode) => {
+    setGameMode(mode);
+    setError('');
+    
+    if (mode === 'single') {
+      setPlayers(1);
+      setNames([]);
+    } 
+    else if (mode === 'local') {
+      setPlayers(2);
+      setNames(['', '']);
     }
-    const segments = location.pathname.split('/').filter(Boolean);
-    const restSegments = segments.slice(1);
-    const rest = restSegments.length ? `/${restSegments.join('/')}` : '';
-    const targetPath = `/${nextLang}${rest}`;
-    if (location.pathname !== targetPath) {
-      navigate(targetPath);
+    else if (mode === 'online') {
+      setOnlineSubMode('create');
+      setPlayers(2); // Default for online create
+      setNames(['']); // One input for me (creator)
     }
   };
 
-
-  const [players, setPlayers] = useState(MIN_PLAYERS);
-  const [names, setNames] = useState([] as string[]);
-  const [error, setError] = useState('');
+  const handleOnlineSubModeChange = (subMode: OnlineSubMode) => {
+    setOnlineSubMode(subMode);
+    setError('');
+    
+    if (subMode === 'create') {
+      setPlayers(2);
+      setNames(['']); // One name for Creator
+    } else {
+      setPlayers(1); // Conceptually 1 "local" player joining
+      setNames(['']); 
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const n = Number(e.target.value);
     setPlayers(n);
     setError('');
-    if (n > 1) {
-      setNames(Array(n).fill(''));
-    } else {
-      setNames([]);
+    if (gameMode === 'local') {
+      if (n > 1) {
+        setNames(Array(n).fill(''));
+      } else {
+        setNames([]);
+      }
+    } else if (gameMode === 'online') {
+        setNames((prev) => {
+            if (prev.length === 0) return [''];
+            return prev.slice(0, 1); // Ensure only 1 name
+        });
     }
   };
 
@@ -120,7 +160,17 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
 
   const handleStart = async () => {
     // 1. PRIMA fai le validazioni (nomi vuoti, duplicati, ecc.)
-    if (players > 1) {
+    if (gameMode === 'online') {
+        const myName = names[0] || '';
+        if (!myName.trim()) {
+           setError(t('error.emptyNames'));
+           return;
+        }
+        if (onlineSubMode === 'join' && !roomCode.trim()) {
+            setError(t('error.emptyRoomCode') || 'Enter a room code');
+            return;
+        }
+    } else if (gameMode === 'local' && players > 1) {
       const empty = names.findIndex(name => !name.trim());
       if (empty !== -1) {
         setError(t('error.emptyNames'));
@@ -132,9 +182,13 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         setError(t('error.duplicateNames'));
         return;
       }
+    } else if (gameMode === 'single') {
+        // Single player - names handling if any
+        if (names.length > 0 && !names[0].trim()) {
+             // Maybe optional? Current logic allows empty?
+        }
     }
 
-    // 2. MOSTRA lo spinner e aspetta il server
     setIsWakingUp(true);
     let awake = false;
     
@@ -157,7 +211,13 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     setIsWakingUp(false);
 
     // 4. SOLO ORA avvia il gioco
-    onStart(players, names.length > 0 ? names : undefined);
+    onStart({
+      players,
+      names: names.length > 0 ? names : [], // Ensure array
+      mode: gameMode,
+      onlineSubMode: gameMode === 'online' ? onlineSubMode : undefined,
+      roomCode: (gameMode === 'online' && onlineSubMode === 'join') ? roomCode : undefined
+    });
   };
 
   const rulesLabel = t('start.rules');
@@ -227,68 +287,139 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         {/* ------------------------------------------------ */}
 
         <h1 className="title fancy-title">{t('start.title')}</h1>
+
+        <div className="game-mode-toggles">
+          <button 
+            className={`mode-btn ${gameMode === 'single' ? 'active' : ''}`} 
+            onClick={() => handleModeChange('single')}
+          >
+            {t('start.mode.single')}
+          </button>
+          <button 
+            className={`mode-btn ${gameMode === 'local' ? 'active' : ''}`} 
+            onClick={() => handleModeChange('local')}
+          >
+            {t('start.mode.local')}
+          </button>
+          <button 
+            className={`mode-btn ${gameMode === 'online' ? 'active' : ''}`} 
+            onClick={() => handleModeChange('online')}
+          >
+            {t('start.mode.online')}
+          </button>
+        </div>
+
+        {gameMode === 'online' && (
+          <div className="game-mode-toggles sub-toggles" style={{ marginTop: '0px' }}>
+            <button 
+              className={`mode-btn sub-mode-btn ${onlineSubMode === 'create' ? 'active' : ''}`} 
+              onClick={() => handleOnlineSubModeChange('create')}
+            >
+              {t('start.submode.create')}
+            </button>
+            <button 
+              className={`mode-btn sub-mode-btn ${onlineSubMode === 'join' ? 'active' : ''}`} 
+              onClick={() => handleOnlineSubModeChange('join')}
+            >
+              {t('start.submode.join')}
+            </button>
+          </div>
+        )}
         
         {/* ... Il resto del form (select players, inputs) rimane invariato ... */}
-        <div className="players-select pretty-select">
-          <div className="players-select-label-group">
-            <label htmlFor="players" className="players-label">
-              {t('players.label')}
-            </label>
-            <div className="custom-dropdown-wrapper">
-              <select
-                id="players"
-                value={players}
-                onChange={handleChange}
-                className="select-dropdown custom-dropdown"
-              >
-                {Array.from({ length: MAX_PLAYERS - MIN_PLAYERS + 1 }, (_, i) => (
-                  <option key={i + MIN_PLAYERS} value={i + MIN_PLAYERS}>
-                    {i + MIN_PLAYERS}
-                  </option>
-                ))}
-              </select>
+        {(gameMode === 'local' || (gameMode === 'online' && onlineSubMode === 'create')) && (
+          <div className="players-select pretty-select">
+            <div className="players-select-label-group">
+              <label htmlFor="players" className="players-label">
+                {t('players.label')}
+              </label>
+              <div className="custom-dropdown-wrapper">
+                <select
+                  id="players"
+                  value={players}
+                  onChange={handleChange}
+                  className="select-dropdown custom-dropdown"
+                >
+                  {Array.from({ length: 3 }, (_, i) => (
+                    <option key={i + 2} value={i + 2}>
+                      {i + 2}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         {(
           <div className="players-names">
-            {Array.from({ length: players }, (_, i) => (
-              <input
-                key={i}
-                type="text"
-                className="player-name-input pretty-input"
-                placeholder={`${t('player.placeholder')} ${i + 1}`}
-                value={names[i] || ''}
-                onChange={e => handleNameChange(i, e.target.value)}
-                autoComplete="off"
-              />
-            ))}
+             {gameMode === 'online' ? (
+                <>
+                  {onlineSubMode === 'join' && (
+                     <input
+                        type="text"
+                        className="player-name-input pretty-input"
+                        placeholder={t('start.roomCode.placeholder')}
+                        value={roomCode}
+                        onChange={e => setRoomCode(e.target.value)}
+                        autoComplete="off"
+                        style={{ marginBottom: '10px' }}
+                     />
+                  )}
+                  {/* Always show one name input for online mode (My Name) */}
+                  <input
+                    type="text"
+                    className="player-name-input pretty-input"
+                    placeholder={t('player.placeholder')} 
+                    value={names[0] || ''}
+                    onChange={e => handleNameChange(0, e.target.value)}
+                    autoComplete="off"
+                  />
+                </>
+             ) : (
+                /* Local or Single */
+                Array.from({ length: players }, (_, i) => (
+                  <input
+                    key={i}
+                    type="text"
+                    className="player-name-input pretty-input"
+                    placeholder={`${t('player.placeholder')} ${i + 1}`}
+                    value={names[i] || ''}
+                    onChange={e => handleNameChange(i, e.target.value)}
+                    autoComplete="off"
+                  />
+                ))
+             )}
           </div>
         )}
         {error && <div className="error-message">{error}</div>}
         <div className="actions-row">
           <button className="start-btn pretty-btn" onClick={handleStart}>
-            {t('start.button')}
+            {gameMode === 'online' 
+               ? (onlineSubMode === 'create' ? t('start.button.create') : t('start.button.join'))
+               : t('start.button')
+            }
           </button>
-          <div className="lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
-            {/* Link verso Italiano */}
-            <Link
-              to="/it"
-              className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-                {t('lang.it')}
-            </Link>
+          {!(gameMode === 'online' && onlineSubMode === 'join') && (
+            <div className="lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
+              {/* Link verso Italiano */}
+              <Link
+                to="/it"
+                className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                  {t('lang.it')}
+              </Link>
 
-            {/* Link verso Inglese */}
-            <Link
-              to="/en"
-              className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-                {t('lang.en')}
+              {/* Link verso Inglese */}
+              <Link
+                to="/en"
+                className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                  {t('lang.en')}
             </Link>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

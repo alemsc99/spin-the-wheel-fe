@@ -1,263 +1,152 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import "./Wheel.css"; 
 import { useTranslation } from '../../i18n/TranslationProvider';
 
-export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayers }) {
+const MULTIPLAYER_LAYOUT = ["Bancarotta", "100", "500", "Passa", "200", "400", "Swap", "300", "600", "Bancarotta", "100", "700", "Passa", "200", "800", "Swap", "400", "500", "100", "200", "300", "400", "500", "600"];
+const SINGLEPLAYER_LAYOUT = ["Bancarotta", "100", "300", "500", "200", "400", "600", "Bancarotta", "100", "300", "500", "200", "400", "600", "700", "800", "100", "200", "300", "500"];
+const COLORS = ["#E5243B", "#DDA63A", "#C5192D", "#FF3A21", "#FCC30B", "#FD6925", "#DD1367", "#FD9D24", "#BF8B2E", "#3F7E44", "#0ad9b7ff", "#56C02B", "#51c4fdff", "#19486A", "#8E24AA", "#2E7D32", "#F57C00", "#5D4037", "#37474F", "#6A1B9A"];
+
+export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayers, isSpinning }) {
   const { t } = useTranslation();
-  
   const angRef = useRef(0);
   const angVelRef = useRef(0);
-  
-  const onSpinRef = useRef(onSpin);
-  const lastSpinRef = useRef(lastSpin);
-  const onSpinEndRef = useRef(onSpinEnd);
+  const [isStopping, setIsStopping] = useState(false);
 
-  useEffect(() => { onSpinRef.current = onSpin; }, [onSpin]);
-  useEffect(() => { lastSpinRef.current = lastSpin; }, [lastSpin]);
-  useEffect(() => { onSpinEndRef.current = onSpinEnd; }, [onSpinEnd]);
+  const sectors = useMemo(() => {
+    const layout = numPlayers > 1 ? MULTIPLAYER_LAYOUT : SINGLEPLAYER_LAYOUT;
+    return layout.map((v, i) => ({
+      raw: v,
+      color: v === "Bancarotta" ? "#000000" : v === "Passa" ? "#1976d2" : v === "Swap" ? "#d025ffff" : COLORS[i % COLORS.length],
+      label: v === "Bancarotta" ? t('wheel.bankruptLabel') : v === "Passa" ? t('wheel.pass') : v === "Swap" ? t('wheel.swap') : v
+    }));
+  }, [numPlayers, t]);
+
+  const sectorsRef = useRef(sectors);
+  useEffect(() => { sectorsRef.current = sectors; }, [sectors]);
+
+  const updateButtonText = () => {
+    const spinEl = document.getElementById("spin");
+    if (!spinEl) return;
+
+    let displayText = "";
+
+    // 1. Durante il movimento (giro o frenata) mostra sempre SPIN
+    if (isSpinning || isStopping) {
+      displayText = t('wheel.spin'); 
+      spinEl.classList.add('spinning');
+    } 
+    // 2. A ruota ferma, controlliamo il risultato
+    else if (lastSpin) {
+      // Estraiamo il valore (gestendo sia oggetti che stringhe/numeri)
+      const ls = String(typeof lastSpin === 'object' ? lastSpin.value : lastSpin);
+      const lsLower = ls.toLowerCase();
+
+      // Mappatura delle icone speciali senza moneta
+      if (lsLower === "bancarotta") {
+        displayText = "😵‍💫";
+      } else if (lsLower === "passa") {
+        displayText = "⏭️";
+      } else if (lsLower === "scambia") {
+        displayText = "🔀";
+      } else {
+        // Se non è uno dei tre sopra, è un numero: aggiungiamo la moneta
+        displayText = `${ls}🪙`;
+      }
+      
+      spinEl.classList.remove('spinning');
+    } 
+    // 3. Stato iniziale
+    else {
+      displayText = t('wheel.spin');
+      spinEl.classList.remove('spinning');
+    }
+
+    spinEl.textContent = displayText;
+  };
 
   useEffect(() => {
-    // 1. Sector Generation
-    const baseValues = [
-      ...Array(4).fill("100"), ...Array(3).fill("200"),
-      ...Array(3).fill("300"), ...Array(2).fill("400"),
-      ...Array(2).fill("500"), ...Array(2).fill("600"),
-      ...Array(1).fill("700"), ...Array(1).fill("800")
-    ];
-    const shuffledValues = baseValues.sort(() => Math.random() - 0.5);
-
-    let finalValues;
-    if (numPlayers > 1) {
-      finalValues = [...shuffledValues];
-      const specialPairs = [
-        { pos: 0, label: "Bancarotta" }, { pos: 3, label: "Passa" },
-        { pos: 7, label: "Bancarotta" }, { pos: 10, label: "Passa" },
-        { pos: 5, label: "Swap" }, { pos: 14, label: "Swap" }
-      ];
-      specialPairs.sort((a, b) => b.pos - a.pos).forEach(p => {
-        finalValues.splice(p.pos, 0, p.label);
-      });
-    } else {
-      finalValues = [...shuffledValues];
-      const specialPositions = [7, 15].sort((a, b) => b - a);
-      specialPositions.forEach((pos) => {
-        finalValues.splice(pos, 0, "Bancarotta");
-      });
-    }
-    
-    const colorPalette = [
-      "#E5243B", "#DDA63A", "#C5192D", "#FF3A21", "#FCC30B",
-      "#FD6925", "#DD1367", "#FD9D24", "#BF8B2E", "#3F7E44",
-      "#0ad9b7ff", "#56C02B", "#51c4fdff", "#19486A", "#8E24AA",
-      "#2E7D32", "#F57C00", "#5D4037", "#37474F", "#6A1B9A"
-    ];
-    
-    const sectors = finalValues.map((value, i) => {
-      const color = value === "Bancarotta" ? "#000000" :
-                    value === "Passa" ? "#1976d2" :
-                    value === "Swap" ? "#d025ffff" :
-                    colorPalette[i % colorPalette.length];
-
-      const displayLabel = value === "Bancarotta" ? t('wheel.bankruptLabel') : 
-                           value === "Passa" ? t('wheel.pass') : 
-                           value === "Swap" ? t('wheel.swap') : value;
-
-      return { raw: value, color, label: displayLabel };
-    });
-
     const canvas = document.getElementById("wheel");
-    const spinEl = document.getElementById("spin");
-    if (!canvas || !spinEl) return;
+    if (!canvas) return;
 
-    canvas.width = 800;
-    canvas.height = 800;
-    const ctx = canvas.getContext("2d");
-    const tot = sectors.length;
-    const rad = canvas.width / 2;
-    const PI = Math.PI;
-    const TAU = 2 * PI;
-    const arc = TAU / tot;
-    const friction = 0.991;
+    if (isSpinning) {
+      canvas.style.transition = 'none'; 
+      angVelRef.current = 0.15; 
+      setIsStopping(false);
+    } else if (!isSpinning && lastSpin) {
+      angVelRef.current = 0;
+      setIsStopping(true);
+      
+      const val = String(typeof lastSpin === 'object' ? lastSpin.value : lastSpin);
+      const norm = (val === "Scambia" || val === t('wheel.swap')) ? 'Swap' : 
+                   (val === "Passa" || val === t('wheel.pass')) ? 'Passa' : 
+                   (val === "Bancarotta" || val === t('wheel.bankrupt')) ? 'Bancarotta' : val;
+      
+      const targetIndex = sectorsRef.current.findIndex(s => String(s.raw) === norm);
+      const tot = sectorsRef.current.length;
+      const TAU = 2 * Math.PI;
 
-    // 2. Updated Index Logic
-    const getIndex = () => {
-      const normalizedAng = ((angRef.current % TAU) + TAU) % TAU;
-      // We subtract 0.5/tot to ensure we are looking at the center of the sector at the pointer
-      return Math.floor(tot - (normalizedAng / TAU) * tot) % tot;
-    };
-
-    // 3. Updated Draw Logic (Starting from Top)
-    function drawSector(sector, i) {
-      // Offset the drawing by -PI/2 so index 0 is at the top
-      const startAng = (arc * i) - (PI / 2);
-      const angleMid = startAng + arc / 2;
-      
-      ctx.save();
-      ctx.beginPath();
-      ctx.fillStyle = sector.color;
-      ctx.moveTo(rad, rad);
-      ctx.arc(rad, rad, rad, startAng, startAng + arc);
-      ctx.closePath();
-      ctx.fill();
-      
-      ctx.translate(rad, rad);
-      ctx.rotate(angleMid);
-      ctx.rotate(PI);
-      
-      ctx.fillStyle = "#fff";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      
-      const baseFontSize = Math.floor(rad * 0.085);
-      let fontSize = sector.raw === "Bancarotta" ? Math.floor(baseFontSize * 0.85) : baseFontSize;
-      ctx.font = `bold ${fontSize}px sans-serif`;
-      
-      const maxWidth = rad * 0.75;
-      while (ctx.measureText(sector.label).width > maxWidth && fontSize > 10) {
-        fontSize -= 1;
-        ctx.font = `bold ${fontSize}px sans-serif`;
-      }
-      ctx.fillText(sector.label, -Math.floor(rad * 0.65), 0);
-      ctx.restore();
-    }
-
-    function rotate() {
-      const sector = sectors[getIndex()];
-      const isSpinning = !!angVelRef.current || canvas.classList.contains('css-spinning');
-      
-      // Removed the PI/2 offset here so 0rad is the visual starting state
-      canvas.style.setProperty('--wheel-rotation', `${angRef.current}rad`);
-      
-      let displayText;
-      if (isSpinning) {
-        const isSwap = sector.raw === "Swap" || sector.raw === t('wheel.swap');
-        displayText = sector.raw === "Bancarotta" ? "😵‍💫" : 
-                      sector.raw === "Passa" ? "⏭️" : 
-                      isSwap ? "🔀" : sector.label;
-      } else if (lastSpinRef.current) {
-        const ls = String(lastSpinRef.current);
-        if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) displayText = "😵‍💫";
-        else if (ls === "Passa" || ls === t('wheel.pass')) displayText = "⏭️";
-        else if (ls === "Swap" || ls === t('wheel.swap')) displayText = "🔀";
-        else displayText = `${ls}🪙`;
-      } else {
-        displayText = t('wheel.spin');
-      }
-      
-      spinEl.textContent = displayText;
-      spinEl.setAttribute('data-sector-color', sector.color);
-      spinEl.classList.toggle('spinning', isSpinning);
-    }
-
-    function frame() {
-      if (!angVelRef.current) return;
-      angVelRef.current *= friction;
-      if (angVelRef.current < 0.002) angVelRef.current = 0;
-      angRef.current += angVelRef.current;
-      rotate();
-    }
-
-    let rafId = 0;
-    let engineRunning = true;
-    function engine() {
-      frame();
-      if (engineRunning) rafId = requestAnimationFrame(engine);
-    }
-
-    const startSpinVisual = (targetIndex, spinResult) => {
-      engineRunning = false;
-      canvas.classList.add('css-spinning');
-
-      const totalFullTurns = 4;
-      
-      // Since we draw starting at Top, 0rad = index 0 at top.
       const targetAngleInCircle = (1 - (targetIndex + 0.5) / tot) * TAU;
       const currentAngleInCircle = ((angRef.current % TAU) + TAU) % TAU;
-      
       let distanceToTarget = targetAngleInCircle - currentAngleInCircle;
       if (distanceToTarget <= 0) distanceToTarget += TAU;
 
-      const finalAng = angRef.current + distanceToTarget + (totalFullTurns * TAU);
-      const duration = 3000 + Math.floor(Math.random() * 1000);
-
-      canvas.style.transition = `transform ${duration}ms cubic-bezier(0.1, 0, 0.1, 1)`;
+      const finalAng = angRef.current + distanceToTarget + (4 * TAU);
+      
+      canvas.style.transition = `transform 3.5s cubic-bezier(0.15, 0, 0.15, 1)`;
       canvas.style.transform = `rotate(${finalAng}rad)`;
 
-      const onTransitionEnd = (ev) => {
+      const onEnd = (ev) => {
         if (ev.target !== canvas) return;
-        canvas.removeEventListener('transitionend', onTransitionEnd);
-        
+        canvas.removeEventListener('transitionend', onEnd);
         angRef.current = finalAng;
-        canvas.style.transition = '';
+        canvas.style.transition = 'none';
         canvas.style.transform = `rotate(${angRef.current}rad)`;
-        canvas.classList.remove('css-spinning');
         
-        engineRunning = true;
-        engine();
-        if (onSpinEndRef.current) onSpinEndRef.current(spinResult);
+        setIsStopping(false); // Fine corsa: scatterà l'aggiornamento del testo a "Valore"
+        if (onSpinEnd) onSpinEnd(lastSpin);
       };
-
-      canvas.addEventListener('transitionend', onTransitionEnd);
-    };
-
-    const onSpinClick = () => {
-      if (canvas.classList.contains('css-spinning') || angVelRef.current) return;
-
-      if (typeof onSpinRef.current === 'function') {
-        const res = onSpinRef.current();
-        const handleResult = (spinResult) => {
-          if (!spinResult) return;
-          const val = String(spinResult.value);
-          const norm = (val === t('wheel.swap')) ? 'Swap' : (val === t('wheel.pass')) ? 'Passa' : (val === t('wheel.bankrupt')) ? 'Bancarotta' : val;
-          const targetIndex = sectors.findIndex(s => String(s.raw) === norm);
-          startSpinVisual(targetIndex >= 0 ? targetIndex : Math.floor(Math.random() * tot), spinResult);
-        };
-
-        if (res instanceof Promise) {
-          res.then(handleResult).catch(() => { angVelRef.current = 0.4; });
-        } else {
-          handleResult(res);
-        }
-      } else {
-        angVelRef.current = 0.4;
-      }
-    };
-
-    sectors.forEach(drawSector);
-    // Apply exact current rotation (initially 0rad) without the offset
-    canvas.style.transform = `rotate(${angRef.current}rad)`;
-    rotate();
-    engine();
-
-    spinEl.addEventListener("click", onSpinClick);
-    return () => {
-      engineRunning = false;
-      cancelAnimationFrame(rafId);
-      spinEl.removeEventListener("click", onSpinClick);
-    };
-  }, [numPlayers, t]);
+      canvas.addEventListener('transitionend', onEnd);
+    }
+  }, [isSpinning, lastSpin]);
 
   useEffect(() => {
-    const spinEl = document.getElementById("spin");
-    if (!spinEl) return;
-    let displayText;
-    if (lastSpin) {
-      const ls = String(lastSpin);
-      if (ls === "Bancarotta" || ls === t('wheel.bankrupt')) displayText = "😵‍💫";
-      else if (ls === "Passa" || ls === t('wheel.pass')) displayText = "⏭️";
-      else if (ls === "Swap" || ls === t('wheel.swap')) displayText = "🔀";
-      else displayText = `${ls}🪙`;
-    } else {
-      displayText = t('wheel.spin');
-    }
-    spinEl.textContent = displayText;
-  }, [lastSpin, t]);
+    const canvas = document.getElementById("wheel");
+    if (!canvas) return;
+    canvas.width = 800; canvas.height = 800;
+    const ctx = canvas.getContext("2d");
+    const rad = canvas.width / 2;
+    const arc = (2 * Math.PI) / sectors.length;
+
+    const frame = () => {
+      if (isSpinning) {
+        angRef.current += angVelRef.current;
+        canvas.style.transform = `rotate(${angRef.current}rad)`;
+      }
+      updateButtonText(); // Chiamato ad ogni frame per gestire i cambi di stato
+      rafId = requestAnimationFrame(frame);
+    };
+
+    let rafId = requestAnimationFrame(frame);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    sectors.forEach((s, i) => {
+      const startAng = (arc * i) - (Math.PI / 2);
+      ctx.save();
+      ctx.beginPath(); ctx.fillStyle = s.color; ctx.moveTo(rad, rad); ctx.arc(rad, rad, rad, startAng, startAng + arc); ctx.fill();
+      ctx.translate(rad, rad); ctx.rotate(startAng + arc / 2.65); ctx.rotate(Math.PI);
+      ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.font = `bold ${Math.floor(rad * 0.08)}px sans-serif`;
+      ctx.fillText(s.label, -Math.floor(rad * 0.65), 0);
+      ctx.restore();
+    });
+
+    return () => cancelAnimationFrame(rafId);
+  }, [sectors, isSpinning, isStopping, lastSpin]);
 
   return (
     <div className="wheel-container">
       <div id="wheelOfFortune" className="wheel-wrapper">
-        <canvas id="wheel" className="wheel-canvas" />
-        <button id="spin" className="spin-btn" disabled={disabled}>
+        <canvas id="wheel" className="wheel-canvas" style={{ transform: `rotate(${angRef.current}rad)` }} />
+        <button id="spin" className="spin-btn" disabled={disabled || isSpinning || isStopping} onClick={onSpin}>
           {t('wheel.spin')}
         </button>
       </div>

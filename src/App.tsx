@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
@@ -14,7 +14,8 @@ import { useTranslation, type Lang } from './i18n/TranslationProvider';
 import TurnOverlay from './components/overlays/TurnOverlay.tsx';
 import Powerups from './components/powerups/Powerups.jsx';
 import Leaderboard from './components/leaderboard/Leaderboard';
-import { GuessPhraseResp, GuessResp, NewGameResp, ReelSpinResponse, SpinResp } from './types/api.ts';
+import Lobby from './components/lobby/Lobby.jsx';
+import { CreateRoomResponse, GuessPhraseResp, GuessResp, NewGameResp, ReelSpinResponse, SpinResp } from './types/api.ts';
 import { debugLog } from './utils/utils.ts';
 import { API_URL } from './constants/constants.jsx';
 import useScoreManager from './hooks/ScoreManager.ts';
@@ -57,9 +58,194 @@ function AppContent() {
   const [showPhraseInput, setShowPhraseInput] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [powerups, setPowerups] = useState<Record<string, string[]>>({});
-  const [recentDeductions, setRecentDeductions] = useState<Record<string, number>>({}); // Deprecated in favor of scoreChanges, but keeping for compatibility if needed or removing
   const [scoreChanges, setScoreChanges] = useState<Record<string, number>>({});
   const prevPlayerScores = useRef<Record<string, number>>({});
+  const [pendingSpinData, setPendingSpinData] = useState<any>(null);
+  const [myName, setMyName] = useState<string>("");
+  const [roomCode, setRoomCode] = useState<string>("");
+  const [roomHost, setRoomHost] = useState<string>("");
+  const navigate = useNavigate();
+  const location = useLocation();
+ 
+  const socketRef = useRef<WebSocket | null>(null);
+
+  // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
+  const connectWebSocket = useCallback((roomCode: string, playerName: string) => {
+    if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
+      console.log("WebSocket connection already active/pending.");
+      return;
+    }
+
+    // Pulisce eventuale socket precedente chiuso male
+    if (socketRef.current) {
+      socketRef.current.close();
+    }
+    setMyName(playerName);
+    setRoomCode(roomCode);
+    const wsBase = API_URL.replace(/\/$/, "").replace(/^http/, 'ws');
+    const ws = new WebSocket(`${wsBase}/ws`);
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        action: "join",
+        room_code: roomCode,
+        player: playerName
+      }));
+    };
+
+    ws.onmessage = (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+      const payload = data.payload;
+      // GESTIONE DEI MESSAGGI DAL BACKEND
+      switch (data.event) { 
+        case 'ROOM_STATE':
+          setPlayerNames(payload.player_names);
+          break;
+        case 'PLAYER_LEFT':
+          console.log("Received PLAYER_LEFT via WebSocket: ", payload);
+          if (socketRef.current) {
+            socketRef.current.close();
+            socketRef.current = null;
+          }
+          if (payload.player === playerName) {
+            setTurnOverlayIsError(true);
+            setShowTurnOverlay(true);
+            setTurnOverlayMsg(t('lobby.youLeft'));            
+            break;
+          }
+          setTurnOverlayIsError(true);
+          setShowTurnOverlay(true);
+          setTurnOverlayMsg(`${payload.player}` + t('lobby.playerLeft'));          
+          break;
+
+        case 'PLAYER_JOINED':
+          console.log("Received PLAYER_JOINED via WebSocket");
+          setPlayerNames(payload.players);
+          break;
+
+        case 'NEW_GAME':
+          console.log("Received NEW_GAME via WebSocket");
+          // Reset score tracking to avoid "deduction" animations when resetting scores
+          setScoreChanges({});
+
+          // Accept and apply server-provided authoritative state fields when present.
+          setGameId(payload.game_id ?? null)
+          if (typeof payload.topic === 'string') setTopic(payload.topic)
+          if (typeof payload.masked === 'string') setMasked(payload.masked)
+          if (payload.powerups) setPowerups(payload.powerups);
+          setPlayerNames(payload.player_names);
+          setNumPlayers(payload.player_names.length);
+          setFirstPlayerIdx(payload.current_player_idx ?? 0);
+          setPlayerScores(payload.player_scores ?? {});
+          setLastSpin(payload.last_spin !== undefined ? payload.last_spin : 0)
+          setUsedLetters(payload.used_letters ?? {})
+          setGuessInput('')
+          setVictory(!!payload.complete)
+          setDefeat(false)
+          setCanGuess(false)
+          setCanBuyVowel(false)
+          setIsSpinning(false)
+          setShowPhraseInput(false)
+          setWrongLetters({})
+          navigate(`/${lang}/game`);
+          break;
+
+        case 'START_GAME':
+          console.log("Received START_GAME via WebSocket");
+          // 1. Salviamo TUTTI i dati della partita nello stato di App.tsx
+          setGameId(data.game_id);
+          setTopic(payload.topic);
+          setMasked(payload.masked);
+          setPlayerNames(payload.player_names);
+          setNumPlayers(payload.player_names.length);
+          setPlayerScores(payload.player_scores);
+          setFirstPlayerIdx(payload.current_player_idx);
+          setIsSpinning(false);   
+          setCanGuess(false);      
+          setLastSpin(""); 
+
+          setTurnOverlayMsg(t('newGame.firstTurn')+ payload.player_names[payload.current_player_idx || 0]);
+          setShowTurnOverlay(true);
+
+          navigate(`/${lang}/game`);
+          break;
+
+        case "START_SPIN":
+          console.log("Received START_SPIN via WebSocket");
+          // 1. RESETTA lastSpin a null ogni volta che inizia un nuovo giro
+          setLastSpin(""); 
+          
+          // 2. Resetta anche i dati pendenti
+          setPendingSpinData(null);
+          
+          setFirstPlayerIdx(payload.current_player_idx);
+          setMasked(payload.masked);
+
+          setIsSpinning(true); 
+          break;
+
+        case "END_SPIN":
+          console.log("Received END_SPIN via WebSocket");
+          
+          // 1. Diciamo alla ruota su che valore fermarsi
+          setLastSpin(payload.value); 
+          
+          // 2. Salviamo il risultato "nel cassetto" (senza applicarlo alla UI ancora)
+          setPendingSpinData(payload); 
+          
+          // 3. Fermiamo il loop infinito della ruota (inizia il rallentamento)
+          setIsSpinning(false); 
+          break;
+
+        case "BUY_VOWEL":
+          console.log("Received BUY_VOWEL via WebSocket");
+          setUsedLetters(payload.used_letters);
+          setPlayerScores(payload.player_scores);
+          setFirstPlayerIdx(payload.current_player_idx);
+          setMasked(payload.masked);
+          break;
+
+        case "GUESS_LETTER":
+          console.log("Received GUESS_LETTER via WebSocket");
+          setMasked(payload.masked);
+          setPowerups(payload.powerups);
+          setFirstPlayerIdx(payload.current_player_idx);
+          setScoreIncrement(payload.added_score);
+          setShowScoreAnim(true);
+          setTimeout(() => setShowScoreAnim(false), 1200);
+          if (payload.used_letters) setUsedLetters(payload.used_letters);
+          setCanGuess(false);
+          setPlayerScores(payload.player_scores);
+          break;
+        
+        case "USE_POWERUP":
+          console.log("Received USE_POWERUP via WebSocket");
+          setPlayerScores(payload.player_scores);
+          setPowerups(payload.powerups);
+          setFirstPlayerIdx(payload.current_player_idx);
+          break;
+        
+        case "GUESS_PHRASE":
+          console.log("Received GUESS_PHRASE via WebSocket");
+          setMasked(payload.masked);
+          setVictory(payload.complete);
+          setPlayerScores(payload.player_scores);
+          break;
+
+        case "REEL_SPIN":
+          console.log("Received REEL_SPIN via WebSocket");
+          console.log("Reel spin result:", payload.value);
+          console.log("Full payload:", payload);
+          // Only store result; apply effects when reel animation ends
+          setReelResult(payload.value);
+          setPendingReelPayload(payload);
+          setShowReel(true);
+          break;
+      }
+    };
+
+    socketRef.current = ws;
+  }, [lang, navigate, t]);
 
   useEffect(() => {
     const changes: Record<string, number> = {};
@@ -105,8 +291,6 @@ function AppContent() {
   const [reelResult, setReelResult] = useState<string | null>(null);
   const [pendingShowReel, setPendingShowReel] = useState(false);
   const [pendingReelPayload, setPendingReelPayload] = useState<ReelSpinResponse | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const pathname = location.pathname;
   const pathSegments = useMemo(() => pathname.split('/').filter(Boolean), [pathname]);
@@ -214,12 +398,13 @@ function AppContent() {
         body: JSON.stringify({
           num_players: players,
           player_names: names,
-          language: lang
+          language: lang,
+          room_code: roomCode,
+          player_name: myName
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
       const data: NewGameResp & { num_players?: number, player_names?: string[], player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, last_spin?: string | number, masked?: string, complete?: boolean, phrase?: string } = await res.json()
-      debugLog('data:', data);
       
       // Reset score tracking to avoid "deduction" animations when resetting scores
       prevPlayerScores.current = {}; 
@@ -263,6 +448,51 @@ function AppContent() {
       }
     }catch(err){
       console.error(err)
+    }
+  }
+
+  async function createRoom(players: number, language: string, host_name: string) {
+    try {
+      const res = await fetch(`${API_URL}/create-room`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          host_name: host_name,
+          capacity: players,
+          language: language
+        })
+      });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const data: CreateRoomResponse = await res.json();
+      console.log('Room created:', data);
+      setPlayerNames(data.players);
+      setRoomHost(host_name);
+      const targetLang = data.language || language || lang;
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name } });
+    } catch (err) {
+      console.error(err);
+      showErrorMessage('Failed to create room');
+    }
+  }
+
+  async function joinRoom(roomCode: string, playerName: string) {
+    try {
+      const res = await fetch(`${API_URL}/join-room`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          room_code: roomCode,
+          player_name: playerName
+        })
+      });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const data = await res.json();
+      console.log('Joined room:', data);
+      const targetLang = data.language || lang;
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName } });
+    } catch (err) {
+      console.error(err);
+      showErrorMessage('Failed to join room');
     }
   }
   // Fetch the reel result from backend
@@ -311,9 +541,13 @@ function AppContent() {
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId })
+        body: JSON.stringify({ game_id: gameId, player_name: myName })
       });
       if (!res.ok) {
+        if (res.status == 403){
+          showErrorMessage(t('buyVowelNotYourTurn'));
+          return;
+        }
         const text = await res.text();
         let json: any = {};
         try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
@@ -353,11 +587,13 @@ function AppContent() {
       const res = await fetch(`${API_URL}/use-powerup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer })
+        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: myName })
       });
       if (!res.ok) {
         if (res.status === 409){
           showErrorMessage(t('buyPowerup.cannotUseNow'));
+        }else if (res.status == 403){
+          showErrorMessage(t('buyPowerupNotYourTurn'));
         }else{
           console.log(t('buyPowerup.lowMoney'))
           showErrorMessage(t('buyPowerup.lowMoney'));
@@ -438,37 +674,55 @@ function AppContent() {
     }
   }
 
-  async function handleSpin(): Promise<SpinResp | false>{
-    if(!gameId) return false
-    if (isSpinning) {
+  async function handleSpin(): Promise<SpinResp | false> {
+    // 1. Controlli di guardia (uguali a prima)
+    if (!gameId) return false;
+    if (isSpinning || canGuess) {
       showErrorMessage(t('wheel.mustSpinFirst'));
       return false;
     }
-    if (canGuess) {
-      showErrorMessage(t('wheel.mustSpinFirst'));
-      return false;
+
+    // Capiamo se siamo in modalità Online o Locale
+    const isOnline = socketRef.current !== null;
+
+    // 2. Se siamo in SINGLE PLAYER, facciamo partire la ruota visivamente SUBITO
+    if (!isOnline) {
+      setIsSpinning(true);
+      setLastSpin(""); // Resettiamo per permettere a React di sentire il cambiamento dopo
+      setPendingSpinData(null);
     }
-    setIsSpinning(true);
-    try{
+
+    try {
       const res = await fetch(`${API_URL}/spin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId })
-      })
+        body: JSON.stringify({ 
+          game_id: gameId,
+          player_name: myName || playerNames[firstPlayerIdx || 0] 
+        })
+      });
+
       if (!res.ok) {
         const text = await res.text();
         let json: any = {};
         try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
-        showErrorMessage(json.error || json.message || `Server error ${res.status}`);
-        setIsSpinning(false);
+        showErrorMessage(t('wheel.notYourTurn'));
+        
+        if (!isOnline) setIsSpinning(false); // Fermiamo la ruota se c'è errore
         return false;
       }
-      const data: SpinResp= await res.json();
-      return data
-    }catch(err){
-      console.error(err)
-      setIsSpinning(false);
-      return false
+
+      const data: SpinResp = await res.json();
+      setLastSpin(data.value);
+      setPendingSpinData(data);
+      setIsSpinning(false);    
+      
+      return data;
+
+    } catch (err) {
+      console.error(err);
+      if (!isOnline) setIsSpinning(false);
+      return false;
     }
   }
 
@@ -567,9 +821,13 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-phrase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, guess: guessInput })
+        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName })
       })
       if (!res.ok) {
+        if (res.status == 403){
+          showErrorMessage(t('actions.notYourTurnToGuess'));          
+          return;
+        }
         const text = await res.text();
         let json: any = {};
         try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
@@ -630,20 +888,36 @@ function AppContent() {
     }
   }
 
-  // Handler invoked from GameCenter "Nuova partita" button.
-  // If multiplayer, show confirmation overlay; otherwise start a new game immediately.
   async function handleNewGameRequest() {
     // Always show confirmation overlay (singleplayer and multiplayer)
-    // Hide victory/turn overlays so the confirmation is on top
     setVictory(false);
     setShowTurnOverlay(false);
+    // if (roomCode){
+    //   if (roomHost !== myName){
+    //     showErrorMessage(t('newGame.onlyHostCanStart'));
+    //     return;
+    //   }
+    // }
     setShowNewGameConfirm(true);
-    // User will decide Yes/No in the overlay
   }
 
   function confirmNewGameYes() {
     // Return to start screen so user can change players/names
     setShowNewGameConfirm(false);
+    // Chiudi la connessione WebSocket se attiva
+    if (socketRef.current) {
+      console.log("Closing WebSocket connection...");
+
+      if (socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          action: "close",
+          room_code: roomCode,
+          player: myName
+        }));
+      }
+      socketRef.current.close();
+      socketRef.current = null;
+    }
     const targetPath = localizedStartPath;
     if (location.pathname !== targetPath) {
       navigate(targetPath);
@@ -718,6 +992,8 @@ function AppContent() {
           element={
             <StartScreenWrapper
               newGame={newGame}
+              createRoom={createRoom}
+              joinRoom={joinRoom}
               setNumPlayers={setNumPlayers}
               setPlayerNames={setPlayerNames}
               setPlayerScores={setPlayerScores}
@@ -729,8 +1005,20 @@ function AppContent() {
           }
         />
         <Route
+          path="/:lang/lobby"
+          element={
+            <Lobby
+              connectWebSocket={connectWebSocket} 
+              playerNames={playerNames} // la lista nomi aggiornata
+            />
+          }
+        />
+        <Route
           path="/:lang/game"
-          element={(
+          element={
+            !gameId ? (
+              <Navigate to={localizedStartPath} replace />
+            ) :(
               <>
                 <SEO 
                   title={lang === 'it' ? "Partita in corso - GiraParole" : "Playing SpinWords - Guess the Phrase"}
@@ -761,8 +1049,8 @@ function AppContent() {
                       powerups={powerups}
                       isSpinning={isSpinning}
                       canGuess={canGuess}
-                      playerNames={playerNames}
-                      currentPlayerIdx={firstPlayerIdx ?? undefined}
+                      playerNames={playerNames.filter(name => name !== (myName || playerNames[firstPlayerIdx || 0]))}
+                      playerName={myName}
                     />
                 )}
               </div>
@@ -788,7 +1076,14 @@ function AppContent() {
                   score={score}
                   canGuess={canGuess}
                   guessInput={guessInput}
-                  onShowPhraseInput={() => setShowPhraseInput(true)}
+                  onShowPhraseInput={() => {
+                    if (myName && myName !== playerNames[firstPlayerIdx || 0]) {
+                      showErrorMessage(t('actions.notYourTurnToGuess'));
+                      return;
+                    }
+                    setShowPhraseInput(true);
+                    return;
+                  }}
                   onBuyVowel={handleBuyVowel}
                   onShowRules={handleShowRules}
                   onNewGame={handleNewGameRequest}
@@ -813,72 +1108,66 @@ function AppContent() {
                 canGuess={canGuess}
                 numPlayers={numPlayers}
                 onSpin={handleSpin}
-                onSpinEnd={(spinResult: SpinResp) => {
-                  debugLog('onSpinEnd -> spinResult', spinResult);
-                  const { value, old_score, new_score } = spinResult as any;
+                onSpinEnd={() => {
+                  // Recuperiamo i dati che il WebSocket ci ha salvato poco fa
+                  const result = pendingSpinData; 
+                  if (!result) return;
+                  
+                  const { value, old_score } = result;
 
-                  // Prefer server-provided last_spin if present, otherwise use value
-                  const serverLast = (spinResult as any).last_spin !== undefined ? (spinResult as any).last_spin : value;
-                  setLastSpin(serverLast);
-
-                  // Keep animations for special outcomes (visual only). Do NOT apply turn/score logic locally based solely on the value.
-                  if (value === 'Bancarotta') {
+                  // --- 1. ANIMAZIONI VISIVE (Bancarotta, ecc.) ---
+                  if (value === 'Bancarotta' || value === 'bancarotta') {
                     setScoreDecrement(old_score ?? 0);
                     setShowScoreDecAnim(true);
                     setTimeout(() => setShowScoreDecAnim(false), 1200);
                   }
 
-                  // Apply server authoritative fields when present. Do not infer turn/score from `value`.
-                  const server = spinResult as any;
-                  if (server.player_scores) {
-                    setPlayerScores(server.player_scores);
-                    if (typeof server.current_player_idx === 'number') {
-                      const idx = server.current_player_idx
-                      const curr = playerNames[idx]
-                      setScore(server.player_scores[curr] ?? 0)
+                  // --- 2. AGGIORNAMENTO STATO AUTOREVOLE ---
+                  if (result.player_scores) {
+                    setPlayerScores(result.player_scores);
+                    if (typeof result.current_player_idx === 'number') {
+                      const idx = result.current_player_idx;
+                      const curr = playerNames[idx];
+                      setScore(result.player_scores[curr] ?? 0);
                     }
                   }
 
-                  if (server.used_letters) {
-                    setUsedLetters(server.used_letters)
-                  }
+                  if (result.used_letters) setUsedLetters(result.used_letters);
+                  if (result.masked) setMasked(result.masked);
+                  if (result.complete) setVictory(true);
+                  if (typeof result.can_guess === 'boolean') setCanGuess(result.can_guess);
+                  if (result.powerups) setPowerups(result.powerups);
+                  if (result.last_spin) setLastSpin(result.last_spin);
 
-                  if (typeof server.current_player_idx === 'number') {
-                    const serverIdx = server.current_player_idx
-                    // Show turn overlay only if the server changed the active player.
-                    const prevIdx = firstPlayerIdx
-                    setFirstPlayerIdx(serverIdx)
+                  // --- 3. CAMBIO TURNO E OVERLAYS ---
+                  if (typeof result.current_player_idx === 'number') {
+                    const serverIdx = result.current_player_idx;
+                    const prevIdx = firstPlayerIdx;
+                    setFirstPlayerIdx(serverIdx);
+
+                    // Mostra l'overlay solo se il turno è effettivamente passato
                     if (playerNames.length > 1 && serverIdx !== prevIdx) {
-                      setTurnOverlayMsg('overlay.changeTurn')
-                      setTurnOverlayIsError(false)
-                      setCurrentOverlayPlayerName(playerNames[serverIdx] ?? '')
-                      setShowTurnOverlay(true)
+                      setTurnOverlayMsg(t('overlay.changeTurn')+ ` ${playerNames[serverIdx] ?? ''}`);
+                      setTurnOverlayIsError(false);
+                      setCurrentOverlayPlayerName(playerNames[serverIdx] ?? '');
+                      setShowTurnOverlay(true);
                     }
-                  }
+                  }                  
 
-                  
-                  // Show swap overlay when server includes swapped_player (name or index)
-                  if (server.swapped_player !== undefined && server.swapped_player !== null) {
-                    const s = server.swapped_player;
-                    // get overlay.swapPlayer value translated
+                  // --- 4. GESTIONE SWAP ---
+                  if (result.swapped_player !== undefined && result.swapped_player !== null) {
+                    const s = result.swapped_player;
                     let overlayMsg = t('overlay.swapPlayers');
-                    // append swapped player name if string
-                    if (typeof s === 'string') {
-                      overlayMsg += ` ${s}`;
-                    }
+                    if (typeof s === 'string') overlayMsg += ` ${s}`;
+                    
                     setTurnOverlayMsg(overlayMsg);
                     setTurnOverlayIsError(false);
                     setCurrentOverlayPlayerName(s);
                     setShowTurnOverlay(true);
                   }
 
-                  // Respect server-provided masked/complete/can_guess (if present). Do not derive them from value.
-                  if (server.masked) setMasked(server.masked)
-                  if (server.complete) setVictory(true)
-                  if (typeof server.can_guess === 'boolean') setCanGuess(server.can_guess)
-
-                  setIsSpinning(false);
-                  setPowerups((spinResult as any).powerups || powerups);
+                  // IMPORTANTE: puliamo il cassetto per il prossimo giro
+                  setPendingSpinData(null);
                 }}
                 onNewGame={handleNewGameRequest}
                 onWheelClick={handleWheelClick}
