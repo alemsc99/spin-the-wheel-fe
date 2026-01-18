@@ -164,8 +164,9 @@ function AppContent() {
           setCanGuess(false);      
           setLastSpin(""); 
 
-          // 2. Navighiamo verso la pagina della partita
-          // Poiché siamo in App.tsx, navigate funzionerà correttamente
+          setTurnOverlayMsg(t('newGame.firstTurn')+ payload.player_names[payload.current_player_idx || 0]);
+          setShowTurnOverlay(true);
+
           navigate(`/${lang}/game`);
           break;
 
@@ -712,18 +713,10 @@ function AppContent() {
       }
 
       const data: SpinResp = await res.json();
-
-      // 3. GESTIONE DIFFERENZIATA
-      if (!isOnline) {
-        // MODALITÀ SINGLE PLAYER:
-        setLastSpin(data.value);
-        setPendingSpinData(data); // Salviamo i dati per usarli in onSpinEnd
-        setIsSpinning(false);    // Questo triggera lo stop visivo in Wheel.jsx
-      } else {
-        // MODALITÀ ONLINE:
-        console.log("Dati inviati al server, attesa eventi WebSocket...");
-      }
-
+      setLastSpin(data.value);
+      setPendingSpinData(data);
+      setIsSpinning(false);    
+      
       return data;
 
     } catch (err) {
@@ -1056,7 +1049,7 @@ function AppContent() {
                       powerups={powerups}
                       isSpinning={isSpinning}
                       canGuess={canGuess}
-                      playerNames={playerNames}
+                      playerNames={playerNames.filter(name => name !== (myName || playerNames[firstPlayerIdx || 0]))}
                       playerName={myName}
                     />
                 )}
@@ -1084,7 +1077,7 @@ function AppContent() {
                   canGuess={canGuess}
                   guessInput={guessInput}
                   onShowPhraseInput={() => {
-                    if (myName !== playerNames[firstPlayerIdx || 0]) {
+                    if (myName && myName !== playerNames[firstPlayerIdx || 0]) {
                       showErrorMessage(t('actions.notYourTurnToGuess'));
                       return;
                     }
@@ -1135,7 +1128,6 @@ function AppContent() {
                     if (typeof result.current_player_idx === 'number') {
                       const idx = result.current_player_idx;
                       const curr = playerNames[idx];
-                      // Aggiorna lo score visualizzato nel centro per il giocatore corrente
                       setScore(result.player_scores[curr] ?? 0);
                     }
                   }
@@ -1155,12 +1147,12 @@ function AppContent() {
 
                     // Mostra l'overlay solo se il turno è effettivamente passato
                     if (playerNames.length > 1 && serverIdx !== prevIdx) {
-                      setTurnOverlayMsg('overlay.changeTurn');
+                      setTurnOverlayMsg(t('overlay.changeTurn')+ ` ${playerNames[serverIdx] ?? ''}`);
                       setTurnOverlayIsError(false);
                       setCurrentOverlayPlayerName(playerNames[serverIdx] ?? '');
                       setShowTurnOverlay(true);
                     }
-                  }
+                  }                  
 
                   // --- 4. GESTIONE SWAP ---
                   if (result.swapped_player !== undefined && result.swapped_player !== null) {

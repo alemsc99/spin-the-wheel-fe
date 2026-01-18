@@ -69,16 +69,19 @@
   "buyPowerup.cannotUseNow": "Questo potenziamento è già in uso",
   "buyPowerupNotYourTurn": "Aspetta il tuo turno per comprare un potenziamento.",
   "overlay.turnSpin": "Gira la ruota!",
-  "overlay.changeTurn": "Cambio turno!",
+  "overlay.changeTurn": "Cambio turno! È il turno di:",
   "overlay.swapPlayers": "Punteggio scambiato con:",
+  "overlay.bankrupt": "Oh no! Il tuo punteggio si azzera! Il turno va a:",
   "overlay.wrongAnswerTurn": "Risposta sbagliata! Cambio turno!",
   "overlay.wrongAnswerSingle": "Risposta sbagliata! Riprova!",
 
   "players.title": "Giocatori",
   "powerups.title": "Potenziamenti",
+  "powerups.choosePlayer": "Scegli un giocatore",
 
   "newgame.confirmTitle": "Vuoi cambiare il numero, il nome dei giocatori o la lingua?",
   "newGame.onlyHostCanStart": "Solo l'host della stanza può avviare una nuova partita.",
+  "newGame.firstTurn": "È il turno di ",
   "common.yes": "Sì",
   "common.no": "No",
   
@@ -206,19 +209,22 @@
   "error.duplicateNames": "Player names must be distinct!",
 
   "overlay.turnSpin": "Spin the wheel!",
-  "overlay.changeTurn": "Change turn!",
+  "overlay.changeTurn": "Change turn! It's now:",
   "overlay.swapPlayers": "Score swapped with:",
+  "overlay.bankrupt": "Oh no! Your score is reset! The turn goes to:",
   "overlay.wrongAnswerTurn": "Wrong answer! Change turn!",
   "overlay.wrongAnswerSingle": "Wrong answer! Try again!",
 
   "players.title": "Players",
   "powerups.title": "Powerups",
+  "powerups.choosePlayer": "Choose a player",
   "buyPowerup.lowMoney": "Your score is not enough to buy this powerup.",
   "buyPowerup.cannotUseNow": "This powerup is already in use",
   "buyPowerupNotYourTurn": "Wait for your turn to buy a powerup.",
 
   "newgame.confirmTitle": "Would you like to change players, their names or the language?",
   "newGame.onlyHostCanStart": "Only the room host can start a new game.",
+  "newGame.firstTurn": "The first turn goes to ",
   "common.yes": "Yes",
   "common.no": "No",
 

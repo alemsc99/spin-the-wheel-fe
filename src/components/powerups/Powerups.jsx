@@ -70,7 +70,7 @@ export default function Powerups({ onUse, powerups = {}, isSpinning = false, can
       {showTargetOverlay && (
         <div className="overlay target-overlay">
           <div className="overlay-box">
-            <h3 style={{ marginBottom: 12 }}>Scegli un giocatore</h3>
+            <h3 style={{ marginBottom: 12 }}>{t('powerups.choosePlayer')}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 200 }}>
               {otherPlayers.length === 0 && <div>Nessun altro giocatore</div>}
               {otherPlayers.map((name) => (
