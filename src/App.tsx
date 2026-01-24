@@ -753,6 +753,10 @@ function AppContent() {
       // Apply server-provided masked / used letters
       if (typeof data.masked === 'string') setMasked(data.masked)
       if (data.powerups) setPowerups(data.powerups);
+      if (typeof data.current_player_idx === 'number') {
+        setFirstPlayerIdx(data.current_player_idx);
+        setCurrentOverlayPlayerName(playerNames[data.current_player_idx] || '');
+      }
       if (data.added_score > 0) {
         setScoreIncrement(data.added_score)
         setShowScoreAnim(true)
@@ -778,10 +782,12 @@ function AppContent() {
           debugLog('data.current_player_idx', data.current_player_idx);
           if (numPlayers > 1 && typeof data.current_player_idx === 'number' && firstPlayerIdx !== null && data.current_player_idx !== firstPlayerIdx) {
             debugLog('handleGuess -> server changed turn to idx', data.current_player_idx, 'player', playerNames[data.current_player_idx]);
-            setFirstPlayerIdx(data.current_player_idx);
-            setTurnOverlayMsg('overlay.changeTurn');
+            const nextIdx = data.current_player_idx;
+            const nextName = playerNames[nextIdx] || `Giocatore ${nextIdx + 1}`; // Fallback robusta
+            setFirstPlayerIdx(nextIdx);
+            setTurnOverlayMsg(t('overlay.changeTurn') + ' ' + nextName);
             setTurnOverlayIsError(false);
-            setCurrentOverlayPlayerName(playerNames[data.current_player_idx]);
+            setCurrentOverlayPlayerName(nextName);
             setShowTurnOverlay(true);
           }
         }, 400);
