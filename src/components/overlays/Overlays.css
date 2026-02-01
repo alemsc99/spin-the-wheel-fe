@@ -167,6 +167,15 @@
   color: #6d4c41;
 }
 
+.overlay-guess-phrase-incorrect-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #d32f2f;
+}
+
 .overlay-text {
   font-size: 1.15em;
   font-weight: 500;

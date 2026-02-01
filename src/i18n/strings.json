@@ -113,6 +113,7 @@
   "overlay.OthersSwapTargetFirstPart": "e",
   "overlay.OthersSwapTargetSecondPart": "si sono scambiati il punteggio!",
   "overlay.BoughtVowel": "ha comprato una vocale!",
+  "overlay.WrongPhrase": "ha provato a indovinare la frase ma ha sbagliato!",
 
   "players.title": "Giocatori",
   "powerups.title": "Potenziamenti",
@@ -292,6 +293,7 @@
   "overlay.OthersSwapTargetFirstPart": "and",
   "overlay.OthersSwapTargetSecondPart": "swapped scores!",
   "overlay.BoughtVowel": "bought a vowel!",
+  "overlay.WrongPhrase": "tried to guess the phrase but was wrong!",
 
   "players.title": "Players",
   "powerups.title": "Powerups",

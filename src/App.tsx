@@ -32,6 +32,7 @@ import WheelNextOverlay from './components/overlays/WheelNextOverlay.tsx';
 import WheelBankruptOverlay from './components/overlays/WheelBankruptOverlay.tsx';
 import SwapOverlay from './components/overlays/SwapOverlay.tsx';
 import BoughtVowelOverlay from './components/overlays/BoughtVowelOverlay.tsx';
+import GuessPhraseIncorrectOverlay from './components/overlays/GuessPhraseIncorrectOverlay.tsx';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -65,6 +66,8 @@ function AppContent() {
   const [wheelSwapOverlayMsg, setWheelSwapOverlayMsg] = useState("");
   const [showBoughtVowelOverlay, setShowBoughtVowelOverlay] = useState(false);
   const [boughtVowelOverlayMsg, setBoughtVowelOverlayMsg] = useState("");
+  const [showGuessPhraseIncorrectOverlay, setShowGuessPhraseIncorrectOverlay] = useState(false);
+  const [guessPhraseIncorrectOverlayMsg, setGuessPhraseIncorrectOverlayMsg] = useState("");
 
   const { t, lang, setLang } = useTranslation();
   const [canBuyVowel, setCanBuyVowel] = useState(false);
@@ -215,7 +218,7 @@ function AppContent() {
           break;
 
         case "END_SPIN":
-          console.log("Received END_SPIN via WebSocket:", payload);
+          console.log("Received END_SPIN via WebSocket");
           setLastSpin(payload.value); 
           setPendingSpinData(payload); 
           setIsSpinning(false); 
@@ -259,7 +262,7 @@ function AppContent() {
           break;
 
         case "GUESS_LETTER":
-          console.log("Received GUESS_LETTER via WebSocket:", payload);
+          console.log("Received GUESS_LETTER via WebSocket");
           setMasked(payload.masked);
           setPowerups(payload.powerups);
           setFirstPlayerIdx(payload.current_player_idx);
@@ -325,10 +328,15 @@ function AppContent() {
           break;
         
         case "GUESS_PHRASE":
-          console.log("Received GUESS_PHRASE via WebSocket");
+          console.log("Received GUESS_PHRASE via WebSocket: ", payload);
           setMasked(payload.masked);
           setVictory(payload.complete);
           setPlayerScores(payload.player_scores);
+          setFirstPlayerIdx(payload.current_player_idx);
+          if (payload.success === false){
+            setGuessPhraseIncorrectOverlayMsg(payload.who_guessed + ' ' + t('overlay.WrongPhrase'));
+            setShowGuessPhraseIncorrectOverlay(true);
+          }
           break;
 
         case "REEL_SPIN":
@@ -539,6 +547,16 @@ function AppContent() {
       return () => clearTimeout(timer);
     }
   }, [showBoughtVowelOverlay]);
+
+  useEffect(() => {
+    if (showGuessPhraseIncorrectOverlay) {
+      const timer = setTimeout(() => {
+        setShowGuessPhraseIncorrectOverlay(false);
+      }
+      , 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showGuessPhraseIncorrectOverlay]);
 
   useEffect(() => {
     // Only auto-set the overlay name when the overlay is for a normal "change turn" event.
@@ -1057,6 +1075,8 @@ function AppContent() {
         body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName })
       })
       if (!res.ok) {
+        setVictory(false);
+        setShowPhraseInput(false);
         if (res.status == 403){
           showErrorMessage(t('actions.notYourTurnToGuess'));          
           return;
@@ -1068,7 +1088,7 @@ function AppContent() {
         return;
       }
       const data: GuessPhraseResp & { player_scores?: Record<string,number>, current_player_idx?: number, masked?: string, success?: boolean, complete?: boolean, total_score?: number } = await res.json()
-
+      console.log("Guess phrase response:", data);
       if (typeof data.masked === 'string') setMasked(data.masked);
 
 
@@ -1086,7 +1106,6 @@ function AppContent() {
           setScore(data.total_score);
           if (firstPlayerIdx !== null) {
             const player = playerNames[firstPlayerIdx];
-            debugLog('handleGuessPhrase -> updating UI score to', data.total_score, 'for', player);
             setPlayerScoreAbsolute(player, data.total_score);
           }
         }
@@ -1098,12 +1117,13 @@ function AppContent() {
         // Rely on server-provided current_player_idx for turn changes when available
         if (numPlayers > 1 && typeof data.current_player_idx === 'number' && playerNames.length > 0) {
           const nextIdx = data.current_player_idx
-          debugLog('handleGuessPhrase -> server set next player to', nextIdx, playerNames[nextIdx]);
           setFirstPlayerIdx(nextIdx);
           setTurnOverlayMsg('overlay.wrongAnswerTurn');
           setTurnOverlayIsError(true);
           setCurrentOverlayPlayerName(playerNames[nextIdx]);
           setShowTurnOverlay(true);
+          setVictory(false);
+          setShowPhraseInput(false);
         } else if (numPlayers === 1) {
           // Single player: mostra overlay errore custom
           setTurnOverlayMsg('overlay.wrongAnswerSingle');
@@ -1453,6 +1473,10 @@ function AppContent() {
       <BoughtVowelOverlay
         show={showBoughtVowelOverlay}
         messageKey={boughtVowelOverlayMsg}
+      />
+      <GuessPhraseIncorrectOverlay
+        show={showGuessPhraseIncorrectOverlay}
+        messageKey={guessPhraseIncorrectOverlayMsg}
       />
       {/* New-game confirmation overlay (same style as TurnOverlay) */}
       {showNewGameConfirm && (
