@@ -23,6 +23,10 @@ import HalfGameReel from './components/half_game_reel/HalfGameReel.jsx';
 import { Helmet } from 'react-helmet-async';
 import RulesPage from './components/rules/RulesPage';
 import ScoreboardPage from './components/scoreboard/ScoreboardPage.tsx';
+import ShieldOverlay from './components/overlays/ShieldOverlay.tsx';
+import DoubleOverlay from './components/overlays/DoubleOverlay.tsx';
+import LoseItAllOverlay from './components/overlays/LoseItAllOverlay.tsx';
+import SkipOverlay from './components/overlays/SkipOverlay.tsx';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -32,11 +36,22 @@ function AppContent() {
   const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [playerScores, setPlayerScores] = useState<Record<string, number>>({});
   const [firstPlayerIdx, setFirstPlayerIdx] = useState<number|null>(null);
+  // Overlays 
   const [currentOverlayPlayerName, setCurrentOverlayPlayerName] = useState<string>('');
   const [showTurnOverlay, setShowTurnOverlay] = useState(false);
   const [turnOverlayMsg, setTurnOverlayMsg] = useState('');
+  const [showShieldOverlay, setShowShieldOverlay] = useState(false);
+  const [shieldOverlayMsg, setShieldOverlayMsg] = useState('');
+  const [showDoubleOverlay, setShowDoubleOverlay] = useState(false);
+  const [doubleOverlayMsg, setDoubleOverlayMsg] = useState('');
+  const [showLoseItAllOverlay, setShowLoseItAllOverlay] = useState(false);
+  const [loseItAllOverlayMsg, setLoseItAllOverlayMsg] = useState('');
+  const [showSkipOverlay, setShowSkipOverlay] = useState(false);
+  const [skipOverlayMsg, setSkipOverlayMsg] = useState('');
   const [turnOverlayIsError, setTurnOverlayIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+
   const { t, lang, setLang } = useTranslation();
   const [canBuyVowel, setCanBuyVowel] = useState(false);
   const [wrongLetters, setWrongLetters] = useState({} as Record<string, boolean>);
@@ -71,6 +86,8 @@ function AppContent() {
 
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
   const connectWebSocket = useCallback((roomCode: string, playerName: string) => {
+    setMyName(playerName);
+    setRoomCode(roomCode);
     if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
       console.log("WebSocket connection already active/pending.");
       return;
@@ -80,8 +97,7 @@ function AppContent() {
     if (socketRef.current) {
       socketRef.current.close();
     }
-    setMyName(playerName);
-    setRoomCode(roomCode);
+    
     const wsBase = API_URL.replace(/\/$/, "").replace(/^http/, 'ws');
     const ws = new WebSocket(`${wsBase}/ws`);
 
@@ -219,10 +235,42 @@ function AppContent() {
           break;
         
         case "USE_POWERUP":
-          console.log("Received USE_POWERUP via WebSocket");
+          console.log("Received USE_POWERUP via WebSocket", payload);
+          console.log("Powerup used:", payload.used_shields);
           setPlayerScores(payload.player_scores);
           setPowerups(payload.powerups);
           setFirstPlayerIdx(payload.current_player_idx);
+          if (payload.target_player){
+            // Lose it all and skip
+            if (payload.used_powerup === 'Lose'){
+              if (payload.target_player === playerName){
+                if (payload.used_shields.includes(playerName)){
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupShielded'));
+                }else{
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupForYou'));
+                }
+              }else{
+                setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupFirstPart') + payload.target_player +' '+ t('overlay.LoseItAllPowerupSecondPart'));
+              }
+              setShowLoseItAllOverlay(true);
+            }else if (payload.used_powerup === 'Skip'){
+              if (payload.target_player === playerName){
+                setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupForYou'));
+              }else{
+                setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupFirstPart') + payload.target_player +' '+ t('overlay.SkipPowerupSecondPart'));
+              }
+              setShowSkipOverlay(true);
+            }
+          }else{
+            // Double and Shield
+            if (payload.used_powerup === "Double"){
+              setDoubleOverlayMsg(payload.buyer_player +' '+ t('overlay.DoublePowerup'));
+              setShowDoubleOverlay(true);
+            }else if (payload.used_powerup === "Shield"){
+              setShieldOverlayMsg(payload.buyer_player +' '+ t('overlay.ShieldPowerup'));
+              setShowShieldOverlay(true);
+            }
+          }
           break;
         
         case "GUESS_PHRASE":
@@ -359,6 +407,43 @@ function AppContent() {
       return () => clearTimeout(timer);
     }
   }, [showTurnOverlay]);
+
+  useEffect(() => {
+    if (showShieldOverlay) {
+      const timer = setTimeout(() => {
+        setShowShieldOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showShieldOverlay]);
+
+  useEffect(() => {
+    if (showDoubleOverlay) {
+      const timer = setTimeout(() => {
+        setShowDoubleOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showDoubleOverlay]);
+
+  useEffect(() => {
+    if (showLoseItAllOverlay) {
+      const timer = setTimeout(() => {
+        setShowLoseItAllOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showLoseItAllOverlay]);
+
+  useEffect(() => {
+    if (showSkipOverlay) {
+      const timer = setTimeout(() => {
+        setShowSkipOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSkipOverlay]);
+
 
   useEffect(() => {
     // Only auto-set the overlay name when the overlay is for a normal "change turn" event.
@@ -604,9 +689,29 @@ function AppContent() {
       setScoreDecrement(data.cost);
       setShowScoreDecAnim(true);
       setTimeout(() => setShowScoreDecAnim(false), 1200);
-
-      // Se Lose colpisce un target e il server restituisce player_scores, calcola la detrazione
-     // (Automatic score change detection will handle the visuals)
+      console.log("Powerup used successfully:", data);
+      switch (powerup) {
+        case 'Shield':
+          setShieldOverlayMsg(t('overlay.YouBoughtShieldPowerup'));
+          setShowShieldOverlay(true);
+          break;
+        case 'Double':
+          setDoubleOverlayMsg(t('overlay.YouBoughtDoublePowerup'));
+          setShowDoubleOverlay(true);
+          break;
+        case 'Lose':
+          if (data.used_shields.includes(targetPlayer)){
+            setLoseItAllOverlayMsg(t('overlay.YouBoughtLoseItAllPowerupShieldedFirstPart') + targetPlayer + t('overlay.YouBoughtLoseItAllPowerupShieldedSecondPart'));
+          }else{
+            setLoseItAllOverlayMsg(t('overlay.YouBoughtLoseItAllPowerupFirstPart') + targetPlayer + t('overlay.YouBoughtLoseItAllPowerupSecondPart'));
+          }
+          setShowLoseItAllOverlay(true);
+          break;
+        case 'Skip':
+          setSkipOverlayMsg(t('overlay.YouBoughtSkipPowerupFirstPart') + targetPlayer + t('overlay.YouBoughtSkipPowerupSecondPart'));
+          setShowSkipOverlay(true);
+          break;
+      }
 
       if (data.player_scores) {
         setPlayerScores(data.player_scores);
@@ -1195,13 +1300,29 @@ function AppContent() {
         <Route path="*" element={<Navigate to={localizedStartPath} replace />} />
           </Routes>
 
-          {/* Overlays */}
-          <TurnOverlay
+      {/* Overlays */}
+      <TurnOverlay
         // Show when the overlay flag is set and there is either a message key or (in multiplayer) a player name
         show={showTurnOverlay && ( !!turnOverlayMsg || (numPlayers > 1 && !!currentOverlayPlayerName) )}
         playerName={numPlayers > 1 ? currentOverlayPlayerName : ''}
         messageKey={turnOverlayMsg} 
         isError={turnOverlayIsError}
+      />
+      <ShieldOverlay 
+        show={showShieldOverlay}
+        messageKey={shieldOverlayMsg}
+      />
+      <DoubleOverlay
+        show={showDoubleOverlay}
+        messageKey={doubleOverlayMsg}
+      />
+      <SkipOverlay
+        show={showSkipOverlay}
+        messageKey={skipOverlayMsg}
+      />
+      <LoseItAllOverlay
+        show={showLoseItAllOverlay}
+        messageKey={loseItAllOverlayMsg}
       />
       {/* New-game confirmation overlay (same style as TurnOverlay) */}
       {showNewGameConfirm && (

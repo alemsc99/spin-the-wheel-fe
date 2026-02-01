@@ -95,6 +95,35 @@
   text-align: center;
 }
 
+.overlay-shield-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #3949ab;
+}
+
+.overlay-double-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #fbc02d;
+}
+
+.overlay-lose-it-all-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #d32f2f;
+}
+
+.overlay-skip-title
+
 .overlay-text {
   font-size: 1.15em;
   font-weight: 500;
