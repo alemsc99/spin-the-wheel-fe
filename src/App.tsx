@@ -27,6 +27,9 @@ import ShieldOverlay from './components/overlays/ShieldOverlay.tsx';
 import DoubleOverlay from './components/overlays/DoubleOverlay.tsx';
 import LoseItAllOverlay from './components/overlays/LoseItAllOverlay.tsx';
 import SkipOverlay from './components/overlays/SkipOverlay.tsx';
+import WrongLetterOverlay from './components/overlays/WrongLetterOverlay.tsx';
+import WheelNextOverlay from './components/overlays/WheelNextOverlay.tsx';
+import WheelBankruptOverlay from './components/overlays/WheelBankruptOverlay.tsx';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -50,7 +53,12 @@ function AppContent() {
   const [skipOverlayMsg, setSkipOverlayMsg] = useState('');
   const [turnOverlayIsError, setTurnOverlayIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
+  const [showWrongLetterOverlay, setShowWrongLetterOverlay] = useState(false);
+  const [wrongLetterOverlayMsg, setWrongLetterOverlayMsg] = useState("");
+  const [showWheelBankruptOverlay, setShowWheelBankruptOverlay] = useState(false);
+  const [wheelBankruptOverlayMsg, setWheelBankruptOverlayMsg] = useState("");
+  const [showWheelNextOverlay, setShowWheelNextOverlay] = useState(false);
+  const [wheelNextOverlayMsg, setWheelNextOverlayMsg] = useState("");
 
   const { t, lang, setLang } = useTranslation();
   const [canBuyVowel, setCanBuyVowel] = useState(false);
@@ -201,17 +209,30 @@ function AppContent() {
           break;
 
         case "END_SPIN":
-          console.log("Received END_SPIN via WebSocket");
-          
-          // 1. Diciamo alla ruota su che valore fermarsi
+          console.log("Received END_SPIN via WebSocket:", payload);
           setLastSpin(payload.value); 
-          
-          // 2. Salviamo il risultato "nel cassetto" (senza applicarlo alla UI ancora)
           setPendingSpinData(payload); 
-          
-          // 3. Fermiamo il loop infinito della ruota (inizia il rallentamento)
           setIsSpinning(false); 
-          break;
+          switch (payload.value) {
+            case 'Bancarotta':
+              if (payload.used_shields.includes(payload.previous_player)){
+                setWheelBankruptOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelBankruptShielded'));
+              }else{
+                setWheelBankruptOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelBankrupt'));
+              }
+              break;
+            case "Passa":
+              if (payload.used_shields.includes(payload.previous_player)){
+                setWheelNextOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelNextShielded'));
+              }else{
+                if (payload.player_names[payload.current_player_idx] === playerName){
+                  setWheelNextOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelNextIsYou'));
+                }else{
+                  setWheelNextOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelNext'));
+                }
+              }
+              break;
+          }
 
         case "BUY_VOWEL":
           console.log("Received BUY_VOWEL via WebSocket");
@@ -232,6 +253,10 @@ function AppContent() {
           if (payload.used_letters) setUsedLetters(payload.used_letters);
           setCanGuess(false);
           setPlayerScores(payload.player_scores);
+          if (payload.used_shields){
+            setWrongLetterOverlayMsg(payload.used_shields[0] + ' ' + t('overlay.WrongLetterShielded'));
+            setShowWrongLetterOverlay(true);
+          }
           break;
         
         case "USE_POWERUP":
@@ -255,7 +280,11 @@ function AppContent() {
               setShowLoseItAllOverlay(true);
             }else if (payload.used_powerup === 'Skip'){
               if (payload.target_player === playerName){
-                setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupForYou'));
+                if (payload.used_shields.includes(playerName)){
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupShielded'));
+                }else{
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupForYou'));
+                }
               }else{
                 setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupFirstPart') + payload.target_player +' '+ t('overlay.SkipPowerupSecondPart'));
               }
@@ -444,6 +473,32 @@ function AppContent() {
     }
   }, [showSkipOverlay]);
 
+  useEffect(() => {
+    if (showWrongLetterOverlay) {
+      const timer = setTimeout(() => {
+        setShowWrongLetterOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showWrongLetterOverlay]);
+
+  useEffect(() => {
+    if (showWheelBankruptOverlay) {
+      const timer = setTimeout(() => {
+        setShowWheelBankruptOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showWheelBankruptOverlay]);
+
+  useEffect(() => {
+    if (showWheelNextOverlay) {
+      const timer = setTimeout(() => {
+        setShowWheelNextOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showWheelNextOverlay]);
 
   useEffect(() => {
     // Only auto-set the overlay name when the overlay is for a normal "change turn" event.
@@ -708,7 +763,11 @@ function AppContent() {
           setShowLoseItAllOverlay(true);
           break;
         case 'Skip':
-          setSkipOverlayMsg(t('overlay.YouBoughtSkipPowerupFirstPart') + targetPlayer + t('overlay.YouBoughtSkipPowerupSecondPart'));
+          if (data.used_shields.includes(targetPlayer)){
+            setSkipOverlayMsg(t('overlay.YouBoughtSkipPowerupShieldedFirstPart') + targetPlayer + t('overlay.YouBoughtSkipPowerupShieldedSecondPart'));
+          }else{
+            setSkipOverlayMsg(t('overlay.YouBoughtSkipPowerupFirstPart') + targetPlayer + t('overlay.YouBoughtSkipPowerupSecondPart'));
+          }
           setShowSkipOverlay(true);
           break;
       }
@@ -818,6 +877,23 @@ function AppContent() {
       }
 
       const data: SpinResp = await res.json();
+      console.log("Spin result:", data);
+      switch (data.value) {
+          case 'Bancarotta':
+            if (data.used_shields?.includes(myName)){
+              setWheelBankruptOverlayMsg(t('overlay.YouLandedBankruptShielded'));
+            }else{
+              setWheelBankruptOverlayMsg(t('overlay.YouLandedBankrupt'));
+            }
+            break;
+          case 'Passa':
+            if (data.used_shields?.includes(myName)){
+              setWheelNextOverlayMsg(t('overlay.YouLandedNextShielded'));
+            }else{
+              setWheelNextOverlayMsg(t('overlay.YouLandedNext'));
+            }
+            break;
+        }
       setLastSpin(data.value);
       setPendingSpinData(data);
       setIsSpinning(false);    
@@ -845,7 +921,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-letter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter })
+        body: JSON.stringify({ game_id: gameId, letter, player_name: myName })
       })
       if (!res.ok) {
         const text = await res.text();
@@ -854,8 +930,9 @@ function AppContent() {
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
         return;
       }
-      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]> } = await res.json()
+      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]>} = await res.json()
       // Apply server-provided masked / used letters
+      console.log("Guess letter response:", data);
       if (typeof data.masked === 'string') setMasked(data.masked)
       if (data.powerups) setPowerups(data.powerups);
       if (typeof data.current_player_idx === 'number') {
@@ -898,8 +975,6 @@ function AppContent() {
         }, 400);
       }
 
-      // Prefer server player_scores; otherwise increment locally
-      // Apply authoritative player totals if server returned them. Do NOT compute/increment totals locally based on added_score.
       if (data.player_scores) {
         setPlayerScores(data.player_scores)
         if (typeof data.current_player_idx === 'number') {
@@ -920,6 +995,10 @@ function AppContent() {
 
       if (data.showReel && !showReel) {
         setPendingShowReel(true);
+      }
+      if (data.used_shields){
+        setWrongLetterOverlayMsg(t('overlay.YouWrongLetterShielded'));
+        setShowWrongLetterOverlay(true);
       }
     }catch(err){
       console.error(err)
@@ -1228,9 +1307,14 @@ function AppContent() {
 
                   // --- 1. ANIMAZIONI VISIVE (Bancarotta, ecc.) ---
                   if (value === 'Bancarotta' || value === 'bancarotta') {
+                    setShowWheelBankruptOverlay(true);
                     setScoreDecrement(old_score ?? 0);
                     setShowScoreDecAnim(true);
                     setTimeout(() => setShowScoreDecAnim(false), 1200);
+                  }
+
+                  if (value === 'Passa' || value === 'passa') {
+                    setShowWheelNextOverlay(true);
                   }
 
                   // --- 2. AGGIORNAMENTO STATO AUTOREVOLE ---
@@ -1255,14 +1339,6 @@ function AppContent() {
                     const serverIdx = result.current_player_idx;
                     const prevIdx = firstPlayerIdx;
                     setFirstPlayerIdx(serverIdx);
-
-                    // Mostra l'overlay solo se il turno è effettivamente passato
-                    if (playerNames.length > 1 && serverIdx !== prevIdx) {
-                      setTurnOverlayMsg(t('overlay.changeTurn')+ ` ${playerNames[serverIdx] ?? ''}`);
-                      setTurnOverlayIsError(false);
-                      setCurrentOverlayPlayerName(playerNames[serverIdx] ?? '');
-                      setShowTurnOverlay(true);
-                    }
                   }                  
 
                   // --- 4. GESTIONE SWAP ---
@@ -1323,6 +1399,18 @@ function AppContent() {
       <LoseItAllOverlay
         show={showLoseItAllOverlay}
         messageKey={loseItAllOverlayMsg}
+      />
+      <WrongLetterOverlay 
+        show={showWrongLetterOverlay}
+        messageKey={wrongLetterOverlayMsg}
+      />
+      <WheelBankruptOverlay
+        show={showWheelBankruptOverlay}
+        messageKey={wheelBankruptOverlayMsg}
+      />
+      <WheelNextOverlay
+        show={showWheelNextOverlay}
+        messageKey={wheelNextOverlayMsg}
       />
       {/* New-game confirmation overlay (same style as TurnOverlay) */}
       {showNewGameConfirm && (

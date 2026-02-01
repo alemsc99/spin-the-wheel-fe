@@ -113,6 +113,15 @@
   color: #fbc02d;
 }
 
+.overlay-wrong-letter-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #d32f2f;
+}
+
 .overlay-lose-it-all-title {
   font-size: 2em;
   font-weight: bold;
@@ -120,6 +129,24 @@
   letter-spacing: 1.5px;
   text-align: center;
   color: #d32f2f;
+}
+
+.overlay-wheel-bankrupt-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #660404;
+}
+
+.overlay-wheel-next-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #0aaff0;
 }
 
 .overlay-skip-title
