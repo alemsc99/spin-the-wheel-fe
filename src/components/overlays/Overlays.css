@@ -149,7 +149,23 @@
   color: #0aaff0;
 }
 
-.overlay-skip-title
+.overlay-swap-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #0aaff0;
+}
+
+.overlay-bought-vowel-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #6d4c41;
+}
 
 .overlay-text {
   font-size: 1.15em;

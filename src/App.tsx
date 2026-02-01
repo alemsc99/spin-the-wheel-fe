@@ -30,6 +30,8 @@ import SkipOverlay from './components/overlays/SkipOverlay.tsx';
 import WrongLetterOverlay from './components/overlays/WrongLetterOverlay.tsx';
 import WheelNextOverlay from './components/overlays/WheelNextOverlay.tsx';
 import WheelBankruptOverlay from './components/overlays/WheelBankruptOverlay.tsx';
+import SwapOverlay from './components/overlays/SwapOverlay.tsx';
+import BoughtVowelOverlay from './components/overlays/BoughtVowelOverlay.tsx';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -59,6 +61,10 @@ function AppContent() {
   const [wheelBankruptOverlayMsg, setWheelBankruptOverlayMsg] = useState("");
   const [showWheelNextOverlay, setShowWheelNextOverlay] = useState(false);
   const [wheelNextOverlayMsg, setWheelNextOverlayMsg] = useState("");
+  const [showSwapOverlay, setShowSwapOverlay] = useState(false);
+  const [wheelSwapOverlayMsg, setWheelSwapOverlayMsg] = useState("");
+  const [showBoughtVowelOverlay, setShowBoughtVowelOverlay] = useState(false);
+  const [boughtVowelOverlayMsg, setBoughtVowelOverlayMsg] = useState("");
 
   const { t, lang, setLang } = useTranslation();
   const [canBuyVowel, setCanBuyVowel] = useState(false);
@@ -232,6 +238,12 @@ function AppContent() {
                 }
               }
               break;
+            case 'Scambia':
+              if (payload.swapped_player === playerName){
+                setWheelSwapOverlayMsg(t('overlay.YouSwapTarget') + ' ' + payload.previous_player);
+              }else{
+                setWheelSwapOverlayMsg(payload.previous_player + ' ' + t('overlay.OthersSwapTargetFirstPart') + ' ' + payload.swapped_player + ' ' + t('overlay.OthersSwapTargetSecondPart'));
+              }
           }
 
         case "BUY_VOWEL":
@@ -240,10 +252,14 @@ function AppContent() {
           setPlayerScores(payload.player_scores);
           setFirstPlayerIdx(payload.current_player_idx);
           setMasked(payload.masked);
+          if (payload.player_names.includes(payload.buyer)){
+            setBoughtVowelOverlayMsg(payload.buyer + ' ' + t('overlay.BoughtVowel'));
+            setShowBoughtVowelOverlay(true);
+          }
           break;
 
         case "GUESS_LETTER":
-          console.log("Received GUESS_LETTER via WebSocket");
+          console.log("Received GUESS_LETTER via WebSocket:", payload);
           setMasked(payload.masked);
           setPowerups(payload.powerups);
           setFirstPlayerIdx(payload.current_player_idx);
@@ -253,10 +269,16 @@ function AppContent() {
           if (payload.used_letters) setUsedLetters(payload.used_letters);
           setCanGuess(false);
           setPlayerScores(payload.player_scores);
-          if (payload.used_shields){
+          if (payload.used_shields && payload.used_shields.length > 0){
             setWrongLetterOverlayMsg(payload.used_shields[0] + ' ' + t('overlay.WrongLetterShielded'));
-            setShowWrongLetterOverlay(true);
+          }else if (payload.used_shields.length === 0 && payload.added_score === 0){
+            if (payload.player_names[payload.current_player_idx] === playerName){
+              setWrongLetterOverlayMsg(payload.previous_player + ' ' + t('overlay.OtherWrongLetterYourTurn'));
+            }else{  
+              setWrongLetterOverlayMsg(payload.previous_player + ' ' + t('overlay.OtherWrongLetterNotYourTurn')+ ' ' + payload.player_names[payload.current_player_idx]);
+            }
           }
+          setShowWrongLetterOverlay(true);
           break;
         
         case "USE_POWERUP":
@@ -501,6 +523,24 @@ function AppContent() {
   }, [showWheelNextOverlay]);
 
   useEffect(() => {
+    if (showSwapOverlay) {
+      const timer = setTimeout(() => {
+        setShowSwapOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSwapOverlay]);
+
+  useEffect(() => {
+    if (showBoughtVowelOverlay) {
+      const timer = setTimeout(() => {
+        setShowBoughtVowelOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showBoughtVowelOverlay]);
+
+  useEffect(() => {
     // Only auto-set the overlay name when the overlay is for a normal "change turn" event.
     // This prevents overwriting custom messages (e.g. swap) that set a different name.
     if (showTurnOverlay && firstPlayerIdx !== null && playerNames.length > 0 && turnOverlayMsg === 'overlay.changeTurn') {
@@ -678,10 +718,11 @@ function AppContent() {
     if (!gameId) return;
     // Ask server to charge the vowel cost and return authoritative state.
     try {
+      console.log("Buying vowel...player:", myName);
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, player_name: myName})
       });
       if (!res.ok) {
         if (res.status == 403){
@@ -793,7 +834,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter: vowel })
+        body: JSON.stringify({ game_id: gameId, letter: vowel, player_name: myName })
       });
       if (!res.ok) {
         const text = await res.text();
@@ -893,6 +934,11 @@ function AppContent() {
               setWheelNextOverlayMsg(t('overlay.YouLandedNext'));
             }
             break;
+          case 'Scambia':
+            if (data.previous_player === myName){
+              setWheelSwapOverlayMsg(t('overlay.YouLandedSwap') + ' ' + data.swapped_player);
+            }
+            break;
         }
       setLastSpin(data.value);
       setPendingSpinData(data);
@@ -947,6 +993,10 @@ function AppContent() {
         setCanGuess(false)
       }
       else {
+        if (data.added_score == 0){
+          setWrongLetterOverlayMsg(t('overlay.YouWrongLetter'));
+          setShowWrongLetterOverlay(true);
+        }
         setWrongLetters(prev => ({ ...prev, [letter]: true }));
         setTimeout(() => {
           setWrongLetters(prev => {
@@ -959,18 +1009,11 @@ function AppContent() {
           if (data.used_letters) setUsedLetters(data.used_letters);
           setCanGuess(false);
 
-          // Rely on server-provided current_player_idx for turn changes when available
-          debugLog('firstPlayerIdx', firstPlayerIdx);
-          debugLog('data.current_player_idx', data.current_player_idx);
           if (numPlayers > 1 && typeof data.current_player_idx === 'number' && firstPlayerIdx !== null && data.current_player_idx !== firstPlayerIdx) {
             debugLog('handleGuess -> server changed turn to idx', data.current_player_idx, 'player', playerNames[data.current_player_idx]);
             const nextIdx = data.current_player_idx;
             const nextName = playerNames[nextIdx] || `Giocatore ${nextIdx + 1}`; // Fallback robusta
             setFirstPlayerIdx(nextIdx);
-            setTurnOverlayMsg(t('overlay.changeTurn') + ' ' + nextName);
-            setTurnOverlayIsError(false);
-            setCurrentOverlayPlayerName(nextName);
-            setShowTurnOverlay(true);
           }
         }, 400);
       }
@@ -996,7 +1039,7 @@ function AppContent() {
       if (data.showReel && !showReel) {
         setPendingShowReel(true);
       }
-      if (data.used_shields){
+      if (data.used_shields && data.used_shields.length > 0){
         setWrongLetterOverlayMsg(t('overlay.YouWrongLetterShielded'));
         setShowWrongLetterOverlay(true);
       }
@@ -1317,6 +1360,10 @@ function AppContent() {
                     setShowWheelNextOverlay(true);
                   }
 
+                  if (value === 'Scambia' || value === 'scambia') {
+                    setShowSwapOverlay(true);
+                  }
+
                   // --- 2. AGGIORNAMENTO STATO AUTOREVOLE ---
                   if (result.player_scores) {
                     setPlayerScores(result.player_scores);
@@ -1340,19 +1387,6 @@ function AppContent() {
                     const prevIdx = firstPlayerIdx;
                     setFirstPlayerIdx(serverIdx);
                   }                  
-
-                  // --- 4. GESTIONE SWAP ---
-                  if (result.swapped_player !== undefined && result.swapped_player !== null) {
-                    const s = result.swapped_player;
-                    let overlayMsg = t('overlay.swapPlayers');
-                    if (typeof s === 'string') overlayMsg += ` ${s}`;
-                    
-                    setTurnOverlayMsg(overlayMsg);
-                    setTurnOverlayIsError(false);
-                    setCurrentOverlayPlayerName(s);
-                    setShowTurnOverlay(true);
-                  }
-
                   // IMPORTANTE: puliamo il cassetto per il prossimo giro
                   setPendingSpinData(null);
                 }}
@@ -1411,6 +1445,14 @@ function AppContent() {
       <WheelNextOverlay
         show={showWheelNextOverlay}
         messageKey={wheelNextOverlayMsg}
+      />
+      <SwapOverlay
+        show={showSwapOverlay}
+        messageKey={wheelSwapOverlayMsg}
+      />
+      <BoughtVowelOverlay
+        show={showBoughtVowelOverlay}
+        messageKey={boughtVowelOverlayMsg}
       />
       {/* New-game confirmation overlay (same style as TurnOverlay) */}
       {showNewGameConfirm && (

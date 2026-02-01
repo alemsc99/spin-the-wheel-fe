@@ -38,6 +38,8 @@ type SpinResp = {
 	powerups?: Record<string, string[]>;
 	showReel?: boolean;
 	used_shields?: string[];
+	previous_player?: string;
+	swapped_player?: string;
 }
 
 type GuessResp = {
