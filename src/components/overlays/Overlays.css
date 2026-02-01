@@ -176,6 +176,15 @@
   color: #d32f2f;
 }
 
+.overlay-reel-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #0ed294;
+}
+
 .overlay-text {
   font-size: 1.15em;
   font-weight: 500;

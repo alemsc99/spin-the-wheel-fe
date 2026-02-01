@@ -33,6 +33,7 @@ import WheelBankruptOverlay from './components/overlays/WheelBankruptOverlay.tsx
 import SwapOverlay from './components/overlays/SwapOverlay.tsx';
 import BoughtVowelOverlay from './components/overlays/BoughtVowelOverlay.tsx';
 import GuessPhraseIncorrectOverlay from './components/overlays/GuessPhraseIncorrectOverlay.tsx';
+import ReelOverlay from './components/overlays/ReelOverlay.tsx';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -68,6 +69,8 @@ function AppContent() {
   const [boughtVowelOverlayMsg, setBoughtVowelOverlayMsg] = useState("");
   const [showGuessPhraseIncorrectOverlay, setShowGuessPhraseIncorrectOverlay] = useState(false);
   const [guessPhraseIncorrectOverlayMsg, setGuessPhraseIncorrectOverlayMsg] = useState("");
+  const [reelOverlayMsg, setReelOverlayMsg] = useState("");
+  const [showReelOverlay, setShowReelOverlay] = useState(false);
 
   const { t, lang, setLang } = useTranslation();
   const [canBuyVowel, setCanBuyVowel] = useState(false);
@@ -219,15 +222,20 @@ function AppContent() {
 
         case "END_SPIN":
           console.log("Received END_SPIN via WebSocket");
-          setLastSpin(payload.value); 
-          setPendingSpinData(payload); 
-          setIsSpinning(false); 
           switch (payload.value) {
             case 'Bancarotta':
               if (payload.used_shields.includes(payload.previous_player)){
-                setWheelBankruptOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelBankruptShielded'));
+                if (payload.player_names[payload.current_player_idx] === playerName){
+                  setWheelBankruptOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelBankruptShieldedNextIsYou'));
+                }else{
+                  setWheelBankruptOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelBankruptShielded'));
+                }
               }else{
-                setWheelBankruptOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelBankrupt'));
+                if (payload.player_names[payload.current_player_idx] === playerName){
+                  setWheelBankruptOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelBankruptNextIsYou'));
+                }else{
+                  setWheelBankruptOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelBankrupt'));
+                }
               }
               break;
             case "Passa":
@@ -247,8 +255,12 @@ function AppContent() {
               }else{
                 setWheelSwapOverlayMsg(payload.previous_player + ' ' + t('overlay.OthersSwapTargetFirstPart') + ' ' + payload.swapped_player + ' ' + t('overlay.OthersSwapTargetSecondPart'));
               }
+              break;
           }
-
+          setLastSpin(payload.value); 
+          setPendingSpinData(payload); 
+          setIsSpinning(false); 
+          break;
         case "BUY_VOWEL":
           console.log("Received BUY_VOWEL via WebSocket");
           setUsedLetters(payload.used_letters);
@@ -256,7 +268,11 @@ function AppContent() {
           setFirstPlayerIdx(payload.current_player_idx);
           setMasked(payload.masked);
           if (payload.player_names.includes(payload.buyer)){
-            setBoughtVowelOverlayMsg(payload.buyer + ' ' + t('overlay.BoughtVowel'));
+            if (payload.occurrences === 0) {
+              setBoughtVowelOverlayMsg(payload.buyer + ' ' + t('overlay.BoughtVowelNoOccurrences'));
+            }else{
+              setBoughtVowelOverlayMsg(payload.buyer + ' ' + t('overlay.BoughtVowel'));
+            }
             setShowBoughtVowelOverlay(true);
           }
           break;
@@ -272,21 +288,21 @@ function AppContent() {
           if (payload.used_letters) setUsedLetters(payload.used_letters);
           setCanGuess(false);
           setPlayerScores(payload.player_scores);
-          if (payload.used_shields && payload.used_shields.length > 0){
+          if (payload.used_shields.length > 0){
             setWrongLetterOverlayMsg(payload.used_shields[0] + ' ' + t('overlay.WrongLetterShielded'));
+            setShowWrongLetterOverlay(true);
           }else if (payload.used_shields.length === 0 && payload.added_score === 0){
             if (payload.player_names[payload.current_player_idx] === playerName){
               setWrongLetterOverlayMsg(payload.previous_player + ' ' + t('overlay.OtherWrongLetterYourTurn'));
             }else{  
               setWrongLetterOverlayMsg(payload.previous_player + ' ' + t('overlay.OtherWrongLetterNotYourTurn')+ ' ' + payload.player_names[payload.current_player_idx]);
             }
+            setShowWrongLetterOverlay(true);
           }
-          setShowWrongLetterOverlay(true);
           break;
         
         case "USE_POWERUP":
-          console.log("Received USE_POWERUP via WebSocket", payload);
-          console.log("Powerup used:", payload.used_shields);
+          console.log("Received USE_POWERUP via WebSocket");
           setPlayerScores(payload.player_scores);
           setPowerups(payload.powerups);
           setFirstPlayerIdx(payload.current_player_idx);
@@ -300,7 +316,11 @@ function AppContent() {
                   setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupForYou'));
                 }
               }else{
-                setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupFirstPart') + payload.target_player +' '+ t('overlay.LoseItAllPowerupSecondPart'));
+                if (payload.used_shields.length > 0){
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupFirstPartShielded') + payload.target_player +' '+ t('overlay.LoseItAllPowerupSecondPartShielded'));
+                }else{
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupFirstPart') + payload.target_player +' '+ t('overlay.LoseItAllPowerupSecondPart'));
+                }
               }
               setShowLoseItAllOverlay(true);
             }else if (payload.used_powerup === 'Skip'){
@@ -311,7 +331,11 @@ function AppContent() {
                   setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupForYou'));
                 }
               }else{
-                setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupFirstPart') + payload.target_player +' '+ t('overlay.SkipPowerupSecondPart'));
+                if (payload.used_shields.length > 0){
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupFirstPartShielded') + payload.target_player +' '+ t('overlay.SkipPowerupSecondPartShielded'));
+                }else{
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupFirstPart') + payload.target_player +' '+ t('overlay.SkipPowerupSecondPart'));
+                }
               }
               setShowSkipOverlay(true);
             }
@@ -328,7 +352,7 @@ function AppContent() {
           break;
         
         case "GUESS_PHRASE":
-          console.log("Received GUESS_PHRASE via WebSocket: ", payload);
+          console.log("Received GUESS_PHRASE via WebSocket");
           setMasked(payload.masked);
           setVictory(payload.complete);
           setPlayerScores(payload.player_scores);
@@ -341,12 +365,27 @@ function AppContent() {
 
         case "REEL_SPIN":
           console.log("Received REEL_SPIN via WebSocket");
-          console.log("Reel spin result:", payload.value);
-          console.log("Full payload:", payload);
           // Only store result; apply effects when reel animation ends
           setReelResult(payload.value);
           setPendingReelPayload(payload);
           setShowReel(true);
+          switch (payload.value) {
+            case 'x0.5':
+              setReelOverlayMsg(t('overlay.ReelX0.5'));
+              break;
+            case 'x2':
+              setReelOverlayMsg(t('overlay.ReelX2'));
+              break;
+            case 'x5':
+              setReelOverlayMsg(t('overlay.ReelX5'));
+              break;
+            case 'Evil':
+              setReelOverlayMsg(t('overlay.ReelEvil'));
+              break;
+            case 'New_Phrase':
+              setReelOverlayMsg(t('overlay.ReelNewPhrase'));
+              break;
+          }
           break;
       }
     };
@@ -559,6 +598,15 @@ function AppContent() {
   }, [showGuessPhraseIncorrectOverlay]);
 
   useEffect(() => {
+    if (showReelOverlay) {
+      const timer = setTimeout(() => {
+        setShowReelOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showReelOverlay]);
+
+  useEffect(() => {
     // Only auto-set the overlay name when the overlay is for a normal "change turn" event.
     // This prevents overwriting custom messages (e.g. swap) that set a different name.
     if (showTurnOverlay && firstPlayerIdx !== null && playerNames.length > 0 && turnOverlayMsg === 'overlay.changeTurn') {
@@ -662,7 +710,6 @@ function AppContent() {
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data: CreateRoomResponse = await res.json();
-      console.log('Room created:', data);
       setPlayerNames(data.players);
       setRoomHost(host_name);
       const targetLang = data.language || language || lang;
@@ -685,7 +732,6 @@ function AppContent() {
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data = await res.json();
-      console.log('Joined room:', data);
       const targetLang = data.language || lang;
       navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName } });
     } catch (err) {
@@ -721,6 +767,7 @@ function AppContent() {
     setTopic(data.topic);
     setMasked(data.masked);
     setPendingReelPayload(null);
+    setShowReelOverlay(true);
   }
 
   function handleReelClose() {
@@ -736,7 +783,6 @@ function AppContent() {
     if (!gameId) return;
     // Ask server to charge the vowel cost and return authoritative state.
     try {
-      console.log("Buying vowel...player:", myName);
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -794,7 +840,6 @@ function AppContent() {
         }else if (res.status == 403){
           showErrorMessage(t('buyPowerupNotYourTurn'));
         }else{
-          console.log(t('buyPowerup.lowMoney'))
           showErrorMessage(t('buyPowerup.lowMoney'));
         }
         return;
@@ -803,7 +848,6 @@ function AppContent() {
       setScoreDecrement(data.cost);
       setShowScoreDecAnim(true);
       setTimeout(() => setShowScoreDecAnim(false), 1200);
-      console.log("Powerup used successfully:", data);
       switch (powerup) {
         case 'Shield':
           setShieldOverlayMsg(t('overlay.YouBoughtShieldPowerup'));
@@ -862,6 +906,10 @@ function AppContent() {
         return;
       }
       const data: any = await res.json();
+      if (data.occurrences === 0) {
+        setBoughtVowelOverlayMsg(t('overlay.YouBoughtVowelNoOccurrences'));
+        setShowBoughtVowelOverlay(true);
+      }
 
       // Apply server-provided state
       if (typeof data.masked === 'string') setMasked(data.masked);
@@ -936,7 +984,6 @@ function AppContent() {
       }
 
       const data: SpinResp = await res.json();
-      console.log("Spin result:", data);
       switch (data.value) {
           case 'Bancarotta':
             if (data.used_shields?.includes(myName)){
@@ -996,7 +1043,6 @@ function AppContent() {
       }
       const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]>} = await res.json()
       // Apply server-provided masked / used letters
-      console.log("Guess letter response:", data);
       if (typeof data.masked === 'string') setMasked(data.masked)
       if (data.powerups) setPowerups(data.powerups);
       if (typeof data.current_player_idx === 'number') {
@@ -1088,7 +1134,6 @@ function AppContent() {
         return;
       }
       const data: GuessPhraseResp & { player_scores?: Record<string,number>, current_player_idx?: number, masked?: string, success?: boolean, complete?: boolean, total_score?: number } = await res.json()
-      console.log("Guess phrase response:", data);
       if (typeof data.masked === 'string') setMasked(data.masked);
 
 
@@ -1477,6 +1522,10 @@ function AppContent() {
       <GuessPhraseIncorrectOverlay
         show={showGuessPhraseIncorrectOverlay}
         messageKey={guessPhraseIncorrectOverlayMsg}
+      />
+      <ReelOverlay 
+        show={showReelOverlay}
+        messageKey={reelOverlayMsg}
       />
       {/* New-game confirmation overlay (same style as TurnOverlay) */}
       {showNewGameConfirm && (
