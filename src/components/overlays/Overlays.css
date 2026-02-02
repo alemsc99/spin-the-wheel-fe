@@ -95,6 +95,96 @@
   text-align: center;
 }
 
+.overlay-shield-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #3949ab;
+}
+
+.overlay-double-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #fbc02d;
+}
+
+.overlay-wrong-letter-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #d32f2f;
+}
+
+.overlay-lose-it-all-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #d32f2f;
+}
+
+.overlay-wheel-bankrupt-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #660404;
+}
+
+.overlay-wheel-next-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #0aaff0;
+}
+
+.overlay-swap-title {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #0aaff0;
+}
+
+.overlay-bought-vowel-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #6d4c41;
+}
+
+.overlay-guess-phrase-incorrect-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #d32f2f;
+}
+
+.overlay-reel-title{
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #0ed294;
+}
+
 .overlay-text {
   font-size: 1.15em;
   font-weight: 500;

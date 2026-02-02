@@ -37,6 +37,9 @@ type SpinResp = {
 	used_letters?: Record<string, boolean>;
 	powerups?: Record<string, string[]>;
 	showReel?: boolean;
+	used_shields?: string[];
+	previous_player?: string;
+	swapped_player?: string;
 }
 
 type GuessResp = {
@@ -51,6 +54,7 @@ type GuessResp = {
 	can_guess?: boolean;
 	powerups?: Record<string, string[]>;
 	showReel?: boolean;
+	used_shields?: string[];
 }
 
 type GuessPhraseResp = {

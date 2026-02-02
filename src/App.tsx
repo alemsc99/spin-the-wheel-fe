@@ -23,6 +23,17 @@ import HalfGameReel from './components/half_game_reel/HalfGameReel.jsx';
 import { Helmet } from 'react-helmet-async';
 import RulesPage from './components/rules/RulesPage';
 import ScoreboardPage from './components/scoreboard/ScoreboardPage.tsx';
+import ShieldOverlay from './components/overlays/ShieldOverlay.tsx';
+import DoubleOverlay from './components/overlays/DoubleOverlay.tsx';
+import LoseItAllOverlay from './components/overlays/LoseItAllOverlay.tsx';
+import SkipOverlay from './components/overlays/SkipOverlay.tsx';
+import WrongLetterOverlay from './components/overlays/WrongLetterOverlay.tsx';
+import WheelNextOverlay from './components/overlays/WheelNextOverlay.tsx';
+import WheelBankruptOverlay from './components/overlays/WheelBankruptOverlay.tsx';
+import SwapOverlay from './components/overlays/SwapOverlay.tsx';
+import BoughtVowelOverlay from './components/overlays/BoughtVowelOverlay.tsx';
+import GuessPhraseIncorrectOverlay from './components/overlays/GuessPhraseIncorrectOverlay.tsx';
+import ReelOverlay from './components/overlays/ReelOverlay.tsx';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -32,11 +43,35 @@ function AppContent() {
   const [playerNames, setPlayerNames] = useState<string[]>([]);
   const [playerScores, setPlayerScores] = useState<Record<string, number>>({});
   const [firstPlayerIdx, setFirstPlayerIdx] = useState<number|null>(null);
+  // Overlays 
   const [currentOverlayPlayerName, setCurrentOverlayPlayerName] = useState<string>('');
   const [showTurnOverlay, setShowTurnOverlay] = useState(false);
   const [turnOverlayMsg, setTurnOverlayMsg] = useState('');
+  const [showShieldOverlay, setShowShieldOverlay] = useState(false);
+  const [shieldOverlayMsg, setShieldOverlayMsg] = useState('');
+  const [showDoubleOverlay, setShowDoubleOverlay] = useState(false);
+  const [doubleOverlayMsg, setDoubleOverlayMsg] = useState('');
+  const [showLoseItAllOverlay, setShowLoseItAllOverlay] = useState(false);
+  const [loseItAllOverlayMsg, setLoseItAllOverlayMsg] = useState('');
+  const [showSkipOverlay, setShowSkipOverlay] = useState(false);
+  const [skipOverlayMsg, setSkipOverlayMsg] = useState('');
   const [turnOverlayIsError, setTurnOverlayIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [showWrongLetterOverlay, setShowWrongLetterOverlay] = useState(false);
+  const [wrongLetterOverlayMsg, setWrongLetterOverlayMsg] = useState("");
+  const [showWheelBankruptOverlay, setShowWheelBankruptOverlay] = useState(false);
+  const [wheelBankruptOverlayMsg, setWheelBankruptOverlayMsg] = useState("");
+  const [showWheelNextOverlay, setShowWheelNextOverlay] = useState(false);
+  const [wheelNextOverlayMsg, setWheelNextOverlayMsg] = useState("");
+  const [showSwapOverlay, setShowSwapOverlay] = useState(false);
+  const [wheelSwapOverlayMsg, setWheelSwapOverlayMsg] = useState("");
+  const [showBoughtVowelOverlay, setShowBoughtVowelOverlay] = useState(false);
+  const [boughtVowelOverlayMsg, setBoughtVowelOverlayMsg] = useState("");
+  const [showGuessPhraseIncorrectOverlay, setShowGuessPhraseIncorrectOverlay] = useState(false);
+  const [guessPhraseIncorrectOverlayMsg, setGuessPhraseIncorrectOverlayMsg] = useState("");
+  const [reelOverlayMsg, setReelOverlayMsg] = useState("");
+  const [showReelOverlay, setShowReelOverlay] = useState(false);
+
   const { t, lang, setLang } = useTranslation();
   const [canBuyVowel, setCanBuyVowel] = useState(false);
   const [wrongLetters, setWrongLetters] = useState({} as Record<string, boolean>);
@@ -71,6 +106,8 @@ function AppContent() {
 
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
   const connectWebSocket = useCallback((roomCode: string, playerName: string) => {
+    setMyName(playerName);
+    setRoomCode(roomCode);
     if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
       console.log("WebSocket connection already active/pending.");
       return;
@@ -80,8 +117,7 @@ function AppContent() {
     if (socketRef.current) {
       socketRef.current.close();
     }
-    setMyName(playerName);
-    setRoomCode(roomCode);
+    
     const wsBase = API_URL.replace(/\/$/, "").replace(/^http/, 'ws');
     const ws = new WebSocket(`${wsBase}/ws`);
 
@@ -186,23 +222,59 @@ function AppContent() {
 
         case "END_SPIN":
           console.log("Received END_SPIN via WebSocket");
-          
-          // 1. Diciamo alla ruota su che valore fermarsi
+          switch (payload.value) {
+            case 'Bancarotta':
+              if (payload.used_shields.includes(payload.previous_player)){
+                if (payload.player_names[payload.current_player_idx] === playerName){
+                  setWheelBankruptOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelBankruptShieldedNextIsYou'));
+                }else{
+                  setWheelBankruptOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelBankruptShielded'));
+                }
+              }else{
+                if (payload.player_names[payload.current_player_idx] === playerName){
+                  setWheelBankruptOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelBankruptNextIsYou'));
+                }else{
+                  setWheelBankruptOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelBankrupt'));
+                }
+              }
+              break;
+            case "Passa":
+              if (payload.used_shields.includes(payload.previous_player)){
+                setWheelNextOverlayMsg(payload.used_shields[0] + ' ' +t('overlay.WheelNextShielded'));
+              }else{
+                if (payload.player_names[payload.current_player_idx] === playerName){
+                  setWheelNextOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelNextIsYou'));
+                }else{
+                  setWheelNextOverlayMsg(payload.previous_player + ' ' + t('overlay.WheelNext'));
+                }
+              }
+              break;
+            case 'Scambia':
+              if (payload.swapped_player === playerName){
+                setWheelSwapOverlayMsg(t('overlay.YouSwapTarget') + ' ' + payload.previous_player);
+              }else{
+                setWheelSwapOverlayMsg(payload.previous_player + ' ' + t('overlay.OthersSwapTargetFirstPart') + ' ' + payload.swapped_player + ' ' + t('overlay.OthersSwapTargetSecondPart'));
+              }
+              break;
+          }
           setLastSpin(payload.value); 
-          
-          // 2. Salviamo il risultato "nel cassetto" (senza applicarlo alla UI ancora)
           setPendingSpinData(payload); 
-          
-          // 3. Fermiamo il loop infinito della ruota (inizia il rallentamento)
           setIsSpinning(false); 
           break;
-
         case "BUY_VOWEL":
           console.log("Received BUY_VOWEL via WebSocket");
           setUsedLetters(payload.used_letters);
           setPlayerScores(payload.player_scores);
           setFirstPlayerIdx(payload.current_player_idx);
           setMasked(payload.masked);
+          if (payload.player_names.includes(payload.buyer)){
+            if (payload.occurrences === 0) {
+              setBoughtVowelOverlayMsg(payload.buyer + ' ' + t('overlay.BoughtVowelNoOccurrences'));
+            }else{
+              setBoughtVowelOverlayMsg(payload.buyer + ' ' + t('overlay.BoughtVowel'));
+            }
+            setShowBoughtVowelOverlay(true);
+          }
           break;
 
         case "GUESS_LETTER":
@@ -216,6 +288,17 @@ function AppContent() {
           if (payload.used_letters) setUsedLetters(payload.used_letters);
           setCanGuess(false);
           setPlayerScores(payload.player_scores);
+          if (payload.used_shields.length > 0){
+            setWrongLetterOverlayMsg(payload.used_shields[0] + ' ' + t('overlay.WrongLetterShielded'));
+            setShowWrongLetterOverlay(true);
+          }else if (payload.used_shields.length === 0 && payload.added_score === 0){
+            if (payload.player_names[payload.current_player_idx] === playerName){
+              setWrongLetterOverlayMsg(payload.previous_player + ' ' + t('overlay.OtherWrongLetterYourTurn'));
+            }else{  
+              setWrongLetterOverlayMsg(payload.previous_player + ' ' + t('overlay.OtherWrongLetterNotYourTurn')+ ' ' + payload.player_names[payload.current_player_idx]);
+            }
+            setShowWrongLetterOverlay(true);
+          }
           break;
         
         case "USE_POWERUP":
@@ -223,6 +306,49 @@ function AppContent() {
           setPlayerScores(payload.player_scores);
           setPowerups(payload.powerups);
           setFirstPlayerIdx(payload.current_player_idx);
+          if (payload.target_player){
+            // Lose it all and skip
+            if (payload.used_powerup === 'Lose'){
+              if (payload.target_player === playerName){
+                if (payload.used_shields.includes(playerName)){
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupShielded'));
+                }else{
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupForYou'));
+                }
+              }else{
+                if (payload.used_shields.length > 0){
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupFirstPartShielded') + payload.target_player +' '+ t('overlay.LoseItAllPowerupSecondPartShielded'));
+                }else{
+                  setLoseItAllOverlayMsg(payload.buyer_player +' '+ t('overlay.LoseItAllPowerupFirstPart') + payload.target_player +' '+ t('overlay.LoseItAllPowerupSecondPart'));
+                }
+              }
+              setShowLoseItAllOverlay(true);
+            }else if (payload.used_powerup === 'Skip'){
+              if (payload.target_player === playerName){
+                if (payload.used_shields.includes(playerName)){
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupShielded'));
+                }else{
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupForYou'));
+                }
+              }else{
+                if (payload.used_shields.length > 0){
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupFirstPartShielded') + payload.target_player +' '+ t('overlay.SkipPowerupSecondPartShielded'));
+                }else{
+                  setSkipOverlayMsg(payload.buyer_player +' '+ t('overlay.SkipPowerupFirstPart') + payload.target_player +' '+ t('overlay.SkipPowerupSecondPart'));
+                }
+              }
+              setShowSkipOverlay(true);
+            }
+          }else{
+            // Double and Shield
+            if (payload.used_powerup === "Double"){
+              setDoubleOverlayMsg(payload.buyer_player +' '+ t('overlay.DoublePowerup'));
+              setShowDoubleOverlay(true);
+            }else if (payload.used_powerup === "Shield"){
+              setShieldOverlayMsg(payload.buyer_player +' '+ t('overlay.ShieldPowerup'));
+              setShowShieldOverlay(true);
+            }
+          }
           break;
         
         case "GUESS_PHRASE":
@@ -230,16 +356,36 @@ function AppContent() {
           setMasked(payload.masked);
           setVictory(payload.complete);
           setPlayerScores(payload.player_scores);
+          setFirstPlayerIdx(payload.current_player_idx);
+          if (payload.success === false){
+            setGuessPhraseIncorrectOverlayMsg(payload.who_guessed + ' ' + t('overlay.WrongPhrase'));
+            setShowGuessPhraseIncorrectOverlay(true);
+          }
           break;
 
         case "REEL_SPIN":
           console.log("Received REEL_SPIN via WebSocket");
-          console.log("Reel spin result:", payload.value);
-          console.log("Full payload:", payload);
           // Only store result; apply effects when reel animation ends
           setReelResult(payload.value);
           setPendingReelPayload(payload);
           setShowReel(true);
+          switch (payload.value) {
+            case 'x0.5':
+              setReelOverlayMsg(t('overlay.ReelX0.5'));
+              break;
+            case 'x2':
+              setReelOverlayMsg(t('overlay.ReelX2'));
+              break;
+            case 'x5':
+              setReelOverlayMsg(t('overlay.ReelX5'));
+              break;
+            case 'Evil':
+              setReelOverlayMsg(t('overlay.ReelEvil'));
+              break;
+            case 'New_Phrase':
+              setReelOverlayMsg(t('overlay.ReelNewPhrase'));
+              break;
+          }
           break;
       }
     };
@@ -361,6 +507,106 @@ function AppContent() {
   }, [showTurnOverlay]);
 
   useEffect(() => {
+    if (showShieldOverlay) {
+      const timer = setTimeout(() => {
+        setShowShieldOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showShieldOverlay]);
+
+  useEffect(() => {
+    if (showDoubleOverlay) {
+      const timer = setTimeout(() => {
+        setShowDoubleOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showDoubleOverlay]);
+
+  useEffect(() => {
+    if (showLoseItAllOverlay) {
+      const timer = setTimeout(() => {
+        setShowLoseItAllOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showLoseItAllOverlay]);
+
+  useEffect(() => {
+    if (showSkipOverlay) {
+      const timer = setTimeout(() => {
+        setShowSkipOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSkipOverlay]);
+
+  useEffect(() => {
+    if (showWrongLetterOverlay) {
+      const timer = setTimeout(() => {
+        setShowWrongLetterOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showWrongLetterOverlay]);
+
+  useEffect(() => {
+    if (showWheelBankruptOverlay) {
+      const timer = setTimeout(() => {
+        setShowWheelBankruptOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showWheelBankruptOverlay]);
+
+  useEffect(() => {
+    if (showWheelNextOverlay) {
+      const timer = setTimeout(() => {
+        setShowWheelNextOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showWheelNextOverlay]);
+
+  useEffect(() => {
+    if (showSwapOverlay) {
+      const timer = setTimeout(() => {
+        setShowSwapOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSwapOverlay]);
+
+  useEffect(() => {
+    if (showBoughtVowelOverlay) {
+      const timer = setTimeout(() => {
+        setShowBoughtVowelOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showBoughtVowelOverlay]);
+
+  useEffect(() => {
+    if (showGuessPhraseIncorrectOverlay) {
+      const timer = setTimeout(() => {
+        setShowGuessPhraseIncorrectOverlay(false);
+      }
+      , 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showGuessPhraseIncorrectOverlay]);
+
+  useEffect(() => {
+    if (showReelOverlay) {
+      const timer = setTimeout(() => {
+        setShowReelOverlay(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showReelOverlay]);
+
+  useEffect(() => {
     // Only auto-set the overlay name when the overlay is for a normal "change turn" event.
     // This prevents overwriting custom messages (e.g. swap) that set a different name.
     if (showTurnOverlay && firstPlayerIdx !== null && playerNames.length > 0 && turnOverlayMsg === 'overlay.changeTurn') {
@@ -464,7 +710,6 @@ function AppContent() {
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data: CreateRoomResponse = await res.json();
-      console.log('Room created:', data);
       setPlayerNames(data.players);
       setRoomHost(host_name);
       const targetLang = data.language || language || lang;
@@ -487,7 +732,6 @@ function AppContent() {
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data = await res.json();
-      console.log('Joined room:', data);
       const targetLang = data.language || lang;
       navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName } });
     } catch (err) {
@@ -523,6 +767,7 @@ function AppContent() {
     setTopic(data.topic);
     setMasked(data.masked);
     setPendingReelPayload(null);
+    setShowReelOverlay(true);
   }
 
   function handleReelClose() {
@@ -541,7 +786,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, player_name: myName})
       });
       if (!res.ok) {
         if (res.status == 403){
@@ -595,7 +840,6 @@ function AppContent() {
         }else if (res.status == 403){
           showErrorMessage(t('buyPowerupNotYourTurn'));
         }else{
-          console.log(t('buyPowerup.lowMoney'))
           showErrorMessage(t('buyPowerup.lowMoney'));
         }
         return;
@@ -604,9 +848,32 @@ function AppContent() {
       setScoreDecrement(data.cost);
       setShowScoreDecAnim(true);
       setTimeout(() => setShowScoreDecAnim(false), 1200);
-
-      // Se Lose colpisce un target e il server restituisce player_scores, calcola la detrazione
-     // (Automatic score change detection will handle the visuals)
+      switch (powerup) {
+        case 'Shield':
+          setShieldOverlayMsg(t('overlay.YouBoughtShieldPowerup'));
+          setShowShieldOverlay(true);
+          break;
+        case 'Double':
+          setDoubleOverlayMsg(t('overlay.YouBoughtDoublePowerup'));
+          setShowDoubleOverlay(true);
+          break;
+        case 'Lose':
+          if (data.used_shields.includes(targetPlayer)){
+            setLoseItAllOverlayMsg(t('overlay.YouBoughtLoseItAllPowerupShieldedFirstPart') + targetPlayer + t('overlay.YouBoughtLoseItAllPowerupShieldedSecondPart'));
+          }else{
+            setLoseItAllOverlayMsg(t('overlay.YouBoughtLoseItAllPowerupFirstPart') + targetPlayer + t('overlay.YouBoughtLoseItAllPowerupSecondPart'));
+          }
+          setShowLoseItAllOverlay(true);
+          break;
+        case 'Skip':
+          if (data.used_shields.includes(targetPlayer)){
+            setSkipOverlayMsg(t('overlay.YouBoughtSkipPowerupShieldedFirstPart') + targetPlayer + t('overlay.YouBoughtSkipPowerupShieldedSecondPart'));
+          }else{
+            setSkipOverlayMsg(t('overlay.YouBoughtSkipPowerupFirstPart') + targetPlayer + t('overlay.YouBoughtSkipPowerupSecondPart'));
+          }
+          setShowSkipOverlay(true);
+          break;
+      }
 
       if (data.player_scores) {
         setPlayerScores(data.player_scores);
@@ -629,7 +896,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter: vowel })
+        body: JSON.stringify({ game_id: gameId, letter: vowel, player_name: myName })
       });
       if (!res.ok) {
         const text = await res.text();
@@ -639,6 +906,10 @@ function AppContent() {
         return;
       }
       const data: any = await res.json();
+      if (data.occurrences === 0) {
+        setBoughtVowelOverlayMsg(t('overlay.YouBoughtVowelNoOccurrences'));
+        setShowBoughtVowelOverlay(true);
+      }
 
       // Apply server-provided state
       if (typeof data.masked === 'string') setMasked(data.masked);
@@ -713,6 +984,27 @@ function AppContent() {
       }
 
       const data: SpinResp = await res.json();
+      switch (data.value) {
+          case 'Bancarotta':
+            if (data.used_shields?.includes(myName)){
+              setWheelBankruptOverlayMsg(t('overlay.YouLandedBankruptShielded'));
+            }else{
+              setWheelBankruptOverlayMsg(t('overlay.YouLandedBankrupt'));
+            }
+            break;
+          case 'Passa':
+            if (data.used_shields?.includes(myName)){
+              setWheelNextOverlayMsg(t('overlay.YouLandedNextShielded'));
+            }else{
+              setWheelNextOverlayMsg(t('overlay.YouLandedNext'));
+            }
+            break;
+          case 'Scambia':
+            if (data.previous_player === myName){
+              setWheelSwapOverlayMsg(t('overlay.YouLandedSwap') + ' ' + data.swapped_player);
+            }
+            break;
+        }
       setLastSpin(data.value);
       setPendingSpinData(data);
       setIsSpinning(false);    
@@ -740,7 +1032,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-letter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter })
+        body: JSON.stringify({ game_id: gameId, letter, player_name: myName })
       })
       if (!res.ok) {
         const text = await res.text();
@@ -749,10 +1041,14 @@ function AppContent() {
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
         return;
       }
-      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]> } = await res.json()
+      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]>} = await res.json()
       // Apply server-provided masked / used letters
       if (typeof data.masked === 'string') setMasked(data.masked)
       if (data.powerups) setPowerups(data.powerups);
+      if (typeof data.current_player_idx === 'number') {
+        setFirstPlayerIdx(data.current_player_idx);
+        setCurrentOverlayPlayerName(playerNames[data.current_player_idx] || '');
+      }
       if (data.added_score > 0) {
         setScoreIncrement(data.added_score)
         setShowScoreAnim(true)
@@ -761,6 +1057,10 @@ function AppContent() {
         setCanGuess(false)
       }
       else {
+        if (data.added_score == 0){
+          setWrongLetterOverlayMsg(t('overlay.YouWrongLetter'));
+          setShowWrongLetterOverlay(true);
+        }
         setWrongLetters(prev => ({ ...prev, [letter]: true }));
         setTimeout(() => {
           setWrongLetters(prev => {
@@ -773,22 +1073,15 @@ function AppContent() {
           if (data.used_letters) setUsedLetters(data.used_letters);
           setCanGuess(false);
 
-          // Rely on server-provided current_player_idx for turn changes when available
-          debugLog('firstPlayerIdx', firstPlayerIdx);
-          debugLog('data.current_player_idx', data.current_player_idx);
           if (numPlayers > 1 && typeof data.current_player_idx === 'number' && firstPlayerIdx !== null && data.current_player_idx !== firstPlayerIdx) {
             debugLog('handleGuess -> server changed turn to idx', data.current_player_idx, 'player', playerNames[data.current_player_idx]);
-            setFirstPlayerIdx(data.current_player_idx);
-            setTurnOverlayMsg('overlay.changeTurn');
-            setTurnOverlayIsError(false);
-            setCurrentOverlayPlayerName(playerNames[data.current_player_idx]);
-            setShowTurnOverlay(true);
+            const nextIdx = data.current_player_idx;
+            const nextName = playerNames[nextIdx] || `Giocatore ${nextIdx + 1}`; // Fallback robusta
+            setFirstPlayerIdx(nextIdx);
           }
         }, 400);
       }
 
-      // Prefer server player_scores; otherwise increment locally
-      // Apply authoritative player totals if server returned them. Do NOT compute/increment totals locally based on added_score.
       if (data.player_scores) {
         setPlayerScores(data.player_scores)
         if (typeof data.current_player_idx === 'number') {
@@ -810,6 +1103,10 @@ function AppContent() {
       if (data.showReel && !showReel) {
         setPendingShowReel(true);
       }
+      if (data.used_shields && data.used_shields.length > 0){
+        setWrongLetterOverlayMsg(t('overlay.YouWrongLetterShielded'));
+        setShowWrongLetterOverlay(true);
+      }
     }catch(err){
       console.error(err)
     }
@@ -824,6 +1121,8 @@ function AppContent() {
         body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName })
       })
       if (!res.ok) {
+        setVictory(false);
+        setShowPhraseInput(false);
         if (res.status == 403){
           showErrorMessage(t('actions.notYourTurnToGuess'));          
           return;
@@ -835,7 +1134,6 @@ function AppContent() {
         return;
       }
       const data: GuessPhraseResp & { player_scores?: Record<string,number>, current_player_idx?: number, masked?: string, success?: boolean, complete?: boolean, total_score?: number } = await res.json()
-
       if (typeof data.masked === 'string') setMasked(data.masked);
 
 
@@ -853,7 +1151,6 @@ function AppContent() {
           setScore(data.total_score);
           if (firstPlayerIdx !== null) {
             const player = playerNames[firstPlayerIdx];
-            debugLog('handleGuessPhrase -> updating UI score to', data.total_score, 'for', player);
             setPlayerScoreAbsolute(player, data.total_score);
           }
         }
@@ -865,12 +1162,13 @@ function AppContent() {
         // Rely on server-provided current_player_idx for turn changes when available
         if (numPlayers > 1 && typeof data.current_player_idx === 'number' && playerNames.length > 0) {
           const nextIdx = data.current_player_idx
-          debugLog('handleGuessPhrase -> server set next player to', nextIdx, playerNames[nextIdx]);
           setFirstPlayerIdx(nextIdx);
           setTurnOverlayMsg('overlay.wrongAnswerTurn');
           setTurnOverlayIsError(true);
           setCurrentOverlayPlayerName(playerNames[nextIdx]);
           setShowTurnOverlay(true);
+          setVictory(false);
+          setShowPhraseInput(false);
         } else if (numPlayers === 1) {
           // Single player: mostra overlay errore custom
           setTurnOverlayMsg('overlay.wrongAnswerSingle');
@@ -1117,9 +1415,18 @@ function AppContent() {
 
                   // --- 1. ANIMAZIONI VISIVE (Bancarotta, ecc.) ---
                   if (value === 'Bancarotta' || value === 'bancarotta') {
+                    setShowWheelBankruptOverlay(true);
                     setScoreDecrement(old_score ?? 0);
                     setShowScoreDecAnim(true);
                     setTimeout(() => setShowScoreDecAnim(false), 1200);
+                  }
+
+                  if (value === 'Passa' || value === 'passa') {
+                    setShowWheelNextOverlay(true);
+                  }
+
+                  if (value === 'Scambia' || value === 'scambia') {
+                    setShowSwapOverlay(true);
                   }
 
                   // --- 2. AGGIORNAMENTO STATO AUTOREVOLE ---
@@ -1144,28 +1451,7 @@ function AppContent() {
                     const serverIdx = result.current_player_idx;
                     const prevIdx = firstPlayerIdx;
                     setFirstPlayerIdx(serverIdx);
-
-                    // Mostra l'overlay solo se il turno è effettivamente passato
-                    if (playerNames.length > 1 && serverIdx !== prevIdx) {
-                      setTurnOverlayMsg(t('overlay.changeTurn')+ ` ${playerNames[serverIdx] ?? ''}`);
-                      setTurnOverlayIsError(false);
-                      setCurrentOverlayPlayerName(playerNames[serverIdx] ?? '');
-                      setShowTurnOverlay(true);
-                    }
                   }                  
-
-                  // --- 4. GESTIONE SWAP ---
-                  if (result.swapped_player !== undefined && result.swapped_player !== null) {
-                    const s = result.swapped_player;
-                    let overlayMsg = t('overlay.swapPlayers');
-                    if (typeof s === 'string') overlayMsg += ` ${s}`;
-                    
-                    setTurnOverlayMsg(overlayMsg);
-                    setTurnOverlayIsError(false);
-                    setCurrentOverlayPlayerName(s);
-                    setShowTurnOverlay(true);
-                  }
-
                   // IMPORTANTE: puliamo il cassetto per il prossimo giro
                   setPendingSpinData(null);
                 }}
@@ -1189,13 +1475,57 @@ function AppContent() {
         <Route path="*" element={<Navigate to={localizedStartPath} replace />} />
           </Routes>
 
-          {/* Overlays */}
-          <TurnOverlay
+      {/* Overlays */}
+      <TurnOverlay
         // Show when the overlay flag is set and there is either a message key or (in multiplayer) a player name
         show={showTurnOverlay && ( !!turnOverlayMsg || (numPlayers > 1 && !!currentOverlayPlayerName) )}
         playerName={numPlayers > 1 ? currentOverlayPlayerName : ''}
         messageKey={turnOverlayMsg} 
         isError={turnOverlayIsError}
+      />
+      <ShieldOverlay 
+        show={showShieldOverlay}
+        messageKey={shieldOverlayMsg}
+      />
+      <DoubleOverlay
+        show={showDoubleOverlay}
+        messageKey={doubleOverlayMsg}
+      />
+      <SkipOverlay
+        show={showSkipOverlay}
+        messageKey={skipOverlayMsg}
+      />
+      <LoseItAllOverlay
+        show={showLoseItAllOverlay}
+        messageKey={loseItAllOverlayMsg}
+      />
+      <WrongLetterOverlay 
+        show={showWrongLetterOverlay}
+        messageKey={wrongLetterOverlayMsg}
+      />
+      <WheelBankruptOverlay
+        show={showWheelBankruptOverlay}
+        messageKey={wheelBankruptOverlayMsg}
+      />
+      <WheelNextOverlay
+        show={showWheelNextOverlay}
+        messageKey={wheelNextOverlayMsg}
+      />
+      <SwapOverlay
+        show={showSwapOverlay}
+        messageKey={wheelSwapOverlayMsg}
+      />
+      <BoughtVowelOverlay
+        show={showBoughtVowelOverlay}
+        messageKey={boughtVowelOverlayMsg}
+      />
+      <GuessPhraseIncorrectOverlay
+        show={showGuessPhraseIncorrectOverlay}
+        messageKey={guessPhraseIncorrectOverlayMsg}
+      />
+      <ReelOverlay 
+        show={showReelOverlay}
+        messageKey={reelOverlayMsg}
       />
       {/* New-game confirmation overlay (same style as TurnOverlay) */}
       {showNewGameConfirm && (
