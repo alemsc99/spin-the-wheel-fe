@@ -73,9 +73,13 @@ export default function RulesPage(): React.ReactElement {
   const pageName = t('rules.pageHeading')
   return (
     <div className="rules-page">
-      <SEO 
-        title={activeLang === 'it' ? "Regole di GiraParole" : "SpinWords Rules"}
-        description="Guida ufficiale."
+      <SEO
+        title={activeLang === 'it'
+          ? "Regole di GiraParole - Come si Gioca | Gioco di Parole Online"
+          : "SpinWords Rules - How to Play | Free Online Word Game Guide"}
+        description={activeLang === 'it'
+          ? "Impara le regole di GiraParole: gira la ruota, indovina consonanti e vocali, usa potenziamenti come Scudo e Doppio. Guida completa al gioco di parole online multiplayer ispirato alla Ruota della Fortuna."
+          : "Learn how to play SpinWords: spin the wheel, guess consonants and vowels, use power-ups like Shield and Double. Complete guide to the free online multiplayer word puzzle game inspired by Wheel of Fortune."}
         lang={activeLang as 'it' | 'en'}
         path="/rules"
       />

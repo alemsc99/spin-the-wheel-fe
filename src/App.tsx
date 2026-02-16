@@ -1318,11 +1318,13 @@ function AppContent() {
               <Navigate to={localizedStartPath} replace />
             ) :(
               <>
-                <SEO 
-                  title={lang === 'it' ? "Partita in corso - GiraParole" : "Playing SpinWords - Guess the Phrase"}
+                <SEO
+                  title={lang === 'it'
+                    ? "Partita in corso - GiraParole | Gioco di Parole Online"
+                    : "Playing SpinWords - Free Online Word Puzzle Game"}
                   description={lang === 'it'
-                    ? "Partita a GiraParole in corso. Gira la ruota e vinci!"
-                    : "SpinWords match in progress. Spin the wheel and win!"}
+                    ? "Stai giocando a GiraParole! Gira la ruota, indovina le consonanti, usa i potenziamenti e sfida gli amici in tempo reale."
+                    : "SpinWords match in progress! Spin the wheel, guess consonants, use power-ups and challenge friends in this free online word game."}
                   lang={lang as 'it' | 'en'}
                   path="/game"
                 />

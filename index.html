@@ -1,29 +1,67 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta name="google-site-verification" content="5TWjClUoTOvFFJw297wyY3cXvyxz5pgAx-4RZZ8suVQ" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- TITOLO E DESCRIZIONE DI DEFAULT (Per i motori e social che non leggono JS) -->
-    <title>GiraParole - SpinWords</title>
-    <meta name="description" content="Gioco di parole online gratuito. Gira la ruota, sfida gli amici e indovina la frase! Free online word puzzle game." />
+    <meta name="google-site-verification" content="5TWjClUoTOvFFJw297wyY3cXvyxz5pgAx-4RZZ8suVQ" />
 
-    <!-- META TAG OPEN GRAPH (Questi sono quelli che cerca WhatsApp) -->
+    <!-- SEO: Title & Description (static fallback for crawlers that don't execute JS) -->
+    <title>SpinWords - Free Online Word Game | Multiplayer Wheel of Fortune Puzzle</title>
+    <meta name="description" content="Play SpinWords online for free! Spin the wheel, guess consonants, buy vowels and solve the mystery phrase. Challenge friends in multiplayer or play solo. A Wheel of Fortune-style word puzzle game." />
+
+    <!-- Canonical & Hreflang (static fallback, overridden by react-helmet-async) -->
+    <link rel="canonical" href="https://spinwords.pages.dev/en" />
+    <link rel="alternate" hreflang="en" href="https://spinwords.pages.dev/en" />
+    <link rel="alternate" hreflang="it" href="https://spinwords.pages.dev/it" />
+    <link rel="alternate" hreflang="x-default" href="https://spinwords.pages.dev/en" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="GiraParole" />
+    <meta property="og:site_name" content="SpinWords" />
     <meta property="og:url" content="https://spinwords.pages.dev/" />
-    <meta property="og:title" content="GiraParole - SpinWords" />
-    <meta property="og:description" content="Gioco di parole online gratuito. Gira la ruota, sfida gli amici e indovina la frase!" />
-    
-    <!-- FONDAMENTALE: L'immagine deve essere un URL assoluto (con https://) -->
+    <meta property="og:title" content="SpinWords - Free Online Word Game | Multiplayer Puzzle" />
+    <meta property="og:description" content="Spin the wheel, guess the phrase! Free multiplayer word puzzle game inspired by Wheel of Fortune. Play solo or challenge friends online." />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="it_IT" />
     <meta property="og:image" content="https://spinwords.pages.dev/og-image-v2.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="GiraParole Game Preview" />
+    <meta property="og:image:alt" content="SpinWords - Online Word Puzzle Game Preview" />
 
-    <!-- Colore tema browser mobile (Opzionale ma carino) -->
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SpinWords - Free Online Word Game | Multiplayer Puzzle" />
+    <meta name="twitter:description" content="Spin the wheel, guess the phrase! Free multiplayer word puzzle game. Play solo or challenge friends online." />
+    <meta name="twitter:image" content="https://spinwords.pages.dev/og-image-v2.jpg" />
+
+    <!-- Theme -->
     <meta name="theme-color" content="#ffd700" />
+
+    <!-- JSON-LD Structured Data (static, always visible to crawlers) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SpinWords",
+      "alternateName": "GiraParole",
+      "description": "Free online multiplayer word puzzle game. Spin the wheel, guess consonants, buy vowels and solve the mystery phrase before your opponents. Inspired by Wheel of Fortune.",
+      "url": "https://spinwords.pages.dev",
+      "applicationCategory": "GameApplication",
+      "genre": ["Word Game", "Puzzle", "Trivia", "Party Game"],
+      "gamePlatform": "Web Browser",
+      "operatingSystem": "Any",
+      "playMode": ["SinglePlayer", "MultiPlayer", "CoOp"],
+      "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 4 },
+      "inLanguage": ["en", "it"],
+      "image": "https://spinwords.pages.dev/og-image-v2.jpg",
+      "screenshot": "https://spinwords.pages.dev/og-image-v2.jpg",
+      "author": { "@type": "Organization", "name": "SpinWords Team" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+      "browserRequirements": "Requires JavaScript",
+      "softwareVersion": "1.0",
+      "isAccessibleForFree": true
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
