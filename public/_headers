@@ -1,2 +1,5 @@
 /sitemap.xml
   Content-Type: application/xml
+
+/BingSiteAuth.xml
+  Content-Type: application/xml
