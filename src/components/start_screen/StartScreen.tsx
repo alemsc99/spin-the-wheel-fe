@@ -91,6 +91,16 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
   // ----------------------------------------------
 
+  // SEO Text for Home Page
+  const metaTitle = isIt 
+    ? "GiraParole - Gioco di Parole Online Gratis | Puzzle stile Ruota della Fortuna" 
+    : "SpinWords - Free Online Word Game | Wheel of Fortune Puzzle";
+  
+  const metaDescription = isIt
+    ? "Gioca a GiraParole online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici."
+    : "Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.";
+  
+  const canonicalUrl = `https://spinwords.pages.dev/${lang}`;
 
   const [gameMode, setGameMode] = useState<GameMode>('single');
   const [onlineSubMode, setOnlineSubMode] = useState<OnlineSubMode>('create');
@@ -241,6 +251,9 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
 
       {/* --- INIEZIONE JSON-LD --- */}
       <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
         <script type="application/ld+json">
           {`
             ${JSON.stringify(schemaData)}

@@ -7,7 +7,7 @@
 
     <!-- SEO: Title & Description (static fallback for crawlers that don't execute JS) -->
     <title>SpinWords - Free Online Word Game | Wheel of Fortune Puzzle</title>
-    <meta name="description" content="Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends." />
+    <!-- Description moved to React components to avoid duplicates -->
 
     <!-- Canonical & Hreflang (static fallback, overridden by react-helmet-async) -->
     <link rel="alternate" hreflang="en" href="https://spinwords.pages.dev/en" />
@@ -65,6 +65,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <h1>SpinWords - Free Online Word Game</h1>
   </body>
 </html>
