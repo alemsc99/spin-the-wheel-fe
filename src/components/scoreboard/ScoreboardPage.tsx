@@ -5,6 +5,7 @@ import strings from '../../i18n/strings.json';
 import '../start_screen/StartScreen.css';
 import '../overlays/Overlays.css';
 import './ScoreboardPage.css';
+import { Helmet } from 'react-helmet-async';
 
 
 export type ScoreboardEntry = {
@@ -15,7 +16,8 @@ export type ScoreboardEntry = {
 export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: ScoreboardEntry[]; onPlayAgain: () => void; }): React.ReactElement {
   const { t } = useTranslation();
   const translate = t as unknown as (key: string, options?: Record<string, unknown>) => unknown;
-  
+  let lang = (window.localStorage && window.localStorage.getItem('lang')) || 'it';
+
   // Se la pagina viene aperta senza ranking, mostra le regole
   const showRules = !ranking || ranking.length === 0;
   // Fix universale per i18next: usa returnObjects: true
@@ -25,13 +27,6 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
     typeof rulesList === 'string' &&
     rulesList.trim() === 'scoreboard.rulesList'
   ) {
-    // Determina la lingua attiva (default 'it')
-    let lang = 'it';
-    try {
-      // @ts-ignore
-      lang = (window.localStorage && window.localStorage.getItem('lang')) || 'it';
-    } catch {}
-    // @ts-ignore
     rulesList = (strings as any)[lang]?.['scoreboard.rulesList'] || [];
   }
   if (!Array.isArray(rulesList)) {
@@ -51,9 +46,46 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
   const rulesTitle = t('scoreboard.rulesTitle');
   rulesList = Array.isArray(rulesList) ? rulesList : [];
   rulesList = rulesList as string[];
+  const pathSegments = window.location.pathname.split('/');
+  const langFromUrl = pathSegments.find(seg => seg === 'en' || seg === 'it');
+  const currentLang = langFromUrl || 'en'; // Fallback a 'en' se non trovato
+  let metaTitle = '';
+  let metaDescription = '';
+  if (currentLang === 'it') {
+    // ITALIANO
+    metaTitle = showRules 
+      ? t('scoreboard.rulesTitle') + " - GiraParole" 
+      : "Partita Terminata - GiraParole";
+      
+    metaDescription = showRules 
+      ? "Leggi le regole ufficiali di GiraParole. Scopri come girare la ruota, risolvere i puzzle e competere con gli amici."
+      : "Guarda i punteggi finali e scopri chi ha vinto la partita a GiraParole!";
+  } else {
+    // INGLESE (Default)
+    metaTitle = showRules 
+      ? (t('scoreboard.rulesTitle') || "Game Rules") + " - SpinWords" 
+      : "Game Over - SpinWords";
+
+    metaDescription = showRules 
+      ? "Read the official rules for SpinWords. Learn how to spin the wheel, solve puzzles, and compete with friends." 
+      : "Check out the final scores and see who won the SpinWords match!";
+  }
+  const canonicalUrl = `https://spinwords.pages.dev/${currentLang}/scoreboard`;
+
 
   return (
     <div className="scoreboard-page">
+      {/* Sostituisci i meta tag per questa pagina specifica */}
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Aggiungi anche qui Open Graph per completezza */}
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
       
       <svg className="bg-star star1" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
       <svg className="bg-star star2" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 import './RulesPage.css';
 import translations from '../../i18n/strings.json';
+import { Helmet } from 'react-helmet-async';
 
 
 type RulesSection = { title: string; content: string[] };
@@ -71,8 +72,28 @@ export default function RulesPage(): React.ReactElement {
   };
 
   const pageName = t('rules.pageHeading')
+  const canonicalUrl = `https://spinwords.pages.dev/${activeLang}/rules`;
+  const metaTitle = activeLang === 'it' 
+      ? "Regole del Gioco - GiraParole | Come Giocare a GiraParole" 
+      : "Game Rules - SpinWords | How to Play Spinwords";
+      
+  const metaDescription = activeLang === 'it'
+    ? "Leggi le regole ufficiali di Giraparole. Scopri come girare la ruota, chiamare le consonanti e risolvere i puzzle in questo gioco di parole online."
+    : "Read the official rules for SpinWords. Learn how to spin the wheel, guess consonants, and solve word puzzles in this free online game.";
+
   return (
     <div className="rules-page">
+      {/* SEZIONE SEO: Definisce questa pagina come unica ai motori di ricerca */}
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph per condivisione social corretta delle regole */}
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
 
       {/* Sfondo Decorativo */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
