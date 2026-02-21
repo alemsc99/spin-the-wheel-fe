@@ -5,7 +5,7 @@ import strings from '../../i18n/strings.json';
 import '../start_screen/StartScreen.css';
 import '../overlays/Overlays.css';
 import './ScoreboardPage.css';
-import { SEO } from '../SEO/SEO';
+
 
 export type ScoreboardEntry = {
   name: string;
@@ -54,16 +54,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
 
   return (
     <div className="scoreboard-page">
-      <SEO
-        title={window.localStorage.getItem('lang') === 'it'
-          ? "Classifica Finale - GiraParole | Risultati Partita"
-          : "Final Scores - SpinWords | Game Results & Rankings"}
-        description={window.localStorage.getItem('lang') === 'it'
-          ? "Scopri chi ha vinto a GiraParole! Consulta la classifica finale, i punteggi dei giocatori e gioca ancora al gioco di parole online."
-          : "See who won at SpinWords! Check out the final rankings, player scores and play the online word game again."}
-        lang={window.localStorage.getItem('lang') as 'it' | 'en'}
-        path="/scoreboard"
-      />
+      
       <svg className="bg-star star1" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
       <svg className="bg-star star2" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
       <svg className="bg-star star3" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
@@ -101,16 +92,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
             </div>
           ) : (
             <>
-            <SEO
-              title={window.localStorage.getItem('lang') === 'it'
-                ? "Vincitore GiraParole - Classifica Finale | Gioco di Parole Online"
-                : "SpinWords Winner - Final Rankings | Free Online Word Game"}
-              description={window.localStorage.getItem('lang') === 'it'
-                ? "Chi ha vinto a GiraParole? Scopri la classifica finale dei giocatori e gioca ancora al gioco di parole online."
-                : "Who won SpinWords? Check out the final player rankings and play the online word game again."}
-              lang={window.localStorage.getItem('lang') as 'it' | 'en'}
-              path="/scoreboard"
-            />
+            
               <span className="trophy-icon">🏆</span>
               <h1 className="victory-title ">{t('victory.title')}</h1>
               <p className="subtitle">

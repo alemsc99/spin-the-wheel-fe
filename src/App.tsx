@@ -3,7 +3,6 @@ import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
 import GameCenter from './components/game_center/GameCenter.jsx';
-import { SEO } from './components/SEO/SEO';
 import { ErrorOverlay } from './components/overlays/Overlays.jsx';
 import StartScreenWrapper from './components/start_screen/StartScreenWrapper.tsx';
 import './App.css';
@@ -20,7 +19,6 @@ import { debugLog } from './utils/utils.ts';
 import { API_URL } from './constants/constants.jsx';
 import useScoreManager from './hooks/ScoreManager.ts';
 import HalfGameReel from './components/half_game_reel/HalfGameReel.jsx';
-import { Helmet } from 'react-helmet-async';
 import RulesPage from './components/rules/RulesPage';
 import ScoreboardPage from './components/scoreboard/ScoreboardPage.tsx';
 import ShieldOverlay from './components/overlays/ShieldOverlay.tsx';
@@ -1318,16 +1316,6 @@ function AppContent() {
               <Navigate to={localizedStartPath} replace />
             ) :(
               <>
-                <SEO
-                  title={lang === 'it'
-                    ? "Partita in corso - GiraParole | Gioco di Parole Online"
-                    : "Playing SpinWords - Free Online Word Puzzle Game"}
-                  description={lang === 'it'
-                    ? "Stai giocando a GiraParole! Gira la ruota, indovina le consonanti, usa i potenziamenti e sfida gli amici in tempo reale."
-                    : "SpinWords match in progress! Spin the wheel, guess consonants, use power-ups and challenge friends in this free online word game."}
-                  lang={lang as 'it' | 'en'}
-                  path="/game"
-                />
             {/* 1. TITOLO PRINCIPALE (ESTERNO) */}
             <h1 className="title fancy-title">
               {pageName}

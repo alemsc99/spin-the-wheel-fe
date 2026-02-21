@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 import './RulesPage.css';
 import translations from '../../i18n/strings.json';
-import { SEO } from '../SEO/SEO';
+
 
 type RulesSection = { title: string; content: string[] };
 
@@ -73,17 +73,7 @@ export default function RulesPage(): React.ReactElement {
   const pageName = t('rules.pageHeading')
   return (
     <div className="rules-page">
-      <SEO
-        title={activeLang === 'it'
-          ? "Regole di GiraParole - Come si Gioca | Gioco di Parole Online"
-          : "SpinWords Rules - How to Play | Free Online Word Game Guide"}
-        description={activeLang === 'it'
-          ? "Impara le regole di GiraParole: gira la ruota, indovina consonanti e vocali, usa potenziamenti come Scudo e Doppio. Guida completa al gioco di parole online multiplayer ispirato alla Ruota della Fortuna."
-          : "Learn how to play SpinWords: spin the wheel, guess consonants and vowels, use power-ups like Shield and Double. Complete guide to the free online multiplayer word puzzle game inspired by Wheel of Fortune."}
-        lang={activeLang as 'it' | 'en'}
-        path="/rules"
-      />
-      
+
       {/* Sfondo Decorativo */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700" /></svg>

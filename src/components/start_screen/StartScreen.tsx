@@ -4,7 +4,7 @@ import './StartScreen.css';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async'; 
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
-import { SEO } from '../SEO/SEO';
+
 import { API_URL } from '../../constants/constants';
 import LoadingSpinner from '../loading_spinner/LoadingSpinner';
 
@@ -238,16 +238,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           </div>
         </div>
       )}
-      <SEO 
-        title={isIt 
-          ? "GiraParole - Gioco di Parole Online Gratis" 
-          : "SpinWords - Free Online Word Puzzle Game"}
-        description={isIt
-          ? "Gioca a GiraParole online! Gira la ruota, scegli una consonante e indovina la frase segreta. Sfida gli amici o gioca da solo in questo puzzle game."
-          : "Play SpinWords online! Spin the wheel, choose a consonant, and guess the secret phrase. Challenge your friends or play solo in this word puzzle game."}
-        lang={lang as 'it' | 'en'}
-        path=""
-      />
 
       {/* --- INIEZIONE JSON-LD --- */}
       <Helmet>
