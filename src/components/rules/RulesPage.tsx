@@ -71,7 +71,11 @@ export default function RulesPage(): React.ReactElement {
     navigate(`/${activeLang}`);
   };
 
-  const pageName = t('rules.pageHeading')
+  const pageNameRaw = t('rules.pageHeading');
+  const pageName = (typeof pageNameRaw === 'string' && pageNameRaw !== 'rules.pageHeading' && pageNameRaw.trim() !== '')
+    ? pageNameRaw
+    : (activeLang === 'it' ? 'Regole del Gioco' : 'Game Rules');
+
   const canonicalUrl = `https://spinwords.pages.dev/${activeLang}/rules`;
   const metaTitle = activeLang === 'it' 
       ? "Regole del Gioco - GiraParole | Come Giocare a GiraParole" 
