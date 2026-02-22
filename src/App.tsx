@@ -85,6 +85,7 @@ function AppContent() {
   const [lastSpin, setLastSpin] = useState<string | number>(0);
   const [usedLetters, setUsedLetters] = useState<Record<string, boolean>>({});
   const [guessInput, setGuessInput] = useState('');
+  const [terminatedVowels, setTerminatedVowels] = useState(false);
   const [victory, setVictory] = useState(false);
   const [defeat, setDefeat] = useState(false);
   const [canGuess, setCanGuess] = useState(false);
@@ -162,6 +163,7 @@ function AppContent() {
           console.log("Received NEW_GAME via WebSocket");
           // Reset score tracking to avoid "deduction" animations when resetting scores
           setScoreChanges({});
+          setTerminatedVowels(false);
 
           // Accept and apply server-provided authoritative state fields when present.
           setGameId(payload.game_id ?? null)
@@ -198,6 +200,7 @@ function AppContent() {
           setIsSpinning(false);   
           setCanGuess(false);      
           setLastSpin(""); 
+          setTerminatedVowels(false);
 
           setTurnOverlayMsg(t('newGame.firstTurn')+ payload.player_names[payload.current_player_idx || 0]);
           setShowTurnOverlay(true);
@@ -273,6 +276,11 @@ function AppContent() {
               setBoughtVowelOverlayMsg(payload.buyer + ' ' + t('overlay.BoughtVowel'));
             }
             setShowBoughtVowelOverlay(true);
+          }
+          if (payload.boughtVowels > 0 && payload.boughtVowels % 5 === 0){
+            setTerminatedVowels(true);
+          }else{
+            setTerminatedVowels(false);
           }
           break;
 
@@ -383,6 +391,7 @@ function AppContent() {
               break;
             case 'New_Phrase':
               setReelOverlayMsg(t('overlay.ReelNewPhrase'));
+              setTerminatedVowels(false);
               break;
           }
           break;
@@ -671,6 +680,7 @@ function AppContent() {
       setShowPhraseInput(false)
       setWrongLetters({})
       setPowerups(data.powerups ?? {});
+      setTerminatedVowels(false);
       if (numPlayers > 1){
         setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
       }else if (numPlayers === 1){
@@ -788,6 +798,7 @@ function AppContent() {
           break;
         case 'New_Phrase':
           setReelOverlayMsg(t('overlay.ReelNewPhrase'));
+          setTerminatedVowels(false);
           break;
       }
       setPendingReelPayload(data);
@@ -838,6 +849,12 @@ function AppContent() {
         return;
       }
       const data: any = await res.json();
+      console.log("Buy vowel response:", data);
+      if (data.boughtVowels > 0 && data.boughtVowels % 5 === 0){
+        setTerminatedVowels(true);
+      }else{
+        setTerminatedVowels(false);
+      }
       // Apply authoritative state from server
       if (data.player_scores) {
         setPlayerScores(data.player_scores);
@@ -1411,6 +1428,7 @@ function AppContent() {
                   score={score}
                   canGuess={canGuess}
                   guessInput={guessInput}
+                  terminatedVowels={terminatedVowels}
                   onShowPhraseInput={() => {
                     if (myName && myName !== playerNames[firstPlayerIdx || 0]) {
                       showErrorMessage(t('actions.notYourTurnToGuess'));

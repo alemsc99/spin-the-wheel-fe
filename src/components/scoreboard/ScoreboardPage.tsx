@@ -124,7 +124,6 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
             </div>
           ) : (
             <>
-            
               <span className="trophy-icon">🏆</span>
               <h1 className="victory-title ">{t('victory.title')}</h1>
               <p className="subtitle">

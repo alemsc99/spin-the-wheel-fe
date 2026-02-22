@@ -7,6 +7,7 @@ export default function GameActions({
   victory,
   score,
   canGuess,
+  terminatedVowels,
   guessInput,
   onShowPhraseInput,
   onBuyVowel,
@@ -34,7 +35,7 @@ export default function GameActions({
         <button
           className="action-button buy-vowel-btn"
           onClick={onBuyVowel}
-          disabled={victory || score < 500 || canGuess}
+          disabled={victory || score < 500 || canGuess || terminatedVowels == true}
         >
           <span role="img" aria-label="vowel" className="action-icon">🅰️</span>
           <span className="btn-text">{t('actions.buyVowel')}</span> {/* Testo avvolto */}
