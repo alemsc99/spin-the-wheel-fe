@@ -448,11 +448,14 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               GiraParole è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole. 
               Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
             </p>
-            <h3>Caratteristiche del gioco:</h3>
+            <h2>Caratteristiche del gioco:</h2>
             <ul style={{ paddingLeft: '20px' }}>
               <li>🕹️ <strong>Modalità Single Player:</strong> Allenati per migliorare le tue abilità di enigmistica.</li>
               <li>👥 <strong>Multiplayer Locale:</strong> Sfida amici e parenti sullo stesso dispositivo.</li>
               <li>🌍 <strong>Multiplayer Online:</strong> Crea stanze private e gioca a distanza con chiunque.</li>
+              <li>🎡 <strong>Ruota:</strong> guadagna punti ma fai attenzione alle insidie nascoste, potresti perdere tutto!</li>
+              <li>⚡ <strong>Potenziamenti:</strong> Sblocca potenziamenti strategici per avere un vantaggio suoi tuoi avversari!</li>
+              <li>🔄 <strong>Sorpresa di Metà Partita:</strong> A metà gioco, un rullo verticale sconvolge completamente le sorti della partita: moltiplicatori, azzeramento punti o cambio della frase misteriosa. Tutto può cambiare!</li>
             </ul>
             <p>
               Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone.
@@ -462,14 +465,17 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           <>
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>The Funniest Free Online Word Game</h2>
             <p>
-              SpinWords is a <strong>free enigmatic word game</strong> perfect for word game enthusiasts. 
+              SpinWords is a <strong>free puzzle word game</strong> perfect for word game enthusiasts. 
               Spin the wheel, guess the consonants, buy vowels, and solve the hidden phrase before your opponents!
             </p>
-            <h3>Game Features:</h3>
+            <h2>Game Features:</h2>
             <ul style={{ paddingLeft: '20px' }}>
               <li>🕹️ <strong>Single Player Mode:</strong> Train your brain and improve your word game skills.</li>
               <li>👥 <strong>Local Multiplayer:</strong> Challenge friends and family on the same device.</li>
               <li>🌍 <strong>Online Multiplayer:</strong> Create private rooms and play remotely with anyone.</li>
+              <li>🎡 <strong>Wheel:</strong> Earn points but beware of hidden traps that could make you lose everything!</li>
+              <li>⚡ <strong>Power-ups:</strong> Unlock strategic power-ups to gain an edge over your opponents!</li>
+              <li>🔄 <strong>Mid-Game Surprise:</strong> At mid-game, a vertical reel shakes up the game with multipliers, point resets, or phrase changes. Anything can happen!</li>
             </ul>
             <p>
               Perfect for crossword lovers, puzzle enthusiasts, and party game fans. No download required: play directly in your browser on PC, tablet, or smartphone.
