@@ -1,13 +1,5 @@
 {
   "it": {
-  "seo.home.title": "GiraParole - Gioco di Parole Online Gratis | Ruota della Fortuna Multiplayer",
-  "seo.home.description": "Gioca gratis a GiraParole, il gioco di parole online ispirato alla Ruota della Fortuna. Gira la ruota, indovina consonanti, compra vocali e risolvi la frase misteriosa. Sfida gli amici in multiplayer o gioca da solo!",
-  "seo.game.title": "Partita in corso - GiraParole | Gioco di Parole Online",
-  "seo.game.description": "Stai giocando a GiraParole! Gira la ruota, indovina le consonanti, usa i potenziamenti e sfida gli amici in tempo reale in questo gioco di parole online.",
-  "seo.rules.title": "Regole di GiraParole - Come si Gioca | Gioco di Parole Online",
-  "seo.rules.description": "Impara le regole di GiraParole: gira la ruota, indovina consonanti e vocali, usa potenziamenti come Scudo e Doppio. Guida completa al gioco di parole online multiplayer.",
-  "seo.scoreboard.title": "Classifica Finale - GiraParole | Risultati Partita",
-  "seo.scoreboard.description": "Scopri chi ha vinto a GiraParole! Consulta la classifica finale, i punteggi dei giocatori e gioca ancora.",
   "rules.pageHeading": "Regole del gioco",
   "rules.backToStart": "Torna alla schermata iniziale",
   "start.title": "GiraParole",
@@ -196,14 +188,6 @@
     "error.emptyRoomCode": "Inserisci un codice stanza"
   },
   "en": {
-  "seo.home.title": "SpinWords - Free Online Word Game | Multiplayer Wheel of Fortune Puzzle",
-  "seo.home.description": "Play SpinWords for free! Spin the wheel, guess consonants, buy vowels and solve the mystery phrase. Challenge friends in multiplayer or play solo. A Wheel of Fortune-style word puzzle game online.",
-  "seo.game.title": "Playing SpinWords - Online Word Game in Progress",
-  "seo.game.description": "SpinWords match in progress! Spin the wheel, guess consonants, use power-ups and challenge friends in real time in this free online word puzzle game.",
-  "seo.rules.title": "SpinWords Rules - How to Play | Free Online Word Game Guide",
-  "seo.rules.description": "Learn how to play SpinWords: spin the wheel, guess consonants and vowels, use power-ups like Shield and Double. Complete guide to the free online multiplayer word puzzle game.",
-  "seo.scoreboard.title": "Final Scores - SpinWords | Game Results & Rankings",
-  "seo.scoreboard.description": "See who won at SpinWords! Check out the final rankings, player scores and play again.",
   "rules.pageHeading": "Game Rules",
   "rules.backToStart": "Back to start",
   "start.title": "SpinWords",

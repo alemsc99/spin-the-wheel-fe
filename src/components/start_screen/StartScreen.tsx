@@ -100,8 +100,8 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
 
   // SEO Text for Home Page
   const metaTitle = isIt 
-    ? "GiraParole - Gioco di Parole Online Gratis | Puzzle stile Ruota della Fortuna" 
-    : "SpinWords - Free Online Word Game | Wheel of Fortune Puzzle";
+    ? "GiraParole - Gioco Enigmistico Online Gratis" 
+    : "SpinWords -  Online Word Game";
   const metaDescription = isIt
     ? "Gioca a GiraParole online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici."
     : "Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.";
