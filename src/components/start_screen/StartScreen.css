@@ -245,7 +245,7 @@
 .bg-star.star1 { left: 8vw; top: 12vh; animation-delay: 0.2s; }
 .bg-star.star2 { left: 80vw; top: 18vh; animation-delay: 0.7s; }
 .bg-star.star3 { left: 60vw; top: 80vh; animation-delay: 1.1s; }
-.bg-star.star4 { left: 20vw; top: 70vh; animation-delay: 0.5s; }
+.bg-star.star4 { left: 20vw; top: 10vh; animation-delay: 0.5s; }
 .bg-star.star5 { left: 50vw; top: 10vh; animation-delay: 1.7s; }
 
 @keyframes twinkle {

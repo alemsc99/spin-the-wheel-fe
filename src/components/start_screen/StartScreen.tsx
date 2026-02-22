@@ -74,8 +74,14 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       : "Free online word puzzle game. Spin the wheel, use power-ups, and guess the phrase before other players.",
     "genre": ["Puzzle", "Word Game", "Trivia", "Enigmistic"],
     "url": "https://spinwords.pages.dev",
-    "playMode": ["SinglePlayer", "Multiplayer"],
+    "playMode": ["SinglePlayer", "MultiPlayer"],
     "applicationCategory": "Game",
+    "gamePlatform": ["Web Browser", "Desktop", "Mobile"],
+    "numberOfPlayers": {
+      "@type": "QuantitativeValue",
+      "minValue": 1,
+      "maxValue": 4
+    },
     "image": "https://spinwords.pages.dev/og-image-v2.jpg",
     "operatingSystem": "Any",
     "inLanguage": ["it", "en"],
@@ -86,7 +92,8 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     "offers": {
       "@type": "Offer",
       "price": "0",
-      "priceCurrency": "EUR"
+      "priceCurrency": "EUR",
+      "category": "free"
     }
   };
   // ----------------------------------------------
@@ -95,13 +102,10 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const metaTitle = isIt 
     ? "GiraParole - Gioco di Parole Online Gratis | Puzzle stile Ruota della Fortuna" 
     : "SpinWords - Free Online Word Game | Wheel of Fortune Puzzle";
-  
   const metaDescription = isIt
     ? "Gioca a GiraParole online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici."
     : "Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.";
-  
-  const canonicalUrl = `https://spinwords.pages.dev/${lang}`;
-
+    
   const [gameMode, setGameMode] = useState<GameMode>('single');
   const [onlineSubMode, setOnlineSubMode] = useState<OnlineSubMode>('create');
   const [players, setPlayers] = useState(MIN_PLAYERS);
@@ -253,7 +257,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <Helmet>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={canonicalUrl} />
         <script type="application/ld+json">
           {`
             ${JSON.stringify(schemaData)}
@@ -265,8 +268,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       {/* SVG Decorativi (Invariati) */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
-      <svg className="bg-decor bg-star star3" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
-      <svg className="bg-decor bg-star star4" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star5" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <div className="bg-decor bg-circle c1"></div>
       <div className="bg-decor bg-circle c2"></div>
@@ -289,7 +290,9 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         </div>
         {/* ------------------------------------------------ */}
 
-        <h1 className="title fancy-title">{t('start.title')}</h1>
+        <h1 className="title fancy-title">
+          {isIt ? "GiraParole" : "SpinWords"}
+        </h1>
 
         <div className="game-mode-toggles">
           <button 
@@ -425,6 +428,55 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           )}
         </div>
       </div>
+      {/* --- NUOVO CONTENUTO SEO (Aggiungi questo blocco sotto la start-card) --- */}
+      <article className="seo-content-container" style={{ 
+          maxWidth: '800px', 
+          margin: '40px auto', 
+          padding: '20px', 
+          backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+          borderRadius: '15px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          color: '#333',
+          lineHeight: '1.6',
+          fontSize: '1rem',
+          textAlign: 'left'
+      }}>
+        {isIt ? (
+          <>
+            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il gioco di enigmistica online più divertente</h2>
+            <p>
+              GiraParole è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole. 
+              Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
+            </p>
+            <h3>Caratteristiche del gioco:</h3>
+            <ul style={{ paddingLeft: '20px' }}>
+              <li>🕹️ <strong>Modalità Single Player:</strong> Allenati per migliorare le tue abilità di enigmistica.</li>
+              <li>👥 <strong>Multiplayer Locale:</strong> Sfida amici e parenti sullo stesso dispositivo.</li>
+              <li>🌍 <strong>Multiplayer Online:</strong> Crea stanze private e gioca a distanza con chiunque.</li>
+            </ul>
+            <p>
+              Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>The Funniest Free Online Word Game</h2>
+            <p>
+              SpinWords is a <strong>free enigmatic word game</strong> perfect for word game enthusiasts. 
+              Spin the wheel, guess the consonants, buy vowels, and solve the hidden phrase before your opponents!
+            </p>
+            <h3>Game Features:</h3>
+            <ul style={{ paddingLeft: '20px' }}>
+              <li>🕹️ <strong>Single Player Mode:</strong> Train your brain and improve your word game skills.</li>
+              <li>👥 <strong>Local Multiplayer:</strong> Challenge friends and family on the same device.</li>
+              <li>🌍 <strong>Online Multiplayer:</strong> Create private rooms and play remotely with anyone.</li>
+            </ul>
+            <p>
+              Perfect for crossword lovers, puzzle enthusiasts, and party game fans. No download required: play directly in your browser on PC, tablet, or smartphone.
+            </p>
+          </>
+        )}
+      </article>
     </div>
   );
 }

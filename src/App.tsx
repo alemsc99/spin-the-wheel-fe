@@ -32,6 +32,7 @@ import SwapOverlay from './components/overlays/SwapOverlay.tsx';
 import BoughtVowelOverlay from './components/overlays/BoughtVowelOverlay.tsx';
 import GuessPhraseIncorrectOverlay from './components/overlays/GuessPhraseIncorrectOverlay.tsx';
 import ReelOverlay from './components/overlays/ReelOverlay.tsx';
+import { Helmet } from 'react-helmet-async';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -1249,21 +1250,7 @@ function AppContent() {
   const localizedGamePath = `${localizedStartPath}/game`;
   const localizedRulesPath = `${localizedStartPath}/rules`;
   const localizedScoreboardPath = `${localizedStartPath}/scoreboard`;
-  const isGameRoute = restPath === 'game';
-  const isRulesRoute = restPath === 'rules';
-  const isScoreboardRoute = restPath === 'scoreboard';
-  const seoPrefix = isGameRoute
-    ? 'seo.game'
-    : isRulesRoute
-      ? 'seo.rules'
-      : isScoreboardRoute
-        ? 'seo.scoreboard'
-        : 'seo.home';
-  const pageTitle = t(`${seoPrefix}.title`);
-  const pageDescription = t(`${seoPrefix}.description`);
-  const ogLocale = effectiveLang === 'it' ? 'it_IT' : 'en_US';
-  const alternateLang = SUPPORTED_LANGS.find(code => code !== effectiveLang) ?? effectiveLang;
-  const ranking = useMemo(
+ const ranking = useMemo(
     () => playerNames.map((name) => ({ name, score: playerScores[name] ?? 0 })).sort((a, b) => b.score - a.score),
     [playerNames, playerScores]
   );
@@ -1275,9 +1262,22 @@ function AppContent() {
   }, [victory, pathname, localizedScoreboardPath, navigate]);
 
   const pageName = t('start.title');
+  const currentPathSuffix = restPath ? `/${restPath}` : '';
+  const baseUrl = "https://spinwords.pages.dev";
+  const urlIt = `${baseUrl}/it${currentPathSuffix}`;
+  const urlEn = `${baseUrl}/en${currentPathSuffix}`;
+  const urlDefault = `${baseUrl}/en${currentPathSuffix}`; // Default inglese
 
   return (
     <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
+      <Helmet>
+        <html lang={effectiveLang} />
+        <link rel="alternate" hrefLang="it" href={urlIt} />
+        <link rel="alternate" hrefLang="en" href={urlEn} />
+        <link rel="alternate" hrefLang="x-default" href={urlDefault} />
+        {/* Canonical: punta alla pagina corrente */}
+        <link rel="canonical" href={`${baseUrl}/${effectiveLang}${currentPathSuffix}`} />
+      </Helmet>
       <Routes>
         <Route path="/" element={<Navigate to={localizedStartPath} replace />} />
         <Route path="/game" element={<Navigate to={localizedGamePath} replace />} />

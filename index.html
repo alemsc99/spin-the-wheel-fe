@@ -9,11 +9,6 @@
     <title>SpinWords - Free Online Word Game | Wheel of Fortune Puzzle</title>
     <!-- Description moved to React components to avoid duplicates -->
 
-    <!-- Canonical & Hreflang (static fallback, overridden by react-helmet-async) -->
-    <link rel="alternate" hreflang="en" href="https://spinwords.pages.dev/en" />
-    <link rel="alternate" hreflang="it" href="https://spinwords.pages.dev/it" />
-    <link rel="alternate" hreflang="x-default" href="https://spinwords.pages.dev/en" />
-
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="SpinWords" />
@@ -40,22 +35,32 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
+      "@type": "VideoGame",
       "name": "SpinWords",
       "alternateName": "GiraParole",
       "description": "Free online multiplayer word puzzle game. Spin the wheel, guess consonants, and solve the mystery phrase.",
       "url": "https://spinwords.pages.dev",
-      "applicationCategory": "GameApplication",
+      "applicationCategory": "Game",
       "genre": ["Word Game", "Puzzle", "Trivia", "Party Game"],
-      "gamePlatform": "Web Browser",
+      "gamePlatform": ["Web Browser", "Desktop", "Mobile"],
       "operatingSystem": "Any",
       "playMode": ["SinglePlayer", "MultiPlayer", "CoOp"],
-      "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 4 },
+      "numberOfPlayers": { 
+        "@type": "QuantitativeValue", 
+        "minValue": 1, 
+        "maxValue": 4 
+      },
       "inLanguage": ["en", "it"],
       "image": "https://spinwords.pages.dev/og-image-v2.jpg",
       "screenshot": "https://spinwords.pages.dev/og-image-v2.jpg",
       "author": { "@type": "Organization", "name": "SpinWords Team" },
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" },
+      "offers": { 
+        "@type": "Offer", 
+        "price": "0", 
+        "priceCurrency": "EUR", 
+        "availability": "https://schema.org/InStock",
+        "category": "free"
+      },
       "browserRequirements": "Requires JavaScript",
       "softwareVersion": "1.0",
       "isAccessibleForFree": true
