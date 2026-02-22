@@ -671,6 +671,12 @@ function AppContent() {
       setShowPhraseInput(false)
       setWrongLetters({})
       setPowerups(data.powerups ?? {});
+      if (numPlayers > 1){
+        setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
+      }else if (numPlayers === 1){
+        setTurnOverlayMsg(t('newGame.firstTurnSinglePlayer'));
+      }
+      setShowTurnOverlay(true);
 
       if (data.player_scores && Object.keys(data.player_scores).length > 0) {
         setPlayerScores(data.player_scores)
@@ -751,6 +757,39 @@ function AppContent() {
       debugLog(data)
       // Only store result; apply effects when reel animation ends
       setReelResult(data.value);
+      switch (data.value) {
+        case 'x0.5':
+          if (numPlayers === 1) {
+            setReelOverlayMsg(t('overlay.ReelX0.5SinglePlayer'));
+          } else {
+            setReelOverlayMsg(t('overlay.ReelX0.5'));
+          }
+          break;
+        case 'x2':
+          if (numPlayers === 1) {
+            setReelOverlayMsg(t('overlay.ReelX2SinglePlayer'));
+          } else {
+            setReelOverlayMsg(t('overlay.ReelX2'));
+          }
+          break;
+        case 'x5':
+          if (numPlayers === 1) {
+            setReelOverlayMsg(t('overlay.ReelX5SinglePlayer'));
+          } else {
+            setReelOverlayMsg(t('overlay.ReelX5'));
+          }
+          break;
+        case 'Evil':
+          if (numPlayers === 1) {
+            setReelOverlayMsg(t('overlay.ReelEvilSinglePlayer'));
+          } else {
+            setReelOverlayMsg(t('overlay.ReelEvil'));
+          }
+          break;
+        case 'New_Phrase':
+          setReelOverlayMsg(t('overlay.ReelNewPhrase'));
+          break;
+      }
       setPendingReelPayload(data);
     } catch (err) {
       setReelResult('error');
@@ -985,21 +1024,25 @@ function AppContent() {
       const data: SpinResp = await res.json();
       switch (data.value) {
           case 'Bancarotta':
-            if (data.used_shields?.includes(myName)){
+            if (data.used_shields?.includes(myName) || (data.previous_player && data.used_shields?.includes(data.previous_player))){
               setWheelBankruptOverlayMsg(t('overlay.YouLandedBankruptShielded'));
             }else{
-              setWheelBankruptOverlayMsg(t('overlay.YouLandedBankrupt'));
+              if (numPlayers > 1){
+                setWheelBankruptOverlayMsg(t('overlay.YouLandedBankrupt'));
+              }else{
+                setWheelBankruptOverlayMsg(t('overlay.YouLandedBankruptSingle'));
+              }
             }
             break;
           case 'Passa':
-            if (data.used_shields?.includes(myName)){
+            if (data.used_shields?.includes(myName) || (data.previous_player && data.used_shields?.includes(data.previous_player))){
               setWheelNextOverlayMsg(t('overlay.YouLandedNextShielded'));
             }else{
               setWheelNextOverlayMsg(t('overlay.YouLandedNext'));
             }
             break;
           case 'Scambia':
-            if (data.previous_player === myName){
+            if (data.previous_player === myName || (!myName && data.swapped_player)){
               setWheelSwapOverlayMsg(t('overlay.YouLandedSwap') + ' ' + data.swapped_player);
             }
             break;
@@ -1056,8 +1099,11 @@ function AppContent() {
         setCanGuess(false)
       }
       else {
-        if (data.added_score == 0){
+        if (data.added_score == 0 && numPlayers > 1){
           setWrongLetterOverlayMsg(t('overlay.YouWrongLetter'));
+          setShowWrongLetterOverlay(true);
+        }else if (data.added_score == 0 && numPlayers === 1){
+          setWrongLetterOverlayMsg(t('overlay.YouWrongLetterSingle'));
           setShowWrongLetterOverlay(true);
         }
         setWrongLetters(prev => ({ ...prev, [letter]: true }));
@@ -1170,6 +1216,7 @@ function AppContent() {
           setShowPhraseInput(false);
         } else if (numPlayers === 1) {
           // Single player: mostra overlay errore custom
+          setShowPhraseInput(false);
           setTurnOverlayMsg('overlay.wrongAnswerSingle');
           setTurnOverlayIsError(true);
           setCurrentOverlayPlayerName('');
