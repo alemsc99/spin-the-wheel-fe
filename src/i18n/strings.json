@@ -8,7 +8,7 @@
     {
       "title": "",
       "content": [
-        "Indovina la frase misteriosa prima dei tuoi avversari!",
+        "<strong>Indovina la frase</strong> misteriosa prima dei tuoi avversari!",
         "Il vincitore è il giocatore con lo score più alto alla fine della partita.",
         "Durante il tuo turno gira la ruota e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
         "Le vocali si comprano sempre al costo fisso di 500🪙: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
