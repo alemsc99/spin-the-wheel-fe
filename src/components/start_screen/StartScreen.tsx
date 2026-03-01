@@ -443,22 +443,22 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       }}>
         {isIt ? (
           <>
-            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il gioco di enigmistica online più divertente</h2>
+            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
             <p>
-              GiraParole è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole. 
-              Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
+              GiraParole è tra i <strong>giochi enigmistici</strong> perfetti per gli appassionati dei giochi di parole. 
+              Gira la ruota, chiama le consonanti, compra le vocali e <strong>indovina la frase</strong> prima dei tuoi avversari!
             </p>
-            <h2>Caratteristiche del gioco:</h2>
+            <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
             <ul style={{ paddingLeft: '20px' }}>
-              <li>🕹️ <strong>Modalità Single Player:</strong> Allenati per migliorare le tue abilità di enigmistica.</li>
+              <li>🕹️ <strong>Modalità Single Player:</strong> Allenati per migliorare le tue abilità di nei <strong>giochi enigmistici</strong>.</li>
               <li>👥 <strong>Multiplayer Locale:</strong> Sfida amici e parenti sullo stesso dispositivo.</li>
               <li>🌍 <strong>Multiplayer Online:</strong> Crea stanze private e gioca a distanza con chiunque.</li>
               <li>🎡 <strong>Ruota:</strong> guadagna punti ma fai attenzione alle insidie nascoste, potresti perdere tutto!</li>
               <li>⚡ <strong>Potenziamenti:</strong> Sblocca potenziamenti strategici per avere un vantaggio suoi tuoi avversari!</li>
-              <li>🔄 <strong>Sorpresa di Metà Partita:</strong> A metà gioco, un rullo verticale sconvolge completamente le sorti della partita: moltiplicatori, azzeramento punti o cambio della frase misteriosa. Tutto può cambiare!</li>
+              <li>🔄 <strong>Sorpresa di metà partita:</strong> A metà gioco, un rullo verticale sconvolge completamente le sorti della partita: moltiplicatori, azzeramento punti o cambio della frase misteriosa. Tutto può cambiare!</li>
             </ul>
             <p>
-              Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone.
+              Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone e <strong>indovina la frase!</strong>
             </p>
           </>
         ) : (
