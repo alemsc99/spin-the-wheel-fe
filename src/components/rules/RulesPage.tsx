@@ -82,9 +82,12 @@ export default function RulesPage(): React.ReactElement {
       : "Game Rules - SpinWords | How to Play Spinwords";
       
   const metaDescription = activeLang === 'it'
-    ? "Leggi le regole ufficiali di Giraparole. Scopri come girare la ruota, chiamare le consonanti e risolvere i puzzle in questo gioco di parole online."
-    : "Read the official rules for SpinWords. Learn how to spin the wheel, guess consonants, and solve word puzzles in this free online game.";
+    ? "Gioca gratis a GiraParole! Sfida i tuoi amici in un gioco multiplayer a turni, indovina la frase misteriosa e usa potenziamenti strategici per vincere."
+    : "Play SpinWords for free! Challenge your friends in a turn-based multiplayer game, guess the mystery phrase, and use strategic power-ups to win.";
 
+  const metaKeywords = activeLang === 'it'
+    ? "gioco della ruota online, ruota della fortuna online, gioco indovina la frase, gioco multiplayer online, gioco gratis online, quiz di parole"
+    : "online wheel game, online wheel of fortune, phrase guessing game, online multiplayer game, free online game, word quiz";
   return (
     <div className="rules-page">
       {/* SEZIONE SEO: Definisce questa pagina come unica ai motori di ricerca */}
@@ -97,6 +100,7 @@ export default function RulesPage(): React.ReactElement {
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta name="keywords" content={metaKeywords} />
       </Helmet>
 
       {/* Sfondo Decorativo */}
@@ -125,11 +129,11 @@ export default function RulesPage(): React.ReactElement {
               rulesPages.map((section, sectionIdx) => (
                 <div className="rules-section" key={sectionIdx}>
                   {section.title && section.title !== baseTitle && <h3 className="rules-section-title">{section.title}</h3>}
-                  <ol className="rules-list">
+                  <div className="rules-list">
                     {section.content.map((line, lineIdx) => (
-                      <li key={lineIdx} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }} />
+                      <p key={lineIdx} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }} />
                     ))}
-                  </ol>
+                  </div>
                 </div>
               ))
             ) : (

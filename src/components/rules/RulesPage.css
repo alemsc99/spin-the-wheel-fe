@@ -189,6 +189,16 @@ html, body {
   margin-bottom: 8px;
 }
 
+.rules-list-item ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 6px 0 0 0;
+}
+
+.rules-list-item ul li {
+  margin-bottom: 4px;
+}
+
 .rules-empty {
   margin: 0;
   text-align: center;

@@ -1,6 +1,6 @@
 {
   "it": {
-  "rules.pageHeading": "Regole del gioco",
+  "rules.pageHeading": "GiraParole - Regole del gioco",
   "rules.backToStart": "Torna alla schermata iniziale",
   "start.title": "GiraParole",
   "start.rules": "Regole",
@@ -8,45 +8,37 @@
     {
       "title": "",
       "content": [
-        "<strong>Indovina la frase</strong> misteriosa prima dei tuoi avversari!",
-        "Il vincitore è il giocatore con lo score più alto alla fine della partita.",
-        "Durante il tuo turno gira la ruota e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
-        "Le vocali si comprano sempre al costo fisso di 500🪙: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
-        "Puoi provare a indovinare la frase nascosta in qualsiasi momento del tuo turno: se sbagli perdi il turno; se indovini vinci il round e ricevi 500 punti bonus sul tuo punteggio finale."
+        "<p>Benvenuto nel nostro gioco di parole online: l’obiettivo è semplice…indovinare la frase misteriosa prima dei tuoi avversari!</p><p>Questo gioco multiplayer online è perfetto per sfidare amici o altri giocatori in una partita dinamica e strategica.Il vincitore è il giocatore con lo score più alto alla fine della partita.</p><p>Se stai cercando un gioco gratis online, divertente e competitivo, sei nel posto giusto!</p>"
       ]
     },
     {
-      "title": "Settori speciali",
+      "title": "🎯 Come funziona il gioco",
       "content": [
-        "Tutti i settori contengono valori numerici tranne alcuni settori speciali.",
-        "<strong>Prossimo</strong> fa terminare il tuo turno senza guadagnare o perdere punti.",
-        "<strong>Blackout</strong> azzera il tuo punteggio e termina il turno. Il turno passa al giocatore successivo.",
-        "<strong>Scambia</strong> inverte il tuo punteggio con quello di un altro giocatore casuale. Mantieni il tuo turno dopo lo scambio.",
-        "I settori <strong>Scambia</strong> e <strong>Prossimo</strong> sono presenti solo nella modalità con più giocatori.",
-        "L'effetto dei settori speciali e il valore aggiunto al punteggio dipende dall'effetto di eventuali potenziamenti attivi per il giocatore."
+        "<p>Durante il tuo turno, gira la ruota virtuale e scegli una consonante:</p><ul><li>Se la consonante è presente nella frase, tutte le occorrenze vengono rivelate.</li><li>Guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze.</li><li>Se la consonante non è presente, il turno passa al giocatore successivo.</li></ul><p>Le vocali si comprano sempre al costo fisso di 500🪙:</p><ul><li>Non sono influenzate dal valore della ruota.</li><li>Rivelano tutte le occorrenze se presenti nella frase.</li></ul><p>Puoi provare a indovinare la frase nascosta in qualsiasi momento del tuo turno:</p><ul><li>Se sbagli, perdi il turno.</li><li>Se indovini, vinci il round e ricevi 500 punti bonus sul tuo punteggio finale.</li></ul><p>Questo gioco a turni online combina fortuna, strategia e abilità linguistica.</p>"
       ]
     },
     {
-      "title": "Rullo verticale",
-      "content": [
-        "Nel momento in cui viene indovinato più del 50% delle lettere della frase nascosta, appare un rullo verticale con diversi valori.",
-        "<strong>x0.5</strong> dimezza il punteggio di tutti i giocatori.",
-        "<strong>x2</strong> raddoppia il punteggio di tutti i giocatori.",
-        "<strong>x5</strong> moltiplica per 5 il punteggio di tutti i giocatori.",
-        "😈 azzera il punteggio di tutti i giocatori.",
-        "🆕 cambia la frase misteriosa. I punteggi e i potenziamenti rimangono invariati ma la frase da indovinare cambia."
+      "title": "🎲 Settori speciali della ruota",
+      "content":[
+        "<p>Tutti i settori contengono valori numerici tranne alcuni settori speciali:</p><ul><li><strong>Prossimo</strong>: termina il turno senza guadagnare o perdere punti.</li><li><strong>Blackout</strong>: azzera il tuo punteggio e termina il turno.</li><li><strong>Scambia</strong>: inverte il tuo punteggio con quello di un altro giocatore casuale. Mantieni il turno dopo lo scambio.</li></ul><p>I settori Scambia e Prossimo sono presenti solo nella modalità gioco multiplayer con amici.</p><p>L’effetto dei settori speciali e il valore aggiunto al punteggio dipendono dagli eventuali potenziamenti attivi.</p>"
       ]
     },
     {
-      "title": "Potenziamenti",
+      "title": "🎰 Rullo verticale",
       "content": [
-        "I potenziamenti possono essere acquistati prima di girare la ruota utilizzando lo score accumulato.",
-        "Ogni potenziamento ha un costo e un effetto specifico che può influenzare il valore della ruota, l'effetto dei settori speciali o altri aspetti del gioco.",
-        "Non è possibile acquistare lo stesso potenziamento se è già attivo.",
-        "<strong>Salta 🚫</strong> permette di indicare un giocatore che salterà il suo prossimo turno.",
-        "<strong>Doppio 💰</strong> raddoppia il valore ottenuto girando la ruota per il turno corrente.",
-        "<strong>Scudo 🛡️</strong> protegge da un effetto di Blackout, Prossimo, Salta o nel caso di consonante sbagliata. Rimane attivo finché non viene utilizzato.",
-        "<strong>Inferno 🔥</strong> permette di indicare un giocatore a cui azzerare il punteggio."
+        "<p>Quando viene indovinato più del 50% delle lettere della frase nascosta, appare un rullo verticale con effetti speciali:</p><ul><li><strong>x0.5</strong> → dimezza il punteggio di tutti i giocatori.</li><li><strong>x2</strong> → raddoppia il punteggio.</li><li><strong>x5</strong> → moltiplica per 5 il punteggio.</li><li><strong>😈</strong> → azzera il punteggio di tutti.</li><li><strong>🆕</strong> → cambia la frase misteriosa (i punteggi restano invariati).</li></ul><p>Questo meccanismo rende il gioco ancora più imprevedibile e perfetto come gioco party online.</p>"
+      ]
+    },
+    {
+      "title": "🚀 Potenziamenti strategici",
+      "content": [
+        "<p>I potenziamenti possono essere acquistati prima di girare la ruota utilizzando lo score accumulato.</p><p>Ogni potenziamento ha un costo e un effetto specifico che può influenzare:</p><ul><li>il valore della ruota</li><li>l’effetto dei settori speciali</li><li>altri aspetti strategici del gioco</li></ul><p>Non è possibile acquistare lo stesso potenziamento se è già attivo.</p><h4>🔥 Potenziamenti disponibili</h4><ul><li><strong>Salta 🚫</strong> → obbliga un giocatore a saltare il prossimo turno.</li><li><strong>Doppio 💰</strong> → raddoppia il valore ottenuto girando la ruota.</li><li><strong>Scudo 🛡️</strong> → protegge da Blackout, Prossimo, Salta o consonante sbagliata.</li><li><strong>Inferno 🔥</strong> → azzera il punteggio di un giocatore scelto.</li></ul><p>Grazie ai potenziamenti, il gioco diventa un vero gioco di abilità linguistica e strategia.</p>"
+      ]
+    },
+    {
+      "title":"🌐 Gioca ora al gioco browser senza download",
+      "content":[
+        "<p>Puoi giocare direttamente online, senza installare nulla.È un gioco perfetto per sfide rapide e divertenti con amici o altri utenti.</p><p>Se ami i quiz di parole questa esperienza è pensata per te.</p>"
       ]
     }
   ],
@@ -150,10 +142,18 @@
   "victory.playAgain": "Gioca ancora",
   "scoreboard.rulesTitle": "Regole di assegnazione punteggio",
   "scoreboard.rulesList": [
-    "Ogni lettera indovinata aumenta il punteggio del giocatore di un valore pari al numero di occorrenze della lettera moltiplicato per il valore della ruota.",
-    "I potenziamenti influenzano il punteggio in modi diversi a seconda del tipo di potenziamento acquistato.",
-    "I potenziamenti hanno un costo specifico che viene detratto dal punteggio del giocatore al momento dell'acquisto.",
-    "Il punteggio del giocatore che indovina la frase riceve un bonus fisso di 500 punti."
+    "<p>Scopri come funziona il sistema di punti nel nostro gioco multiplayer online e come aumentare il tuo score per vincere la partita.</p>",
+    "<p>Nel nostro gioco di parole online, il punteggio è fondamentale: ogni scelta può fare la differenza tra vittoria e sconfitta.</p>",
+    "<h4>🔠 Come si calcola il punteggio</h4>",
+    "<p>Ogni lettera indovinata aumenta il punteggio del giocatore.</p><p>Il calcolo nel nostro gioco funziona così:</p><p><strong>Numero di occorrenze della lettera × valore della ruota</strong></p><p>Più volte la lettera compare nella frase misteriosa, maggiore sarà il punteggio ottenuto.Questo rende strategica la scelta delle consonanti.</p>",
+    "<h4>🛠️ Effetto dei potenziamenti sul punteggio</h4>",
+    "<p>Nel nostro gioco competitivo online, i potenziamenti possono modificare il punteggio in modi diversi, a seconda del tipo acquistato: </p><ul><li>Moltiplicare il valore della ruota</li><li>Proteggere da penalità</li><li>Influenzare gli effetti dei settori speciali</li><li>Azzerare o modificare il punteggio di altri giocatori</li></ul><p>Utilizzarli al momento giusto è fondamentale per dominare in questo gioco multiplayer con amici.</p>",
+    "<h4>💸 Costo dei potenziamenti</h4>",
+    "<p>Ogni potenziamento ha un costo specifico.</p><p>Il costo viene detratto immediatamente dal punteggio del giocatore al momento dell'acquisto.</p><p>Gestire bene il proprio score è essenziale per mantenere il vantaggio in questo gioco di abilità linguistica.</p>",
+    "<h4>🎁 Bonus per chi indovina la frase</h4>",
+    "<p>Il giocatore che riesce a indovinare la frase misteriosa riceve un bonus fisso di 500 punti.</p><p>Questo bonus può cambiare completamente l’esito della partita.</p>",
+    "<h4>🎯 Strategia per massimizzare il punteggio</h4>",
+    "<ul><li>Scegli consonanti ad alta probabilità</li><li>Acquista potenziamenti in modo strategico</li><li>Valuta quando tentare di indovinare la frase</li><li>Gestisci il tuo punteggio con attenzione</li></ul><p>Se ami i quiz di parole, questo sistema di punteggio rende l’esperienza ancora più coinvolgente.</p>"
   ],
   "overlay.attention": "Attenzione!",
   "game.newGame": "Nuova partita",
@@ -188,7 +188,7 @@
     "error.emptyRoomCode": "Inserisci un codice stanza"
   },
   "en": {
-  "rules.pageHeading": "Game Rules",
+  "rules.pageHeading": "Spinwords - Game Rules",
   "rules.backToStart": "Back to start",
   "start.title": "SpinWords",
   "start.rules": "Rules",
@@ -196,46 +196,38 @@
     {
       "title": "",
       "content": [
-        "Guess the mystery phrase before your opponents!",
-        "The winner is the player with the highest score at the end of the game.",
-        "During your turn, spin the wheel and choose a consonant: if the chosen consonant is present in the phrase, all occurrences are revealed and you earn points equal to the wheel value multiplied by the number of occurrences; if the consonant is not present, the turn passes to the next player.",
-        "Vowels always cost a fixed price of 500🪙: they are not influenced by the wheel value but reveal all occurrences if present.",
-        "You can try to guess the hidden phrase at any time during your turn: if you are wrong you lose your turn; if you guess it you win the round and receive a 500-point bonus on your final score."
+        "<p>Welcome to our online word guessing game: the goal is simple… guess the mystery phrase before your opponents!</p><p>This online multiplayer game is perfect for challenging friends or other players in a dynamic and strategic match. The winner is the player with the highest score at the end of the game.</p><p>If you're looking for a free online game, fun and competitive, you're in the right place!</p>"
       ]
     },
     {
-      "title": "Special Sectors",
+      "title": "🎯 How the Phrase-Guessing Game Works",
       "content": [
-        "All sectors contain numerical values except for some special sectors.",
-        "<strong>Next</strong> ends your turn without earning or losing points.",
-        "<strong>Blackout</strong> resets your score to zero and ends your turn. The turn passes to the next player.",
-        "<strong>Swap</strong> swaps your score with that of a random other player. You keep your turn after the swap.",
-        "The <strong>Swap</strong> and <strong>Next</strong> sectors are only present in multiplayer mode.",
-        "The effect of special sectors and the score added depends on any active power-ups for the player."
+        "<p>During your turn, spin the virtual wheel and choose a consonant:</p><ul><li>If the consonant is present in the phrase, all occurrences are revealed.</li><li>You earn points equal to the wheel value multiplied by the number of occurrences.</li><li>If the consonant is not present, the turn passes to the next player.</li></ul><p>Vowels are always purchased at the fixed cost of 500🪙:</p><ul><li>They are not affected by the wheel value.</li><li>They reveal all occurrences if present in the phrase.</li></ul><p>You can try to guess the hidden phrase at any time during your turn:</p><ul><li>If you're wrong, you lose your turn.</li><li>If you guess it, you win the round and receive a 500-point bonus on your final score.</li></ul><p>This online turn-based game combines luck, strategy, and linguistic skill.</p>"
       ]
     },
     {
-      "title": "Vertical Reel",
+      "title": "🎲 Special Wheel Sectors",
       "content": [
-        "When more than 50% of the letters in the hidden phrase have been guessed, a vertical reel with different values appears.",
-        "<strong>x0.5</strong> halves all players' scores.",
-        "<strong>x2</strong> doubles all players' scores.",
-        "<strong>x5</strong> multiplies all players' scores by 5.",
-        "😈 resets all players' scores to zero.",
-        "🆕 changes the mystery phrase. Scores and power-ups remain unchanged but the phrase to guess changes."
+        "<p>All sectors contain numerical values except for some special sectors:</p><ul><li><strong>Next</strong>: ends your turn without earning or losing points.</li><li><strong>Blackout</strong>: resets your score to zero and ends your turn.</li><li><strong>Swap</strong>: swaps your score with that of a random other player. You keep your turn after the swap.</li></ul><p>The Swap and Next sectors are only present in multiplayer game with friends mode.</p><p>The effect of special sectors and the points added to your score depend on any active power-ups.</p>"
       ]
     },
     {
-      "title": "Power-ups",
+      "title": "🎰 Vertical Reel",
       "content": [
-        "Power-ups can be purchased before spinning the wheel using accumulated score.",
-        "Each power-up has a specific cost and effect that can influence the wheel value, the effect of special sectors, or other aspects of the game.",
-        "You cannot purchase the same power-up if it is already active.",
-        "<strong>Skip 🚫</strong> allows you to designate a player who will skip their next turn.",
-        "<strong>Double 💰</strong> doubles the value obtained by spinning the wheel for the current turn.",
-        "<strong>Shield 🛡️</strong> protects against the effect of Blackout, Next, Skip, or a wrong consonant. It remains active until used.",
-        "<strong> Hell 🔥</strong> allows you to designate a player whose score will be reset."
-    ]
+        "<p>When more than 50% of the letters in the hidden phrase have been guessed, a vertical reel with special effects appears:</p><ul><li><strong>x0.5</strong> → halves all players' scores.</li><li><strong>x2</strong> → doubles the score.</li><li><strong>x5</strong> → multiplies the score by 5.</li><li><strong>😈</strong> → resets all players' scores to zero.</li><li><strong>🆕</strong> → changes the mystery phrase (scores remain unchanged).</li></ul><p>This mechanism makes the game even more unpredictable and perfect as a online party game.</p>"
+      ]
+    },
+    {
+      "title": "🚀 Strategic Power-ups",
+      "content": [
+        "<p>Power-ups can be purchased before spinning the wheel using accumulated score.</p><p>Each power-up has a specific cost and effect that can influence:</p><ul><li>the wheel value</li><li>the effect of special sectors</li><li>other strategic aspects of the game</li></ul><p>You cannot purchase the same power-up if it is already active.</p><h3>🔥 Available Power-ups</h3><ul><li><strong>Skip 🚫</strong> → forces a player to skip their next turn.</li><li><strong>Double 💰</strong> → doubles the value obtained by spinning the wheel.</li><li><strong>Shield 🛡️</strong> → protects against Blackout, Next, Skip, or wrong consonant.</li><li><strong>Hell 🔥</strong> → resets the score of a chosen player.</li></ul><p>Thanks to power-ups, the game becomes a true game of linguistic skill and strategy.</p>"
+      ]
+    },
+    {
+      "title": "🌐 Play Now - Browser Game Without Download",
+      "content": [
+        "<p>You can play directly online without installing anything. It's a casual multiplayer game perfect for quick and fun challenges with friends or other users.</p><p>If you love word quizzes and letter games, this experience is designed for you.</p>"
+      ]
     }
     ],
   "players.label": "Number of players:",
@@ -341,10 +333,18 @@
   "wheel.spin": "SPIN",
   "scoreboard.rulesTitle": "Scoring rules",
   "scoreboard.rulesList": [
-    "Each correct letter increases the player's score by an amount equal to the number of occurrences of the letter multiplied by the wheel value.",
-    "Power-ups affect the score in different ways depending on the type of power-up purchased.",
-    "Power-ups have a specific cost that is deducted from the player's score at the time of purchase.",
-    "The score of the player who guesses the phrase receives a fixed bonus of 500 points."
+    "<p>Discover how the point system works in our online multiplayer game and how to increase your score to win the match.</p>",
+    "<p>In our online word game, scoring is fundamental: every choice can make the difference between victory and defeat.</p>",
+    "<h4>🔠 How scoring is calculated</h4>",
+    "<p>Each correct letter increases the player's score.</p><p>The calculation in our game works like this:</p><p><strong>Number of letter occurrences × wheel value</strong></p><p>The more times the letter appears in the mystery phrase, the higher the score you will get. This makes consonant selection strategic.</p>",
+    "<h4>🛠️ Effect of power-ups on score</h4>",
+    "<p>In our competitive online game, power-ups can modify your score in different ways, depending on the type purchased:</p><ul><li>Multiply the wheel value</li><li>Protect against penalties</li><li>Influence the effects of special sectors</li><li>Reset or modify other players' scores</li></ul><p>Using them at the right time is essential to dominate in this multiplayer game with friends.</p>",
+    "<h4>💸 Power-ups cost</h4>",
+    "<p>Each power-up has a specific cost.</p><p>The cost is deducted immediately from the player's score at the time of purchase.</p><p>Managing your score well is essential to maintain the advantage in this linguistic skill game.</p>",
+    "<h4>🎁 Bonus for guessing the phrase</h4>",
+    "<p>The player who manages to guess the mystery phrase receives a fixed bonus of 500 points.</p><p>This bonus can completely change the outcome of the match.</p>",
+    "<h4>🎯 Strategy to maximize your score</h4>",
+    "<ul><li>Choose high-probability consonants</li><li>Buy power-ups strategically</li><li>Evaluate when to try to guess the phrase</li><li>Manage your score carefully</li></ul><p>If you love word quizzes, this scoring system makes the experience even more engaging.</p>"
   ],
   "wheel.bankrupt": "Blackout",
   "wheel.bankruptLabel": "Blackout",

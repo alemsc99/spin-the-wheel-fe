@@ -51,6 +51,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
   const currentLang = langFromUrl || 'en'; // Fallback a 'en' se non trovato
   let metaTitle = '';
   let metaDescription = '';
+  let metaKeywords = '';
   if (currentLang === 'it') {
     // ITALIANO
     metaTitle = showRules 
@@ -60,6 +61,11 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
     metaDescription = showRules 
       ? "Leggi le regole ufficiali di GiraParole. Scopri come girare la ruota, risolvere i puzzle e competere con gli amici."
       : "Guarda i punteggi finali e scopri chi ha vinto la partita a GiraParole!";
+
+    metaKeywords = showRules
+      ? "regole punteggio gioco online, gioco della ruota online, gioco multiplayer online, gioco a punteggio online, indovina la frase, bonus punteggio gioco"
+      : "punteggi finali, classifica, vincitore, partita terminata, GiraParole";
+
   } else {
     // INGLESE (Default)
     metaTitle = showRules 
@@ -69,6 +75,10 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
     metaDescription = showRules 
       ? "Read the official rules for SpinWords. Learn how to spin the wheel, solve puzzles, and compete with friends." 
       : "Check out the final scores and see who won the SpinWords match!";
+
+    metaKeywords = showRules
+      ? "game rules, online wheel game, online multiplayer game, online scoring game, phrase guessing, score bonuses"
+      : "final scores, leaderboard, winner, game over, SpinWords";
   }
   const canonicalUrl = `https://spinwords.pages.dev/${currentLang}/scoreboard`;
 
@@ -85,6 +95,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
         <meta property="og:title" content={metaTitle} />
         <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta name="keywords" content={metaKeywords} />
       </Helmet>
       
       <svg className="bg-star star1" style={{position:'absolute'}} viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" /></svg>
@@ -110,11 +121,11 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
                 {rulesList.map((rule: any, idx: number) => (
                   <li key={idx}>
                     <span className="scoreboard-rule-icon" aria-hidden="true">
-                      {idx === 0 && '🔠'}
-                      {idx === 1 && '🛠️'}
-                      {idx === 2 && '💸'}
-                      {idx === 3 && '🎁'}
-                      {idx > 3 && '⭐'}
+                      {idx === 0 && ''}
+                      {idx === 1 && ''}
+                      {idx === 2 && ''}
+                      {idx === 3 && ''}
+                      {idx > 3 && ''}
                     </span>
                     <span className="scoreboard-rule-desc" dangerouslySetInnerHTML={{ __html: rule }} />
                   </li>
