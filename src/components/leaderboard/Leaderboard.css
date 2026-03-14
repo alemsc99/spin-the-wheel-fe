@@ -143,10 +143,8 @@
 /* MEDIA QUERY PER MOBILE */
 @media (max-width: 960px) {
   .leaderboard-root {
-    order: 8; /* Per la tua griglia mobile */
-    margin: 0px 0 !important;
-    padding: 0px;
-    width: 100% !important;
+    margin: 0;
+    padding: 6px 4px;
   }
 
   /* Ripristina layout orizzontale su mobile */

@@ -20,11 +20,19 @@
 
 @media (max-width: 960px) {
 	.category-label-fancy {
-		font-size: 1em;
-		padding: 0px 16px;
+		font-size: 0.95em;
+		padding: 6px 12px;
+		margin-bottom: 4px;
 	}
 	.category-icon {
-		font-size: 18px;
+		font-size: 16px;
+	}
+}
+
+@media (max-width: 480px) {
+	.category-label-fancy {
+		font-size: 0.85em;
+		padding: 5px 10px;
 	}
 }
 

@@ -48,8 +48,9 @@
 /* Game Layout */
 .game-layout {
   display: flex;
-  gap: 35px;
+  gap: 24px;
   margin-top: 5px;
+  align-items: flex-start;
 }
 
 .game-sidebar {
@@ -57,7 +58,8 @@
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  max-width: 300px;
+  max-width: 260px;
+  flex-shrink: 0;
 }
 
 .powerups-container {
@@ -72,56 +74,83 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: 350px
+  gap: 12px;
+  min-width: 0;
 }
 
-/* Mobile Responsive Styles */
+/* ── Mobile / Tablet Responsive Styles (≤ 960px) ── */
 @media (max-width: 960px) {
-  .game-layout {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 5px;
-    padding-bottom: 10px;
-  }
 
-  .game-sidebar {
-    min-width: auto;
-    width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    order: 3;
-  }
-
-  .powerups-container {
-    flex: 1;
-    min-width: 280px;
-  }
-
-  .game-main-content {
-    width: 100%;
-    order: 1;
-  }
-  
-  /* Target the GameCenter component which is a direct child */
-  .game-layout > .game-center-container {
-    order: 2;
-    width: 100% !important;
-    min-height: auto !important;
-    margin-top: 5px;
-    margin-bottom: 10px;
-  }
+  /* 1. Layout principale: riga con wrap per permettere il riordino */
   .game-layout {
     display: flex;
-    flex-direction: row; /* Changed to row to allow side-by-side elements */
-    flex-wrap: wrap;     /* Allow elements to wrap to next line */
-    margin-top: 5px;
-    padding-bottom: 0px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 0 4px 8px;
+    justify-content: center;
+    align-items: flex-start;
   }
 
-  /* FORZA tutti i div annidati (wrapper, position, ecc.) a essere trasparenti al layout */
+  /* 2. "Appiattisce" i wrapper: i figli diventano figli diretti di game-layout */
+  .game-sidebar,
+  .game-main-content,
+  .game-center-container {
+    display: contents;
+  }
+
+  /* ── Ordine elementi mobile ── */
+
+  /* Riga 1 – Categoria */
+  .category-label-fancy {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+    margin: 0 !important;
+  }
+
+  /* Riga 2 – Frase nascosta */
+  .board {
+    order: 2;
+    width: 100%;
+    margin: 0 !important;
+    justify-content: center;
+  }
+
+  /* Riga 3 – Griglia lettere */
+  .letters-grid-container {
+    order: 3;
+    width: 100%;
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Riga 4 – [Azioni] [Ruota] [Powerup] */
+  .game-actions-container {
+    order: 4;
+    width: 14%;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+
+  /* Ruota al centro (14 + 68 + 14 = 96 % + 2 gap ≈ 100 %) */
+  .wheel-container {
+    order: 5;
+    width: calc(68% - 12px);
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+  }
+
+  /* Forza tutti i div annidati dentro wheel-container a essere trasparenti */
   .wheel-container div {
     width: 100% !important;
     display: flex !important;
@@ -131,101 +160,46 @@
     padding: 0 !important;
   }
 
-  /* "Appiattisce" i contenitori per permettere il riordinamento globale dei figli */
-  .game-sidebar,
-  .game-main-content,
-  .game-center-container {
-    display: contents;
-  }
-
-  /* ORDINE ELEMENTI MOBILE */
-
-  /* 1. Categoria */
-  .category-label-fancy {
-    order: 1;
-    width: 100%;
-    justify-content: center;
+  /* Powerup sulla destra */
+  .powerups-wrapper {
+    order: 6;
+    width: 14%;
     margin: 0 !important;
   }
 
-  /* 2. Frase Nascosta */
-  .board {
-    order: 2;
-    width: 100%; /* Force full width */
-    margin: 0 !important;
-    justify-content: center;
-  }
-
-  /* 3. Griglia Lettere */
-  .letters-grid-container {
-    order: 3;
-    margin: -17px -1px !important;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-
-  /* 6. Game Center (Azioni di gioco e Score) */
-  .game-actions-container {
-    order: 4 !important;
-    width: 15% !important;
-    display: flex !important;
-    flex-direction: column !important; /* In colonna */
-    gap: 15px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-  }
-
-  /* 4. Ruota */
-  .wheel-container {
-    order: 5 !important; /* Sta in mezzo tra 4 e 6 */
-    width: 62% !important;
-    margin: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 !important;
-  }
-   /* 6. Game Center (Azioni di gioco e Score) */
-  .game-actions-right-container {
-    order: 6 !important;
-    width: 15% !important;
-    display: flex !important;
-    flex-direction: column !important; /* In colonna */
-    gap: 15px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-  }
-
-  /* 5. Powerups */
-  .powerups-container {
-    order: 8;
-    width: calc(50% - 5px) !important; /* Fit half width minus gap */
-    min-width: 0 !important; /* Override the 280px min-width */
-    margin: 0 !important;
-    box-sizing: border-box; /* Ensure padding doesn't increase width */
-    flex: none !important; /* Prevent flex-grow from changing size */
-  }
-
+  /* Riga 5 – Leaderboard */
   .leaderboard-root {
-    order: 8;
-    width: calc(50% - 5px); /* Fit half width minus gap */
+    order: 7;
+    width: 100%;
     margin: 0 !important;
     min-width: 0 !important;
   }
 
-  .wheel-info-bar {
-    order: 9;
-    width: 100%;
-    margin: 0 !important;
-  }
-
-  /* Gestione bottone nuova partita se presente */
+  /* Bottone nuova partita */
   .new-game-btn {
     order: 10;
     width: 48px;
+  }
+}
+
+/* ── Extra-small phones (≤ 480px) ── */
+@media (max-width: 480px) {
+  .game-layout {
+    gap: 4px;
+    padding: 0 2px 6px;
+  }
+
+  .game-actions-container {
+    width: 13% !important;
+    gap: 6px !important;
+  }
+
+  .wheel-container {
+    width: calc(72% - 8px) !important;
+  }
+
+  .powerups-wrapper {
+    width: 13% !important;
   }
 }
 
