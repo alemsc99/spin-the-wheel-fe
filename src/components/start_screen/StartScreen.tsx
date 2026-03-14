@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
 import './StartScreen.css';
-import { useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useTranslation } from '../../i18n/TranslationProvider';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
+import { GoogleLogin } from '@react-oauth/google';
 
 import { API_URL } from '../../constants/constants';
 import LoadingSpinner from '../loading_spinner/LoadingSpinner';
@@ -36,20 +36,18 @@ type StartScreenProps = {
   onStart: (options: StartGameOptions) => void;
 };
 
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 200 : -200,
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction > 0 ? -200 : 200,
-    opacity: 0,
-  }),
-};
+// Decode a Google JWT credential to extract the user's name
+function decodeGoogleJwt(credential: string): { name: string; email?: string; picture?: string } | null {
+  try {
+    const payload = JSON.parse(atob(credential.split('.')[1]));
+    return { name: payload.name || payload.email || '', email: payload.email, picture: payload.picture };
+  } catch {
+    return null;
+  }
+}
+
+// Steps in order: login → gameMode → playerNames → start
+const TOTAL_STEPS = 4;
 
 export default function StartScreen({ onStart }: StartScreenProps): React.ReactElement {
   const { lang, t } = useTranslation();
@@ -59,139 +57,188 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const isIt = lang === 'it';
   const loadingPhrases = isIt
     ? [
-      "Preparando la ruota...",
-      "Caricando i giocatori...",
-      "Mescolando le lettere segrete...",
-      "Ricaricando i power-up..."
-    ]
+        'Preparando la ruota...',
+        'Caricando i giocatori...',
+        'Mescolando le lettere segrete...',
+        'Ricaricando i power-up...',
+      ]
     : [
-      "Preparing the wheel...",
-      "Loading players...",
-      "Shuffling secret letters...",
-      "Recharging power-ups..."
+        'Preparing the wheel...',
+        'Loading players...',
+        'Shuffling secret letters...',
+        'Recharging power-ups...',
       ];
   const [loadingPhraseIdx, setLoadingPhraseIdx] = useState(0);
   React.useEffect(() => {
     if (!isWakingUp || loadingPhrases.length === 0) return;
     const interval = setInterval(() => {
-      setLoadingPhraseIdx(idx => (idx + 1) % loadingPhrases.length);
+      setLoadingPhraseIdx((idx) => (idx + 1) % loadingPhrases.length);
     }, 2500);
     return () => clearInterval(interval);
   }, [isWakingUp, loadingPhrases.length]);
 
   // --- JSON-LD ---
   const schemaData = {
-    "@context": "https://schema.org",
-    "@type": "VideoGame",
-    "name": isIt ? "GiraParole" : "SpinWords",
-    "description": isIt
-      ? "Gioco di parole e di enigmistica online gratuito. Gira la ruota, usa i powerups e indovina la frase prima degli altri giocatori."
-      : "Free online word puzzle game. Spin the wheel, use power-ups, and guess the phrase before other players.",
-    "genre": ["Puzzle", "Word Game", "Trivia", "Enigmistic"],
-    "url": "https://spinwords.pages.dev",
-    "playMode": ["SinglePlayer", "MultiPlayer"],
-    "applicationCategory": "Game",
-    "gamePlatform": ["Web Browser", "Desktop", "Mobile"],
-    "numberOfPlayers": {
-      "@type": "QuantitativeValue",
-      "minValue": 1,
-      "maxValue": 4
-    },
-    "image": "https://spinwords.pages.dev/og-image-v2.jpg",
-    "operatingSystem": "Any",
-    "inLanguage": ["it", "en"],
-    "author": {
-      "@type": "Person",
-      "name": "SpinWords Team"
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "EUR",
-      "category": "free"
-    }
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    name: isIt ? 'GiraParole' : 'SpinWords',
+    description: isIt
+      ? 'Gioco di parole e di enigmistica online gratuito. Gira la ruota, usa i powerups e indovina la frase prima degli altri giocatori.'
+      : 'Free online word puzzle game. Spin the wheel, use power-ups, and guess the phrase before other players.',
+    genre: ['Puzzle', 'Word Game', 'Trivia', 'Enigmistic'],
+    url: 'https://spinwords.pages.dev',
+    playMode: ['SinglePlayer', 'MultiPlayer'],
+    applicationCategory: 'Game',
+    gamePlatform: ['Web Browser', 'Desktop', 'Mobile'],
+    numberOfPlayers: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 4 },
+    image: 'https://spinwords.pages.dev/og-image-v2.jpg',
+    operatingSystem: 'Any',
+    inLanguage: ['it', 'en'],
+    author: { '@type': 'Person', name: 'SpinWords Team' },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR', category: 'free' },
   };
 
   const metaTitle = isIt
-    ? "GiraParole - Gioco Enigmistico Online Gratis"
-    : "SpinWords -  Online Word Game";
+    ? 'GiraParole - Gioco Enigmistico Online Gratis'
+    : 'SpinWords -  Online Word Game';
   const metaDescription = isIt
-    ? "Gioca a GiraParole online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici."
-    : "Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.";
+    ? 'Gioca a GiraParole online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici.'
+    : 'Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.';
 
-  // --- Carousel state ---
-  const [step, setStep] = useState(0);
-  const [direction, setDirection] = useState(1);
+  // ---- CAROUSEL STATE ----
+  const [currentStep, setCurrentStep] = useState(0); // 0=login, 1=gameMode, 2=playerNames, 3=start
 
-  // --- Game state ---
+  // ---- LOGIN STATE ----
+  const [currentUser, setCurrentUser] = useState<{ name: string; isGoogle: boolean } | null>(null);
+  const [showGuestForm, setShowGuestForm] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
+  // ---- GAME CONFIG STATE ----
   const [gameMode, setGameMode] = useState<GameMode>('single');
   const [onlineSubMode, setOnlineSubMode] = useState<OnlineSubMode>('create');
   const [players, setPlayers] = useState(MIN_PLAYERS);
-  const [names, setNames] = useState([] as string[]);
+  const [otherNames, setOtherNames] = useState<string[]>([]); // names of OTHER players (not the current user)
   const [roomCode, setRoomCode] = useState('');
   const [category, setCategory] = useState<'random' | 'food' | 'travel' | 'sports' | 'music' | 'technology'>('random');
   const [error, setError] = useState('');
 
-  const handleModeChange = (mode: GameMode, subMode?: OnlineSubMode) => {
+  // ---- NAVIGATION ----
+  function navigateTo(step: number) {
+    setCurrentStep(step);
+  }
+
+  function goNext() {
+    // Validate current step before advancing
+    if (currentStep === 0) {
+      // Login step: user must have a name
+      if (!currentUser) {
+        setLoginError(t('error.emptyUsername'));
+        return;
+      }
+      setLoginError('');
+      navigateTo(1);
+    } else if (currentStep === 1) {
+      // Game mode step
+      setError('');
+      if (gameMode === 'single') {
+        // Skip player names step for single player
+        navigateTo(3);
+      } else {
+        // Initialize other names based on mode/count
+        if (gameMode === 'local') {
+          const count = players - 1; // -1 because current user is one player
+          setOtherNames(Array(count).fill(''));
+        } else if (gameMode === 'online') {
+          if (onlineSubMode === 'create') {
+            const count = players - 1;
+            setOtherNames(Array(count).fill(''));
+          } else {
+            setOtherNames([]);
+          }
+        }
+        navigateTo(2);
+      }
+    } else if (currentStep === 2) {
+      // Player names step
+      if (gameMode === 'local') {
+        const empty = otherNames.findIndex((n) => !n.trim());
+        if (empty !== -1) {
+          setError(t('error.emptyNames'));
+          return;
+        }
+        const allNames = [currentUser?.name || '', ...otherNames];
+        const normalized = allNames.map((n) => n.trim().toLowerCase());
+        const hasDuplicates = normalized.some((name, idx) => normalized.indexOf(name) !== idx);
+        if (hasDuplicates) {
+          setError(t('error.duplicateNames'));
+          return;
+        }
+      }
+      setError('');
+      navigateTo(3);
+    }
+  }
+
+  function goBack() {
+    if (currentStep === 1) {
+      navigateTo(0);
+    } else if (currentStep === 2) {
+      navigateTo(1);
+    } else if (currentStep === 3) {
+      if (gameMode === 'single') {
+        navigateTo(1);
+      } else {
+        navigateTo(2);
+      }
+    }
+  }
+
+  // ---- GAME MODE HANDLER ----
+  const handleModeChange = (mode: GameMode) => {
     setGameMode(mode);
     setError('');
-
     if (mode === 'single') {
       setPlayers(1);
-      setNames(['']);
-    }
-    else if (mode === 'local') {
+      setOtherNames([]);
+    } else if (mode === 'local') {
       setPlayers(2);
-      setNames(['', '']);
-    }
-    else if (mode === 'online') {
-      const sm = subMode || 'create';
-      setOnlineSubMode(sm);
-      if (sm === 'create') {
-        setPlayers(2);
-        setNames(['']);
-      } else {
-        setPlayers(1);
-        setNames(['']);
-        // join has only 2 steps, clamp if needed
-        setStep(s => Math.min(s, 1));
-      }
+      setOtherNames(['']);
+    } else if (mode === 'online') {
+      setOnlineSubMode('create');
+      setPlayers(2);
+      setOtherNames(['']);
     }
   };
 
   const handleOnlineSubModeChange = (subMode: OnlineSubMode) => {
     setOnlineSubMode(subMode);
     setError('');
-
     if (subMode === 'create') {
       setPlayers(2);
-      setNames(['']);
+      setOtherNames(['']);
     } else {
       setPlayers(1);
-      setNames(['']);
+      setOtherNames([]);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handlePlayersCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const n = Number(e.target.value);
     setPlayers(n);
     setError('');
     if (gameMode === 'local') {
-      if (n > 1) {
-        setNames(Array(n).fill(''));
-      } else {
-        setNames([]);
-      }
-    } else if (gameMode === 'online') {
-        setNames((prev) => {
-            if (prev.length === 0) return [''];
-            return prev.slice(0, 1);
-        });
+      const otherCount = n - 1;
+      setOtherNames(Array(otherCount).fill(''));
+    } else if (gameMode === 'online' && onlineSubMode === 'create') {
+      const otherCount = n - 1;
+      setOtherNames(Array(otherCount).fill(''));
     }
   };
 
-  const handleNameChange = (idx: number, value: string) => {
-    setNames((prev: string[]) => {
+  const handleOtherNameChange = (idx: number, value: string) => {
+    setOtherNames((prev) => {
       const arr = [...prev];
       arr[idx] = value;
       return arr;
@@ -199,33 +246,34 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     setError('');
   };
 
-  // --- Validation for step transitions ---
-  const validateStep1 = (): boolean => {
-    if (gameMode === 'online') {
-      const myName = names[0] || '';
-      if (!myName.trim()) {
-        setError(t('error.emptyNames'));
-        return false;
-      }
-      if (onlineSubMode === 'join' && !roomCode.trim()) {
-        setError(t('error.emptyRoomCode') || 'Enter a room code');
-        return false;
-      }
-    } else if (gameMode === 'local' && players > 1) {
-      const empty = names.findIndex(name => !name.trim());
-      if (empty !== -1) {
-        setError(t('error.emptyNames'));
-        return false;
-      }
-      const normalized = names.map(n => n.trim().toLowerCase());
-      const hasDuplicates = normalized.some((name, idx) => normalized.indexOf(name) !== idx);
-      if (hasDuplicates) {
-        setError(t('error.duplicateNames'));
-        return false;
-      }
-    } else if (gameMode === 'single') {
-      if (names.length > 0 && names[0] && !names[0].trim()) {
-        // Allow empty name for single player (optional)
+  // ---- START GAME ----
+  const handleStart = async () => {
+    const myName = currentUser?.name || t('players.defaultName');
+
+    let finalPlayers = players;
+    let finalNames: string[] = [];
+    let finalRoomCode: string | undefined;
+    let finalOnlineSubMode: OnlineSubMode | undefined;
+
+    if (gameMode === 'single') {
+      finalPlayers = 1;
+      finalNames = [myName];
+    } else if (gameMode === 'local') {
+      finalNames = [myName, ...otherNames];
+      finalPlayers = finalNames.length;
+    } else if (gameMode === 'online') {
+      finalOnlineSubMode = onlineSubMode;
+      if (onlineSubMode === 'join') {
+        if (!roomCode.trim()) {
+          setError(t('error.emptyRoomCode') || 'Enter a room code');
+          return;
+        }
+        finalRoomCode = roomCode;
+        finalNames = [myName];
+        finalPlayers = 1;
+      } else {
+        finalNames = [myName];
+        finalPlayers = players;
       }
     }
     return true;
@@ -252,197 +300,40 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const handleStart = async () => {
     setIsWakingUp(true);
     let awake = false;
-
     while (!awake) {
       try {
         const res = await fetch(`${API_URL}/health`, { cache: 'no-store' });
         if (res.ok) {
           awake = true;
         } else {
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
       } catch (err) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
-
     setIsWakingUp(false);
 
     onStart({
-      players,
-      names: names.length > 0 ? names : [],
+      players: finalPlayers,
+      names: finalNames,
       mode: gameMode,
-      onlineSubMode: gameMode === 'online' ? onlineSubMode : undefined,
-      roomCode: (gameMode === 'online' && onlineSubMode === 'join') ? roomCode : undefined,
-      category,
+      onlineSubMode: finalOnlineSubMode,
+      roomCode: finalRoomCode,
     });
   };
 
   const rulesLabel = t('start.rules');
 
-  // --- Render step content ---
-  const renderStep0 = () => (
-    <div className="carousel-step">
-      <div className="game-mode-toggles">
-        <button
-          className={`mode-btn ${gameMode === 'single' ? 'active' : ''}`}
-          onClick={() => handleModeChange('single')}
-        >
-          {t('start.mode.single')}
-        </button>
-        <button
-          className={`mode-btn ${gameMode === 'local' ? 'active' : ''}`}
-          onClick={() => handleModeChange('local')}
-        >
-          {t('start.mode.local')}
-        </button>
-        <button
-          className={`mode-btn ${gameMode === 'online' && onlineSubMode === 'create' ? 'active' : ''}`}
-          onClick={() => handleModeChange('online', 'create')}
-        >
-          {t('start.submode.create')}
-        </button>
-        <button
-          className={`mode-btn ${gameMode === 'online' && onlineSubMode === 'join' ? 'active' : ''}`}
-          onClick={() => handleModeChange('online', 'join')}
-        >
-          {t('start.submode.join')}
-        </button>
-      </div>
+  // Step labels for progress indicator
+  const stepLabels = [
+    t('start.step.login'),
+    t('start.step.mode'),
+    t('start.step.players'),
+    t('start.step.start'),
+  ];
 
-      <div className="lang-toggle carousel-lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
-        <Link
-          to="/it"
-          className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
-          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          {t('lang.it')}
-        </Link>
-        <Link
-          to="/en"
-          className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          {t('lang.en')}
-        </Link>
-      </div>
-    </div>
-  );
-
-  const renderStep1 = () => (
-    <div className="carousel-step">
-      {(gameMode === 'local' || (gameMode === 'online' && onlineSubMode === 'create')) && (
-        <div className="players-select pretty-select">
-          <div className="players-select-label-group">
-            <label htmlFor="players" className="players-label">
-              {t('players.label')}
-            </label>
-            <div className="custom-dropdown-wrapper">
-              <select
-                id="players"
-                value={players}
-                onChange={handleChange}
-                className="select-dropdown custom-dropdown"
-              >
-                {Array.from({ length: 3 }, (_, i) => (
-                  <option key={i + 2} value={i + 2}>
-                    {i + 2}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className={`players-names ${gameMode === 'online' ? 'players-names-column' : ''}`}>
-        {gameMode === 'online' ? (
-          <>
-            {onlineSubMode === 'join' && (
-              <input
-                type="text"
-                className="player-name-input pretty-input"
-                placeholder={t('start.roomCode.placeholder')}
-                value={roomCode}
-                onChange={e => setRoomCode(e.target.value)}
-                autoComplete="off"
-                style={{ marginBottom: '10px' }}
-              />
-            )}
-            <input
-              type="text"
-              className="player-name-input pretty-input"
-              placeholder={t('player.placeholder')}
-              value={names[0] || ''}
-              onChange={e => handleNameChange(0, e.target.value)}
-              autoComplete="off"
-            />
-          </>
-        ) : (
-          Array.from({ length: gameMode === 'single' ? 1 : players }, (_, i) => (
-            <input
-              key={i}
-              type="text"
-              className="player-name-input pretty-input"
-              placeholder={gameMode === 'single' ? t('player.placeholder') : `${t('player.placeholder')} ${i + 1}`}
-              value={names[i] || ''}
-              onChange={e => handleNameChange(i, e.target.value)}
-              autoComplete="off"
-            />
-          ))
-        )}
-      </div>
-
-      {error && <div className="error-message">{error}</div>}
-    </div>
-  );
-
-  const renderStep2 = () => (
-    <div className="carousel-step">
-      <h3 className="category-title">{t('carousel.category')}</h3>
-      <div className="category-toggles">
-        <button
-          className={`mode-btn category-btn ${category === 'random' ? 'active' : ''}`}
-          onClick={() => setCategory('random')}
-        >
-          🎲 {t('carousel.categoryRandom')}
-        </button>
-        <button
-          className={`mode-btn category-btn ${category === 'food' ? 'active' : ''}`}
-          onClick={() => setCategory('food')}
-        >
-          🍕 {t('carousel.categoryFood')}
-        </button>
-        <button
-          className={`mode-btn category-btn ${category === 'travel' ? 'active' : ''}`}
-          onClick={() => setCategory('travel')}
-        >
-          ✈️ {t('carousel.categoryTravel')}
-        </button>
-        <button
-          className={`mode-btn category-btn ${category === 'sports' ? 'active' : ''}`}
-          onClick={() => setCategory('sports')}
-        >
-          ⚽ {t('carousel.categorySports')}
-        </button>
-        <button
-          className={`mode-btn category-btn ${category === 'music' ? 'active' : ''}`}
-          onClick={() => setCategory('music')}
-        >
-          🎵 {t('carousel.categoryMusic')}
-        </button>
-        <button
-          className={`mode-btn category-btn ${category === 'technology' ? 'active' : ''}`}
-          onClick={() => setCategory('technology')}
-        >
-          💻 {t('carousel.categoryTechnology')}
-        </button>
-      </div>
-
-      {error && <div className="error-message">{error}</div>}
-    </div>
-  );
-
+  // ---- RENDER ----
   return (
     <div className="start-screen pretty-bg">
       {isWakingUp && (
@@ -452,9 +343,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               <LoadingSpinner />
             </div>
             {loadingPhrases.length > 0 && (
-              <div className="loading-text">
-                {loadingPhrases[loadingPhraseIdx]}
-              </div>
+              <div className="loading-text">{loadingPhrases[loadingPhraseIdx]}</div>
             )}
           </div>
         </div>
@@ -463,14 +352,10 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <Helmet>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
-        <script type="application/ld+json">
-          {`
-            ${JSON.stringify(schemaData)}
-          `}
-        </script>
+        <script type="application/ld+json">{`\n            ${JSON.stringify(schemaData)}\n          `}</script>
       </Helmet>
 
-      {/* SVG Decorativi */}
+      {/* Decorative SVGs */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star5" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
@@ -481,7 +366,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <div className="bg-decor bg-circle c5"></div>
 
       <div className="start-card start-card-relative">
-
+        {/* Rules button */}
         <div className="rules-btn-container">
           <Link
             to="rules"
@@ -494,61 +379,378 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           </Link>
         </div>
 
-        <h1 className="title fancy-title">
-          {isIt ? "GiraParole" : "SpinWords"}
-        </h1>
+        <h1 className="title fancy-title">{isIt ? 'GiraParole' : 'SpinWords'}</h1>
 
-        {/* Carousel container */}
-        <div className="carousel-container">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={step}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              {step === 0 && renderStep0()}
-              {step === 1 && renderStep1()}
-              {step === 2 && renderStep2()}
-            </motion.div>
-          </AnimatePresence>
+        {/* Step progress indicator */}
+        <div className="carousel-steps">
+          {stepLabels.map((label, idx) => {
+            // For single player mode, step 2 (playerNames) is skipped visually
+            const isSkipped = gameMode === 'single' && idx === 2;
+            const isActive = currentStep === idx;
+            const isCompleted = currentStep > idx;
+            return (
+              <div
+                key={idx}
+                className={`carousel-step-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isSkipped ? 'skipped' : ''}`}
+              >
+                <div className="carousel-step-dot">
+                  {isCompleted ? '✓' : idx + 1}
+                </div>
+                <span className="carousel-step-label">{label}</span>
+              </div>
+            );
+          })}
         </div>
-         {/* Step indicator dots */}
-        <div className="step-dots">
-          {Array.from({ length: maxStep + 1 }, (_, i) => (
-            <span key={i} className={`step-dot ${step === i ? 'active' : ''}`} />
-          ))}
+
+        {/* Carousel slides */}
+        <div className="carousel-viewport">
+          <div
+            className="carousel-inner"
+            style={{ transform: `translateX(-${currentStep * 100}%)`, transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)' }}
+          >
+            {/* ===== SLIDE 0: LOGIN ===== */}
+            <div className="carousel-slide">
+              <div className="slide-content login-slide">
+                <p className="slide-subtitle">{t('login.subtitle')}</p>
+
+                {currentUser ? (
+                  // Already logged in - show who they are
+                  <div className="logged-in-state">
+                    {currentUser.isGoogle && (
+                      <div className="google-avatar">🟢</div>
+                    )}
+                    <p className="logged-in-label">{t('login.loggedInAs')}</p>
+                    <p className="logged-in-name">{currentUser.name}</p>
+                    <button
+                      className="change-user-btn"
+                      onClick={() => {
+                        setCurrentUser(null);
+                        setShowGuestForm(false);
+                        setGuestName('');
+                        setLoginError('');
+                      }}
+                    >
+                      ✏️ {isIt ? 'Cambia' : 'Change'}
+                    </button>
+                  </div>
+                ) : showGuestForm ? (
+                  // Guest username form
+                  <div className="guest-form">
+                    <p className="guest-form-title">{t('login.guestTitle')}</p>
+                    <input
+                      type="text"
+                      className="player-name-input pretty-input guest-name-input"
+                      placeholder={t('login.guestPlaceholder')}
+                      value={guestName}
+                      onChange={(e) => {
+                        setGuestName(e.target.value);
+                        setLoginError('');
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && guestName.trim()) {
+                          setCurrentUser({ name: guestName.trim(), isGoogle: false });
+                          setLoginError('');
+                        }
+                      }}
+                      autoFocus
+                      autoComplete="off"
+                      maxLength={30}
+                    />
+                    {loginError && <div className="error-message">{loginError}</div>}
+                    <div className="guest-form-actions">
+                      <button
+                        className="pretty-btn guest-back-btn"
+                        onClick={() => {
+                          setShowGuestForm(false);
+                          setLoginError('');
+                        }}
+                      >
+                        ← {t('login.guestBack')}
+                      </button>
+                      <button
+                        className="pretty-btn guest-confirm-btn"
+                        onClick={() => {
+                          if (!guestName.trim()) {
+                            setLoginError(t('error.emptyUsername'));
+                            return;
+                          }
+                          setCurrentUser({ name: guestName.trim(), isGoogle: false });
+                          setLoginError('');
+                        }}
+                      >
+                        {t('login.guestConfirm')} →
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // Login options
+                  <div className="login-options">
+                    {loginError && <div className="error-message">{loginError}</div>}
+                    {/* Google Login Button */}
+                    {googleClientId ? (
+                      <div className="google-login-wrapper">
+                        <GoogleLogin
+                          onSuccess={(credentialResponse) => {
+                            const profile = credentialResponse.credential
+                              ? decodeGoogleJwt(credentialResponse.credential)
+                              : null;
+                            if (profile?.name) {
+                              setCurrentUser({ name: profile.name, isGoogle: true });
+                              setLoginError('');
+                            }
+                          }}
+                          onError={() => {
+                            setLoginError(t('login.googleError'));
+                          }}
+                          text="signin_with"
+                          shape="rectangular"
+                          size="large"
+                          logo_alignment="left"
+                          width="280"
+                        />
+                      </div>
+                    ) : (
+                      <button
+                        className="pretty-btn google-btn-placeholder"
+                        disabled
+                        title={t('login.googleNotConfigured')}
+                      >
+                        <span className="google-icon">G</span>
+                        {t('login.googleBtn')}
+                      </button>
+                    )}
+
+                    <div className="login-divider">
+                      <span>{isIt ? 'oppure' : 'or'}</span>
+                    </div>
+
+                    {/* Guest button */}
+                    <button
+                      className="pretty-btn guest-btn"
+                      onClick={() => {
+                        setShowGuestForm(true);
+                        setLoginError('');
+                      }}
+                    >
+                      👤 {t('login.guestBtn')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ===== SLIDE 1: GAME MODE ===== */}
+            <div className="carousel-slide">
+              <div className="slide-content">
+                <div className="game-mode-toggles">
+                  <button
+                    className={`mode-btn ${gameMode === 'single' ? 'active' : ''}`}
+                    onClick={() => handleModeChange('single')}
+                  >
+                    {t('start.mode.single')}
+                  </button>
+                  <button
+                    className={`mode-btn ${gameMode === 'local' ? 'active' : ''}`}
+                    onClick={() => handleModeChange('local')}
+                  >
+                    {t('start.mode.local')}
+                  </button>
+                  <button
+                    className={`mode-btn ${gameMode === 'online' ? 'active' : ''}`}
+                    onClick={() => handleModeChange('online')}
+                  >
+                    {t('start.mode.online')}
+                  </button>
+                </div>
+
+                {gameMode === 'online' && (
+                  <div className="game-mode-toggles sub-toggles" style={{ marginTop: '0px' }}>
+                    <button
+                      className={`mode-btn sub-mode-btn ${onlineSubMode === 'create' ? 'active' : ''}`}
+                      onClick={() => handleOnlineSubModeChange('create')}
+                    >
+                      {t('start.submode.create')}
+                    </button>
+                    <button
+                      className={`mode-btn sub-mode-btn ${onlineSubMode === 'join' ? 'active' : ''}`}
+                      onClick={() => handleOnlineSubModeChange('join')}
+                    >
+                      {t('start.submode.join')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ===== SLIDE 2: PLAYER NAMES (others only) ===== */}
+            <div className="carousel-slide">
+              <div className="slide-content">
+                {gameMode === 'local' && (
+                  <>
+                    <div className="players-select pretty-select">
+                      <div className="players-select-label-group">
+                        <label htmlFor="players" className="players-label">
+                          {t('players.label')}
+                        </label>
+                        <div className="custom-dropdown-wrapper">
+                          <select
+                            id="players"
+                            value={players}
+                            onChange={handlePlayersCountChange}
+                            className="select-dropdown custom-dropdown"
+                          >
+                            {Array.from({ length: 3 }, (_, i) => (
+                              <option key={i + 2} value={i + 2}>
+                                {i + 2}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="others-label">{t('players.othersOnly')}</p>
+                    <div className="players-names">
+                      {otherNames.map((name, i) => (
+                        <input
+                          key={i}
+                          type="text"
+                          className="player-name-input pretty-input"
+                          placeholder={`${t('player.placeholder')} ${i + 2}`}
+                          value={name}
+                          onChange={(e) => handleOtherNameChange(i, e.target.value)}
+                          autoComplete="off"
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {gameMode === 'online' && onlineSubMode === 'create' && (
+                  <div className="players-select pretty-select">
+                    <div className="players-select-label-group">
+                      <label htmlFor="players" className="players-label">
+                        {t('players.label')}
+                      </label>
+                      <div className="custom-dropdown-wrapper">
+                        <select
+                          id="players"
+                          value={players}
+                          onChange={handlePlayersCountChange}
+                          className="select-dropdown custom-dropdown"
+                        >
+                          {Array.from({ length: 3 }, (_, i) => (
+                            <option key={i + 2} value={i + 2}>
+                              {i + 2}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {gameMode === 'online' && onlineSubMode === 'join' && (
+                  <div className="players-names">
+                    <input
+                      type="text"
+                      className="player-name-input pretty-input"
+                      placeholder={t('start.roomCode.placeholder')}
+                      value={roomCode}
+                      onChange={(e) => { setRoomCode(e.target.value); setError(''); }}
+                      autoComplete="off"
+                    />
+                  </div>
+                )}
+
+                {error && <div className="error-message">{error}</div>}
+              </div>
+            </div>
+
+            {/* ===== SLIDE 3: CONFIRM / START ===== */}
+            <div className="carousel-slide">
+              <div className="slide-content start-slide">
+                <div className="start-summary">
+                  {gameMode === 'single' && (
+                    <p className="summary-text">
+                      {t('start.confirm.single').replace('{name}', currentUser?.name || '')}
+                    </p>
+                  )}
+                  {gameMode === 'local' && (
+                    <>
+                      <p className="summary-text">{t('start.confirm.local')}</p>
+                      <ul className="players-summary-list">
+                        {[currentUser?.name || '', ...otherNames].map((name, i) => (
+                          <li key={i}>
+                            <span className="player-summary-badge">{name || `${t('player.placeholder')} ${i + 1}`}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  {gameMode === 'online' && onlineSubMode === 'create' && (
+                    <p className="summary-text">{t('start.confirm.online.create')}</p>
+                  )}
+                  {gameMode === 'online' && onlineSubMode === 'join' && (
+                    <p className="summary-text">{t('start.confirm.online.join')}</p>
+                  )}
+                </div>
+
+                {error && <div className="error-message">{error}</div>}
+
+                <button className="start-btn pretty-btn" onClick={handleStart}>
+                  {gameMode === 'online'
+                    ? onlineSubMode === 'create'
+                      ? t('start.button.create')
+                      : t('start.button.join')
+                    : t('start.button')}
+                </button>
+
+                {/* Language toggle only on last slide */}
+                {!(gameMode === 'online' && onlineSubMode === 'join') && (
+                  <div className="lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
+                    <Link
+                      to="/it"
+                      className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      {t('lang.it')}
+                    </Link>
+                    <Link
+                      to="/en"
+                      className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      {t('lang.en')}
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Navigation buttons */}
         <div className="carousel-nav">
-          {step > 0 ? (
-            <button className="carousel-nav-btn back-btn" onClick={goBack}>
-              {t('carousel.back')}
+          {currentStep > 0 && (
+            <button className="nav-btn back-btn pretty-btn" onClick={goBack}>
+              ← {t('start.back')}
             </button>
-          ) : (
-            <div className="carousel-nav-spacer" />
           )}
-          {step < maxStep ? (
-            <button className="carousel-nav-btn next-btn" onClick={goNext}>
-              {t('carousel.next')}
-            </button>
-          ) : (
-            <button className="carousel-nav-btn next-btn" onClick={handleStart}>
-              {gameMode === 'online'
-                ? (onlineSubMode === 'create' ? t('start.button.create') : t('start.button.join'))
-                : t('start.button')
-              }
+          {currentStep < TOTAL_STEPS - 1 && (
+            <button
+              className={`nav-btn next-btn pretty-btn ${currentStep === 0 && !currentUser ? 'disabled-look' : ''}`}
+              onClick={goNext}
+            >
+              {t('start.next')} →
             </button>
           )}
         </div>
       </div>
 
-      {/* SEO content */}
-      <article className="seo-content-container" style={{
+      {/* SEO Content */}
+      <article
+        className="seo-content-container"
+        style={{
           maxWidth: '800px',
           margin: '40px auto',
           padding: '20px',
@@ -558,14 +760,15 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           color: '#333',
           lineHeight: '1.6',
           fontSize: '1rem',
-          textAlign: 'left'
-      }}>
+          textAlign: 'left',
+        }}
+      >
         {isIt ? (
           <>
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
             <p>
-              GiraParole è tra i <strong>giochi enigmistici</strong> perfetti per gli appassionati dei giochi di parole.
-              Gira la ruota, chiama le consonanti, compra le vocali e <strong>indovina la frase</strong> prima dei tuoi avversari!
+              GiraParole è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
+              Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
             </p>
             <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
             <ul style={{ paddingLeft: '20px' }}>
@@ -573,8 +776,8 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               <li>👥 <strong>Multiplayer Locale:</strong> Sfida amici e parenti sullo stesso dispositivo.</li>
               <li>🌍 <strong>Multiplayer Online:</strong> Crea stanze private e gioca a distanza con chiunque.</li>
               <li>🎡 <strong>Ruota:</strong> guadagna punti ma fai attenzione alle insidie nascoste, potresti perdere tutto!</li>
-              <li>⚡ <strong>Potenziamenti:</strong> Sblocca potenziamenti strategici per avere un vantaggio suoi tuoi avversari!</li>
-              <li>🔄 <strong>Sorpresa di metà partita:</strong> A metà gioco, un rullo verticale sconvolge completamente le sorti della partita: moltiplicatori, azzeramento punti o cambio della frase misteriosa. Tutto può cambiare!</li>
+              <li>⚡ <strong>Potenziamenti:</strong> Sblocca potenziamenti strategici per avere un vantaggio sui tuoi avversari!</li>
+              <li>🔄 <strong>Sorpresa di Metà Partita:</strong> A metà gioco, un rullo verticale sconvolge completamente le sorti della partita: moltiplicatori, azzeramento punti o cambio della frase misteriosa. Tutto può cambiare!</li>
             </ul>
             <p>
               Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone e <strong>indovina la frase!</strong>
@@ -597,7 +800,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               <li>🔄 <strong>Mid-Game Surprise:</strong> At mid-game, a vertical reel shakes up the game with multipliers, point resets, or phrase changes. Anything can happen!</li>
             </ul>
             <p>
-              Perfect for crossword lovers, puzzle enthusiasts, and party game fans. No download required: play directly in your browser on PC, tablet, or smartphone.
+              Perfect for crossword lovers, puzzle enthusiasts, and party game fans. No download required: play directly in your browser on PC, tablet or smartphone.
             </p>
           </>
         )}
