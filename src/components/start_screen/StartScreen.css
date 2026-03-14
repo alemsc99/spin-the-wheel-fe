@@ -1,7 +1,5 @@
 /* StartScreen custom classes for rules and layout */
-.start-card-relative {
-  position: relative;
-}
+
 .rules-btn-container {
   position: absolute;
   top: 16px;
@@ -54,41 +52,36 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 0rem;
-  margin-top: 1rem;
-}
-
-.players-names.players-names-column {
-  flex-direction: column;
-  align-items: center;
+  gap: 0.1rem;
+  margin-bottom: auto;
+  margin-top: auto;
 }
 
 .players-names.players-names-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .players-names.players-names-grid .player-name-input {
-  width: 100%;
-  margin-top: 0;
+  width: 90%;
   box-sizing: border-box;
 }
 
 .player-name-input, .pretty-input {
   width: 130px;
   padding: 0.3rem 0.5rem;
-  font-size: 1.08rem;
+  font-size: 1rem;
   border-radius: 8px;
-  border: 1.5px solid #1976d2;
+  border: 1px solid #1976d2;
   background: #f6f8fa;
   color: #222;
   outline: none;
   box-shadow: 0 1px 6px 0 rgba(25,118,210,0.07);
   transition: border 0.2s, box-shadow 0.2s;
-  margin-top: 1.5rem;
+  margin-top: 0.8rem;
 }
 .player-name-input:focus, .pretty-input:focus {
   border: 2px solid #f49f31;
@@ -106,18 +99,29 @@
   border-radius: 18px;
   box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
   width: 420px;
+  margin-top: 4rem;
+  margin-bottom: -2rem;
+}
+
+.start-card-relative{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  align-items: center;
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 20.5rem;
   margin-bottom: 1rem;
   letter-spacing: 2px;
   text-align: center;
 }
 
 .players-select {
-  margin-bottom: 1.0rem;
-  margin-top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: auto;
+  margin-top: 1rem;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -130,11 +134,6 @@
   color: #1976d2;
   letter-spacing: 1px;
   margin-right: 0.5rem;
-}
-
-.custom-dropdown-wrapper {
-  display: flex;
-  align-items: center;
 }
 
 .custom-dropdown {
@@ -158,6 +157,13 @@
   box-shadow: 0 0 0 2px #ffe06644;
 }
 
+.custom-dropdown-wrapper-create-room{
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 .actions-row {
   margin-top: 1.5rem;
   width: 100%;
@@ -174,6 +180,8 @@
 
 .lang-toggle {
   margin-top: 0.2rem;
+  margin-left: auto;
+  margin-right: auto;
   background: #f6f8fa;
   border-radius: 999px;
   box-shadow: 0 1px 6px 0 rgba(25,118,210,0.07);
@@ -182,7 +190,7 @@
   align-items: center;
   gap: 0.5rem;
   border: 1.5px solid #ececec;
-  min-width: 110px;
+  width: 200px;
 }
 
 .lang-btn {
@@ -212,12 +220,6 @@
   background: #ffe066;
 }
 
-.lang-toggle {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-}
 
 .start-screen, .pretty-bg {
   position: fixed;
@@ -280,35 +282,16 @@
   100% { transform: translateY(-18px) scale(1.12); }
 }
 
-
-.title {
-  font-size: 2.5rem;
-  margin-bottom: 2.5rem;
-  letter-spacing: 2px;
-}
-
-.players-select {
-  margin-bottom: -2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .players-select-label-group {
   display: flex;
   align-items: center;
-  gap: 1rem;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
-  padding: 0.7rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: 1px solid #ececec;
-  margin-top: 0.5rem;
-}
-
-.start-card-relative{
-  padding-top: 2.2rem;
-  padding-bottom: 0.5rem;
+  margin-top: auto;
+  margin-bottom: auto
 }
 
 .players-label {
@@ -322,27 +305,6 @@
 .custom-dropdown-wrapper {
   display: flex;
   align-items: center;
-}
-
-.custom-dropdown {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background: #f6f8fa url('data:image/svg+xml;utf8,<svg fill="%231976d2" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.7em center/1.2em 1.2em;
-  border: 1.5px solid #1976d2;
-  border-radius: 8px;
-  padding: 0.5rem 2.2rem 0.5rem 1rem;
-  font-size: 1.1rem;
-  color: #1976d2;
-  font-weight: 600;
-  outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
-  box-shadow: 0 1px 4px 0 rgba(25,118,210,0.07);
-  cursor: pointer;
-}
-.custom-dropdown:focus {
-  border: 2px solid #f49f31;
-  box-shadow: 0 0 0 2px #ffe06644;
 }
 
 .start-btn {
@@ -361,11 +323,6 @@
   background: #ffe066;
 }
 
-.lang-toggle {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-}
 
 .lang-btn {
   padding: 6px 10px;
@@ -417,7 +374,8 @@
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 25px;
+  margin-top: auto;
+  margin-bottom: auto;
   flex-wrap: wrap;
 }
 
@@ -431,7 +389,8 @@
   color: #333;
   transition: all 0.2s ease;
   font-size: 0.9rem;
-  margin-top: 0.5rem;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .mode-btn:hover {
@@ -445,17 +404,10 @@
   color: #fff;
   border-color: #e6c200;
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: auto;
+  margin-top: auto;
 }
 
-.sub-toggles {
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.sub-mode-btn {
-  font-size: 0.8rem;
-  padding: 6px 12px;
-}
 /* ======= CAROUSEL ======= */
 .carousel-viewport {
   width: 100%;
@@ -481,10 +433,12 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  min-height: 200px;
+  height: 250px;
   padding: 0.5rem 0;
   gap: 0.75rem;
+  overflow-y: auto;
 }
+
 
 /* ======= STEP PROGRESS ======= */
 .carousel-steps {
@@ -492,8 +446,8 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  margin-bottom: 1.25rem;
   width: 100%;
+  padding-top: 1rem;
 }
 
 .carousel-step-item {
@@ -551,7 +505,7 @@
 .carousel-step-item.skipped .carousel-step-dot {
   background: #ccc;
   color: #999;
-  opacity: 0.5;
+  opacity: 0.65;
 }
 
 .carousel-step-label {
@@ -623,10 +577,6 @@
 }
 
 /* ======= LOGIN SLIDE ======= */
-.login-slide {
-  min-height: 220px;
-}
-
 .slide-subtitle {
   font-size: 1rem;
   color: #666;
@@ -640,6 +590,8 @@
   align-items: center;
   gap: 0.75rem;
   width: 100%;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .google-login-wrapper {
@@ -717,6 +669,8 @@
   gap: 0.75rem;
   width: 100%;
   animation: fadeIn 0.2s ease;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .guest-form-title {
@@ -764,8 +718,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: auto;
+  margin-bottom:auto;
   gap: 0.5rem;
-  padding: 1rem 1.5rem;
+  padding: 0.5rem 0.5rem;
   background: linear-gradient(135deg, #f0fff4, #e8f5e9);
   border-radius: 12px;
   border: 1.5px solid #a5d6a7;
@@ -822,7 +778,6 @@
 
 .start-summary {
   text-align: center;
-  padding: 0.75rem;
 }
 
 .summary-text {
@@ -830,16 +785,6 @@
   color: #333;
   font-weight: 600;
   margin: 0 0 0.75rem 0;
-}
-
-.players-summary-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
 }
 
 .player-summary-badge {
@@ -859,38 +804,49 @@
   text-align: center;
 }
 
-.category-label {
-  font-size: 0.92rem;
-  color: #555;
-  font-weight: 600;
-  margin: 0 0 0.4rem 0;
-  text-align: center;
-}
 
 .category-buttons {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
+  margin-top: auto;
+  margin-bottom: auto;
+  grid-template-columns: repeat(3, 1fr); 
 }
 
 .category-btn {
-  font-size: 0.78rem;
-  padding: 5px 10px;
+  display: flex;
+  flex-direction: row; 
+  align-items: center;
+  justify-content: center;
+  padding: 3px 4px;
+  font-size: 0.9rem;
 }
 
-/* ======= LOGIN LANG TOGGLE ======= */
-.login-lang-toggle {
+.error-message {
+  color: #d32f2f;
+  font-size: 0.85rem;
   margin-top: 0.5rem;
 }
 
+.category-emoji {
+  font-size: 1.4rem; /* Dimensione dell'emoji */
+  margin-bottom: 4px;
+}
+
+
 /* ======= RESPONSIVE ======= */
-@media (max-width: 480px) {
+@media (max-width: 400px) {
   .start-card {
     width: 96vw;
     max-width: 420px;
     padding: 1.5rem 1rem;
     border-radius: 14px;
+  }
+
+  .category-buttons {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .carousel-step-label {

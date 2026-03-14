@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 import { GoogleLogin } from '@react-oauth/google';
 
-import { API_URL, VITE_GOOGLE_CLIENT_ID } from '../../constants/constants';
+import { API_URL, categoryIcons, VITE_GOOGLE_CLIENT_ID } from '../../constants/constants';
 import LoadingSpinner from '../loading_spinner/LoadingSpinner';
 
 declare global {
@@ -324,7 +324,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       {/* Decorative SVGs */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
-      <svg className="bg-decor bg-star star5" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <div className="bg-decor bg-circle c1"></div>
       <div className="bg-decor bg-circle c2"></div>
       <div className="bg-decor bg-circle c3"></div>
@@ -351,7 +350,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         <div className="carousel-steps">
           {stepLabels.map((label, idx) => {
             // For single player mode, step 2 (playerNames) is skipped visually
-            const isSkipped = gameMode === 'single' && idx === 2;
+            const isSkipped = false;
             const isActive = currentStep === idx;
             const isCompleted = currentStep > idx;
             return (
@@ -377,7 +376,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             {/* ===== SLIDE 0: LOGIN ===== */}
             <div className="carousel-slide">
               <div className="slide-content login-slide">
-                <p className="slide-subtitle">{t('login.subtitle')}</p>
 
                 {currentUser ? (
                   // Already logged in - show who they are
@@ -581,7 +579,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                         </div>
                       </div>
                     </div>
-                    <p className="others-label">{t('players.othersOnly')}</p>
                     <div className="players-names players-names-grid">
                       {otherNames.map((name, i) => (
                         <input
@@ -624,6 +621,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
 
                 {gameMode === 'online' && onlineSubMode === 'join' && (
                   <div className="players-names">
+                    <p className="guest-form-title">{t('start.roomCode.joinLabel')}</p>
                     <input
                       type="text"
                       className="player-name-input pretty-input"
@@ -634,9 +632,8 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                     />
                   </div>
                 )}
-
-                {error && <div className="error-message">{error}</div>}
               </div>
+              {error && <div className="error-message">{error}</div>}
             </div>
 
             {/* ===== SLIDE 3: CATEGORY / START ===== */}
@@ -645,19 +642,12 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                 <div className="start-summary">
                   {gameMode === 'single' && (
                     <p className="summary-text">
-                      {t('start.confirm.single').replace('{name}', currentUser?.name || '')}
+                      {t("start.category.selection")}
                     </p>
                   )}
                   {gameMode === 'local' && (
                     <>
-                      <p className="summary-text">{t('start.confirm.local')}</p>
-                      <ul className="players-summary-list">
-                        {[currentUser?.name || '', ...otherNames].map((name, i) => (
-                          <li key={i}>
-                            <span className="player-summary-badge">{name || `${t('player.placeholder')} ${i + 1}`}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <p className="summary-text">{t('start.category.selection')}</p>              
                     </>
                   )}
                   {gameMode === 'online' && onlineSubMode === 'create' && (
@@ -669,22 +659,22 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                 </div>
 
                 {/* Category selection for single / local modes */}
-                {(gameMode === 'single' || gameMode === 'local') && (
-                  <div className="category-selection">
-                    <p className="category-label">{t('category.label')}</p>
-                    <div className="category-buttons">
-                      {(['random', 'food', 'travel', 'sports', 'music', 'technology'] as const).map((cat) => (
-                        <button
-                          key={cat}
-                          className={`mode-btn category-btn ${category === cat ? 'active' : ''}`}
-                          onClick={() => setCategory(cat)}
-                        >
-                          {t(`category.${cat}`)}
-                        </button>
-                      ))}
-                    </div>
+                {(gameMode === 'single' || gameMode === 'local' || (gameMode === 'online' && onlineSubMode === 'create')) && (
+                <div className="category-selection">
+                  <div className="category-buttons">
+                    {(['random', 'food', 'travel', 'sports', 'music', 'technology'] as const).map((cat) => (
+                      <button
+                        key={cat}
+                        className={`mode-btn category-btn ${category === cat ? 'active' : ''}`}
+                        onClick={() => setCategory(cat)}
+                      >
+                        <span className="category-emoji">{categoryIcons[cat]}</span>
+                        {t(`category.${cat}`)}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
 
                 {error && <div className="error-message">{error}</div>}
 
@@ -724,13 +714,13 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         style={{
           maxWidth: '800px',
           margin: '40px auto',
-          padding: '20px',
+          padding: '10px',
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
           borderRadius: '15px',
           boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
           color: '#333',
-          lineHeight: '1.6',
-          fontSize: '1rem',
+          lineHeight: '1.5',
+          fontSize: '0.9rem',
           textAlign: 'left',
         }}
       >

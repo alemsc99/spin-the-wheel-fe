@@ -39,5 +39,14 @@ const COLORS = [
   "#8E24AA", "#2E7D32", "#F57C00", "#5D4037", "#37474F", "#6A1B9A"
 ];
 
+const categoryIcons = {
+  random: '🎲',
+  food: '🍔',
+  travel: '✈️',
+  sports: '⚽',
+  music: '🎵',
+  technology: '💻'
+};
 
-export { IMAGES, POWERUP_PRICES, MULTIPLAYER_LAYOUT, SINGLEPLAYER_LAYOUT, COLORS };
+
+export { IMAGES, POWERUP_PRICES, MULTIPLAYER_LAYOUT, SINGLEPLAYER_LAYOUT, COLORS, categoryIcons };
