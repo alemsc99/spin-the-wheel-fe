@@ -429,18 +429,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         </div>
       </div>
       {/* --- NUOVO CONTENUTO SEO (Aggiungi questo blocco sotto la start-card) --- */}
-      <article className="seo-content-container" style={{ 
-          maxWidth: '800px', 
-          margin: '40px auto', 
-          padding: '20px', 
-          backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-          borderRadius: '15px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          color: '#333',
-          lineHeight: '1.6',
-          fontSize: '1rem',
-          textAlign: 'left'
-      }}>
+      <article className="seo-content-container">
         {isIt ? (
           <>
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il gioco di enigmistica online più divertente</h2>
