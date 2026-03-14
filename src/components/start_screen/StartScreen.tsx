@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
 import { GoogleLogin } from '@react-oauth/google';
 
-import { API_URL } from '../../constants/constants';
+import { API_URL, VITE_GOOGLE_CLIENT_ID } from '../../constants/constants';
 import LoadingSpinner from '../loading_spinner/LoadingSpinner';
 
 declare global {
@@ -113,7 +113,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const [showGuestForm, setShowGuestForm] = useState(false);
   const [guestName, setGuestName] = useState('');
   const [loginError, setLoginError] = useState('');
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+  const googleClientId = VITE_GOOGLE_CLIENT_ID || '';
 
   // ---- GAME CONFIG STATE ----
   const [gameMode, setGameMode] = useState<GameMode>('single');
@@ -280,48 +280,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
 
   const isJoin = gameMode === 'online' && onlineSubMode === 'join';
-  const maxStep = isJoin ? 1 : 2;
-
-  const goNext = () => {
-    if (step === 1) {
-      if (!validateStep1()) return;
-    }
-    setError('');
-    setDirection(1);
-    setStep(s => Math.min(s + 1, maxStep));
-  };
-
-  const goBack = () => {
-    setError('');
-    setDirection(-1);
-    setStep(s => Math.max(s - 1, 0));
-  };
-
-  const handleStart = async () => {
-    setIsWakingUp(true);
-    let awake = false;
-    while (!awake) {
-      try {
-        const res = await fetch(`${API_URL}/health`, { cache: 'no-store' });
-        if (res.ok) {
-          awake = true;
-        } else {
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-        }
-      } catch (err) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
-    }
-    setIsWakingUp(false);
-
-    onStart({
-      players: finalPlayers,
-      names: finalNames,
-      mode: gameMode,
-      onlineSubMode: finalOnlineSubMode,
-      roomCode: finalRoomCode,
-    });
-  };
 
   const rulesLabel = t('start.rules');
 

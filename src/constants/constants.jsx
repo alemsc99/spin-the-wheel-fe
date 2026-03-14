@@ -1,4 +1,5 @@
 export const API_URL = import.meta.env.VITE_BACKEND_URL;
+export const VITE_GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 import doubleImg from '../components/powerups/images/double.png';
 import shieldImg from '../components/powerups/images/shield.png';
 import skipImg from '../components/powerups/images/skip.png';
