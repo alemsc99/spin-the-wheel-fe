@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import GameInfo from './components/game_info/GameInfo.jsx';
 import LettersGrid from './components/letters_grid/LettersGrid.jsx';
 import GameActions from './components/game_actions/GameActions.jsx';
@@ -1609,9 +1610,12 @@ function AppContent() {
 }
 
 export default function App() {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
   return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   );
 }
