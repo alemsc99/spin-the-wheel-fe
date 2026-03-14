@@ -4,7 +4,7 @@ import StartScreen, { StartGameOptions } from './StartScreen';
 import { useTranslation } from '../../i18n/TranslationProvider';
 
 type Props = {
-  newGame: (players: number, names: string[]) => Promise<void>;
+  newGame: (players: number, names: string[], category?: string) => Promise<void>;
   createRoom: (players: number, language: string, hostName: string) => Promise<void>;
   joinRoom: (roomCode: string, playerName: string) => Promise<void>;
   setNumPlayers: React.Dispatch<React.SetStateAction<number>>;
@@ -36,7 +36,7 @@ export default function StartScreenWrapper({
   return (
     <StartScreen
       onStart={async (options: StartGameOptions) => {
-        const { players, names, mode, onlineSubMode, roomCode } = options;
+        const { players, names, mode, onlineSubMode, roomCode, category } = options;
 
         if (mode === 'online') {
           const myName = names[0] || 'Player';
@@ -59,7 +59,7 @@ export default function StartScreenWrapper({
           setTurnOverlayIsError(false);
           setShowTurnOverlay(true);
           // start the new game
-          await newGame(players, finalNames);
+          await newGame(players, finalNames, category);
           navigate(`/${activeLang}/game`);
         }
       }}

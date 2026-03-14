@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
 import './StartScreen.css';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async'; 
-import { useTranslation, type Lang } from '../../i18n/TranslationProvider';
+import { useNavigate, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from '../../i18n/TranslationProvider';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { API_URL } from '../../constants/constants';
 import LoadingSpinner from '../loading_spinner/LoadingSpinner';
@@ -28,20 +29,35 @@ export interface StartGameOptions {
   mode: GameMode;
   onlineSubMode?: OnlineSubMode;
   roomCode?: string;
+  category?: 'random' | 'food' | 'travel' | 'sports' | 'music' | 'technology';
 }
 
 type StartScreenProps = {
   onStart: (options: StartGameOptions) => void;
 };
 
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 200 : -200,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -200 : 200,
+    opacity: 0,
+  }),
+};
+
 export default function StartScreen({ onStart }: StartScreenProps): React.ReactElement {
   const { lang, t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isWakingUp, setIsWakingUp] = useState(false);
-  
-  const isIt = lang === 'it'; // Comodo per i check
-  const loadingPhrases = isIt 
+
+  const isIt = lang === 'it';
+  const loadingPhrases = isIt
     ? [
       "Preparando la ruota...",
       "Caricando i giocatori...",
@@ -54,7 +70,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       "Shuffling secret letters...",
       "Recharging power-ups..."
       ];
-  // State for cycling loading phrases
   const [loadingPhraseIdx, setLoadingPhraseIdx] = useState(0);
   React.useEffect(() => {
     if (!isWakingUp || loadingPhrases.length === 0) return;
@@ -64,13 +79,13 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     return () => clearInterval(interval);
   }, [isWakingUp, loadingPhrases.length]);
 
-  // --- DEFINIZIONE DATI STRUTTURATI (JSON-LD) ---
+  // --- JSON-LD ---
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "VideoGame",
     "name": isIt ? "GiraParole" : "SpinWords",
-    "description": isIt 
-      ? "Gioco di parole e di enigmistica online gratuito. Gira la ruota, usa i powerups e indovina la frase prima degli altri giocatori." 
+    "description": isIt
+      ? "Gioco di parole e di enigmistica online gratuito. Gira la ruota, usa i powerups e indovina la frase prima degli altri giocatori."
       : "Free online word puzzle game. Spin the wheel, use power-ups, and guess the phrase before other players.",
     "genre": ["Puzzle", "Word Game", "Trivia", "Enigmistic"],
     "url": "https://spinwords.pages.dev",
@@ -96,52 +111,64 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       "category": "free"
     }
   };
-  // ----------------------------------------------
 
-  // SEO Text for Home Page
-  const metaTitle = isIt 
-    ? "GiraParole - Gioco Enigmistico Online Gratis" 
+  const metaTitle = isIt
+    ? "GiraParole - Gioco Enigmistico Online Gratis"
     : "SpinWords -  Online Word Game";
   const metaDescription = isIt
     ? "Gioca a GiraParole online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici."
     : "Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.";
-    
+
+  // --- Carousel state ---
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  // --- Game state ---
   const [gameMode, setGameMode] = useState<GameMode>('single');
   const [onlineSubMode, setOnlineSubMode] = useState<OnlineSubMode>('create');
   const [players, setPlayers] = useState(MIN_PLAYERS);
   const [names, setNames] = useState([] as string[]);
   const [roomCode, setRoomCode] = useState('');
+  const [category, setCategory] = useState<'random' | 'food' | 'travel' | 'sports' | 'music' | 'technology'>('random');
   const [error, setError] = useState('');
 
-  const handleModeChange = (mode: GameMode) => {
+  const handleModeChange = (mode: GameMode, subMode?: OnlineSubMode) => {
     setGameMode(mode);
     setError('');
-    
+
     if (mode === 'single') {
       setPlayers(1);
-      setNames([]);
-    } 
+      setNames(['']);
+    }
     else if (mode === 'local') {
       setPlayers(2);
       setNames(['', '']);
     }
     else if (mode === 'online') {
-      setOnlineSubMode('create');
-      setPlayers(2); // Default for online create
-      setNames(['']); // One input for me (creator)
+      const sm = subMode || 'create';
+      setOnlineSubMode(sm);
+      if (sm === 'create') {
+        setPlayers(2);
+        setNames(['']);
+      } else {
+        setPlayers(1);
+        setNames(['']);
+        // join has only 2 steps, clamp if needed
+        setStep(s => Math.min(s, 1));
+      }
     }
   };
 
   const handleOnlineSubModeChange = (subMode: OnlineSubMode) => {
     setOnlineSubMode(subMode);
     setError('');
-    
+
     if (subMode === 'create') {
       setPlayers(2);
-      setNames(['']); // One name for Creator
+      setNames(['']);
     } else {
-      setPlayers(1); // Conceptually 1 "local" player joining
-      setNames(['']); 
+      setPlayers(1);
+      setNames(['']);
     }
   };
 
@@ -158,7 +185,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     } else if (gameMode === 'online') {
         setNames((prev) => {
             if (prev.length === 0) return [''];
-            return prev.slice(0, 1); // Ensure only 1 name
+            return prev.slice(0, 1);
         });
     }
   };
@@ -172,69 +199,249 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     setError('');
   };
 
-  const handleStart = async () => {
-    // 1. PRIMA fai le validazioni (nomi vuoti, duplicati, ecc.)
+  // --- Validation for step transitions ---
+  const validateStep1 = (): boolean => {
     if (gameMode === 'online') {
-        const myName = names[0] || '';
-        if (!myName.trim()) {
-           setError(t('error.emptyNames'));
-           return;
-        }
-        if (onlineSubMode === 'join' && !roomCode.trim()) {
-            setError(t('error.emptyRoomCode') || 'Enter a room code');
-            return;
-        }
+      const myName = names[0] || '';
+      if (!myName.trim()) {
+        setError(t('error.emptyNames'));
+        return false;
+      }
+      if (onlineSubMode === 'join' && !roomCode.trim()) {
+        setError(t('error.emptyRoomCode') || 'Enter a room code');
+        return false;
+      }
     } else if (gameMode === 'local' && players > 1) {
       const empty = names.findIndex(name => !name.trim());
       if (empty !== -1) {
         setError(t('error.emptyNames'));
-        return;
+        return false;
       }
       const normalized = names.map(n => n.trim().toLowerCase());
       const hasDuplicates = normalized.some((name, idx) => normalized.indexOf(name) !== idx);
       if (hasDuplicates) {
         setError(t('error.duplicateNames'));
-        return;
+        return false;
       }
     } else if (gameMode === 'single') {
-        // Single player - names handling if any
-        if (names.length > 0 && !names[0].trim()) {
-             // Maybe optional? Current logic allows empty?
-        }
+      if (names.length > 0 && names[0] && !names[0].trim()) {
+        // Allow empty name for single player (optional)
+      }
     }
+    return true;
+  };
 
+  const isJoin = gameMode === 'online' && onlineSubMode === 'join';
+  const maxStep = isJoin ? 1 : 2;
+
+  const goNext = () => {
+    if (step === 1) {
+      if (!validateStep1()) return;
+    }
+    setError('');
+    setDirection(1);
+    setStep(s => Math.min(s + 1, maxStep));
+  };
+
+  const goBack = () => {
+    setError('');
+    setDirection(-1);
+    setStep(s => Math.max(s - 1, 0));
+  };
+
+  const handleStart = async () => {
     setIsWakingUp(true);
     let awake = false;
-    
+
     while (!awake) {
       try {
         const res = await fetch(`${API_URL}/health`, { cache: 'no-store' });
         if (res.ok) {
           awake = true;
         } else {
-          // Se il server risponde ma con errore, aspetta 2 secondi
           await new Promise(resolve => setTimeout(resolve, 2000));
         }
       } catch (err) {
-        // Se il fetch fallisce (server ancora "giù"), aspetta 2 secondi
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
-    
-    // 3. Una volta che il server è sveglio, togli lo spinner
+
     setIsWakingUp(false);
 
-    // 4. SOLO ORA avvia il gioco
     onStart({
       players,
-      names: names.length > 0 ? names : [], // Ensure array
+      names: names.length > 0 ? names : [],
       mode: gameMode,
       onlineSubMode: gameMode === 'online' ? onlineSubMode : undefined,
-      roomCode: (gameMode === 'online' && onlineSubMode === 'join') ? roomCode : undefined
+      roomCode: (gameMode === 'online' && onlineSubMode === 'join') ? roomCode : undefined,
+      category,
     });
   };
 
   const rulesLabel = t('start.rules');
+
+  // --- Render step content ---
+  const renderStep0 = () => (
+    <div className="carousel-step">
+      <div className="game-mode-toggles">
+        <button
+          className={`mode-btn ${gameMode === 'single' ? 'active' : ''}`}
+          onClick={() => handleModeChange('single')}
+        >
+          {t('start.mode.single')}
+        </button>
+        <button
+          className={`mode-btn ${gameMode === 'local' ? 'active' : ''}`}
+          onClick={() => handleModeChange('local')}
+        >
+          {t('start.mode.local')}
+        </button>
+        <button
+          className={`mode-btn ${gameMode === 'online' && onlineSubMode === 'create' ? 'active' : ''}`}
+          onClick={() => handleModeChange('online', 'create')}
+        >
+          {t('start.submode.create')}
+        </button>
+        <button
+          className={`mode-btn ${gameMode === 'online' && onlineSubMode === 'join' ? 'active' : ''}`}
+          onClick={() => handleModeChange('online', 'join')}
+        >
+          {t('start.submode.join')}
+        </button>
+      </div>
+
+      <div className="lang-toggle carousel-lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
+        <Link
+          to="/it"
+          className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
+          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {t('lang.it')}
+        </Link>
+        <Link
+          to="/en"
+          className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {t('lang.en')}
+        </Link>
+      </div>
+    </div>
+  );
+
+  const renderStep1 = () => (
+    <div className="carousel-step">
+      {(gameMode === 'local' || (gameMode === 'online' && onlineSubMode === 'create')) && (
+        <div className="players-select pretty-select">
+          <div className="players-select-label-group">
+            <label htmlFor="players" className="players-label">
+              {t('players.label')}
+            </label>
+            <div className="custom-dropdown-wrapper">
+              <select
+                id="players"
+                value={players}
+                onChange={handleChange}
+                className="select-dropdown custom-dropdown"
+              >
+                {Array.from({ length: 3 }, (_, i) => (
+                  <option key={i + 2} value={i + 2}>
+                    {i + 2}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={`players-names ${gameMode === 'online' ? 'players-names-column' : ''}`}>
+        {gameMode === 'online' ? (
+          <>
+            {onlineSubMode === 'join' && (
+              <input
+                type="text"
+                className="player-name-input pretty-input"
+                placeholder={t('start.roomCode.placeholder')}
+                value={roomCode}
+                onChange={e => setRoomCode(e.target.value)}
+                autoComplete="off"
+                style={{ marginBottom: '10px' }}
+              />
+            )}
+            <input
+              type="text"
+              className="player-name-input pretty-input"
+              placeholder={t('player.placeholder')}
+              value={names[0] || ''}
+              onChange={e => handleNameChange(0, e.target.value)}
+              autoComplete="off"
+            />
+          </>
+        ) : (
+          Array.from({ length: gameMode === 'single' ? 1 : players }, (_, i) => (
+            <input
+              key={i}
+              type="text"
+              className="player-name-input pretty-input"
+              placeholder={gameMode === 'single' ? t('player.placeholder') : `${t('player.placeholder')} ${i + 1}`}
+              value={names[i] || ''}
+              onChange={e => handleNameChange(i, e.target.value)}
+              autoComplete="off"
+            />
+          ))
+        )}
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="carousel-step">
+      <h3 className="category-title">{t('carousel.category')}</h3>
+      <div className="category-toggles">
+        <button
+          className={`mode-btn category-btn ${category === 'random' ? 'active' : ''}`}
+          onClick={() => setCategory('random')}
+        >
+          🎲 {t('carousel.categoryRandom')}
+        </button>
+        <button
+          className={`mode-btn category-btn ${category === 'food' ? 'active' : ''}`}
+          onClick={() => setCategory('food')}
+        >
+          🍕 {t('carousel.categoryFood')}
+        </button>
+        <button
+          className={`mode-btn category-btn ${category === 'travel' ? 'active' : ''}`}
+          onClick={() => setCategory('travel')}
+        >
+          ✈️ {t('carousel.categoryTravel')}
+        </button>
+        <button
+          className={`mode-btn category-btn ${category === 'sports' ? 'active' : ''}`}
+          onClick={() => setCategory('sports')}
+        >
+          ⚽ {t('carousel.categorySports')}
+        </button>
+        <button
+          className={`mode-btn category-btn ${category === 'music' ? 'active' : ''}`}
+          onClick={() => setCategory('music')}
+        >
+          🎵 {t('carousel.categoryMusic')}
+        </button>
+        <button
+          className={`mode-btn category-btn ${category === 'technology' ? 'active' : ''}`}
+          onClick={() => setCategory('technology')}
+        >
+          💻 {t('carousel.categoryTechnology')}
+        </button>
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
+    </div>
+  );
 
   return (
     <div className="start-screen pretty-bg">
@@ -253,7 +460,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         </div>
       )}
 
-      {/* --- INIEZIONE JSON-LD --- */}
       <Helmet>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
@@ -263,9 +469,8 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           `}
         </script>
       </Helmet>
-      {/* ------------------------- */}
 
-      {/* SVG Decorativi (Invariati) */}
+      {/* SVG Decorativi */}
       <svg className="bg-decor bg-star star1" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star2" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
       <svg className="bg-decor bg-star star5" viewBox="0 0 38 38"><polygon points="19,2 23,14 36,14 25,22 29,35 19,27 9,35 13,22 2,14 15,14" fill="#ffd700"/></svg>
@@ -276,164 +481,78 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <div className="bg-decor bg-circle c5"></div>
 
       <div className="start-card start-card-relative">
-        
+
         <div className="rules-btn-container">
           <Link
-            to="rules" // React Router gestirà il link relativo (es. /it/rules)
+            to="rules"
             className="rules-btn pretty-btn cute-rules-btn"
             aria-label={rulesLabel}
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} // Fix rapido per assicurarsi che sembri un bottone
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <span className="rules-btn-icon" role="img" aria-label="rules">📜</span>
             {rulesLabel}
           </Link>
         </div>
-        {/* ------------------------------------------------ */}
 
         <h1 className="title fancy-title">
           {isIt ? "GiraParole" : "SpinWords"}
         </h1>
 
-        <div className="game-mode-toggles">
-          <button 
-            className={`mode-btn ${gameMode === 'single' ? 'active' : ''}`} 
-            onClick={() => handleModeChange('single')}
-          >
-            {t('start.mode.single')}
-          </button>
-          <button 
-            className={`mode-btn ${gameMode === 'local' ? 'active' : ''}`} 
-            onClick={() => handleModeChange('local')}
-          >
-            {t('start.mode.local')}
-          </button>
-          <button 
-            className={`mode-btn ${gameMode === 'online' ? 'active' : ''}`} 
-            onClick={() => handleModeChange('online')}
-          >
-            {t('start.mode.online')}
-          </button>
+        {/* Carousel container */}
+        <div className="carousel-container">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              {step === 0 && renderStep0()}
+              {step === 1 && renderStep1()}
+              {step === 2 && renderStep2()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+         {/* Step indicator dots */}
+        <div className="step-dots">
+          {Array.from({ length: maxStep + 1 }, (_, i) => (
+            <span key={i} className={`step-dot ${step === i ? 'active' : ''}`} />
+          ))}
         </div>
 
-        {gameMode === 'online' && (
-          <div className="game-mode-toggles sub-toggles" style={{ marginTop: '0px' }}>
-            <button 
-              className={`mode-btn sub-mode-btn ${onlineSubMode === 'create' ? 'active' : ''}`} 
-              onClick={() => handleOnlineSubModeChange('create')}
-            >
-              {t('start.submode.create')}
+        {/* Navigation buttons */}
+        <div className="carousel-nav">
+          {step > 0 ? (
+            <button className="carousel-nav-btn back-btn" onClick={goBack}>
+              {t('carousel.back')}
             </button>
-            <button 
-              className={`mode-btn sub-mode-btn ${onlineSubMode === 'join' ? 'active' : ''}`} 
-              onClick={() => handleOnlineSubModeChange('join')}
-            >
-              {t('start.submode.join')}
+          ) : (
+            <div className="carousel-nav-spacer" />
+          )}
+          {step < maxStep ? (
+            <button className="carousel-nav-btn next-btn" onClick={goNext}>
+              {t('carousel.next')}
             </button>
-          </div>
-        )}
-        
-        {/* ... Il resto del form (select players, inputs) rimane invariato ... */}
-        {(gameMode === 'local' || (gameMode === 'online' && onlineSubMode === 'create')) && (
-          <div className="players-select pretty-select">
-            <div className="players-select-label-group">
-              <label htmlFor="players" className="players-label">
-                {t('players.label')}
-              </label>
-              <div className="custom-dropdown-wrapper">
-                <select
-                  id="players"
-                  value={players}
-                  onChange={handleChange}
-                  className="select-dropdown custom-dropdown"
-                >
-                  {Array.from({ length: 3 }, (_, i) => (
-                    <option key={i + 2} value={i + 2}>
-                      {i + 2}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        )}
-        {(
-          <div className="players-names">
-             {gameMode === 'online' ? (
-                <>
-                  {onlineSubMode === 'join' && (
-                     <input
-                        type="text"
-                        className="player-name-input pretty-input"
-                        placeholder={t('start.roomCode.placeholder')}
-                        value={roomCode}
-                        onChange={e => setRoomCode(e.target.value)}
-                        autoComplete="off"
-                        style={{ marginBottom: '10px' }}
-                     />
-                  )}
-                  {/* Always show one name input for online mode (My Name) */}
-                  <input
-                    type="text"
-                    className="player-name-input pretty-input"
-                    placeholder={t('player.placeholder')} 
-                    value={names[0] || ''}
-                    onChange={e => handleNameChange(0, e.target.value)}
-                    autoComplete="off"
-                  />
-                </>
-             ) : (
-                /* Local or Single */
-                Array.from({ length: players }, (_, i) => (
-                  <input
-                    key={i}
-                    type="text"
-                    className="player-name-input pretty-input"
-                    placeholder={`${t('player.placeholder')} ${i + 1}`}
-                    value={names[i] || ''}
-                    onChange={e => handleNameChange(i, e.target.value)}
-                    autoComplete="off"
-                  />
-                ))
-             )}
-          </div>
-        )}
-        {error && <div className="error-message">{error}</div>}
-        <div className="actions-row">
-          <button className="start-btn pretty-btn" onClick={handleStart}>
-            {gameMode === 'online' 
-               ? (onlineSubMode === 'create' ? t('start.button.create') : t('start.button.join'))
-               : t('start.button')
-            }
-          </button>
-          {!(gameMode === 'online' && onlineSubMode === 'join') && (
-            <div className="lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
-              {/* Link verso Italiano */}
-              <Link
-                to="/it"
-                className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
-                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                  {t('lang.it')}
-              </Link>
-
-              {/* Link verso Inglese */}
-              <Link
-                to="/en"
-                className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                  {t('lang.en')}
-            </Link>
-            </div>
+          ) : (
+            <button className="carousel-nav-btn next-btn" onClick={handleStart}>
+              {gameMode === 'online'
+                ? (onlineSubMode === 'create' ? t('start.button.create') : t('start.button.join'))
+                : t('start.button')
+              }
+            </button>
           )}
         </div>
       </div>
-      {/* --- NUOVO CONTENUTO SEO (Aggiungi questo blocco sotto la start-card) --- */}
-      <article className="seo-content-container" style={{ 
-          maxWidth: '800px', 
-          margin: '40px auto', 
-          padding: '20px', 
-          backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+
+      {/* SEO content */}
+      <article className="seo-content-container" style={{
+          maxWidth: '800px',
+          margin: '40px auto',
+          padding: '20px',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
           borderRadius: '15px',
           boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
           color: '#333',
@@ -445,7 +564,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           <>
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
             <p>
-              GiraParole è tra i <strong>giochi enigmistici</strong> perfetti per gli appassionati dei giochi di parole. 
+              GiraParole è tra i <strong>giochi enigmistici</strong> perfetti per gli appassionati dei giochi di parole.
               Gira la ruota, chiama le consonanti, compra le vocali e <strong>indovina la frase</strong> prima dei tuoi avversari!
             </p>
             <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
@@ -465,7 +584,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           <>
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>The Funniest Free Online Word Game</h2>
             <p>
-              SpinWords is a <strong>free puzzle word game</strong> perfect for word game enthusiasts. 
+              SpinWords is a <strong>free puzzle word game</strong> perfect for word game enthusiasts.
               Spin the wheel, guess the consonants, buy vowels, and solve the hidden phrase before your opponents!
             </p>
             <h2>Game Features:</h2>

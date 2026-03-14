@@ -51,15 +51,22 @@
 .players-names {
   width: 100%;
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0rem;
+  margin-top: 1rem;
+}
+
+.players-names.players-names-column {
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  margin-bottom: 0.2rem;
 }
 
 .player-name-input, .pretty-input {
-  width: 220px;
-  padding: 0.6rem 1rem;
+  width: 130px;
+  padding: 0.3rem 0.5rem;
   font-size: 1.08rem;
   border-radius: 8px;
   border: 1.5px solid #1976d2;
@@ -68,7 +75,7 @@
   outline: none;
   box-shadow: 0 1px 6px 0 rgba(25,118,210,0.07);
   transition: border 0.2s, box-shadow 0.2s;
-  margin-bottom: 0;
+  margin-top: 1.5rem;
 }
 .player-name-input:focus, .pretty-input:focus {
   border: 2px solid #f49f31;
@@ -90,29 +97,18 @@
 
 .title {
   font-size: 2.5rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
   letter-spacing: 2px;
   text-align: center;
 }
 
 .players-select {
-  margin-bottom: 2.2rem;
+  margin-bottom: 1.0rem;
   margin-top: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.players-select-label-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
-  padding: 0.7rem 1.5rem;
-  border: 1px solid #ececec;
 }
 
 .players-label {
@@ -279,14 +275,7 @@
 }
 
 .players-select {
-  margin-bottom: 1.5rem;
-  margin-top: 0;
-  /* aggiunto padding sopra per separare dal titolo */
-}
-
-
-.players-select {
-  margin-bottom: 1.5rem;
+  margin-bottom: -2rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -301,6 +290,12 @@
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
   padding: 0.7rem 1.5rem;
   border: 1px solid #ececec;
+  margin-top: 0.5rem;
+}
+
+.start-card-relative{
+  padding-top: 2.2rem;
+  padding-bottom: 0.5rem;
 }
 
 .players-label {
@@ -409,8 +404,7 @@
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 25px;
   flex-wrap: wrap;
 }
 
@@ -424,6 +418,7 @@
   color: #333;
   transition: all 0.2s ease;
   font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .mode-btn:hover {
@@ -447,4 +442,110 @@
 .sub-mode-btn {
   font-size: 0.8rem;
   padding: 6px 12px;
+}
+
+/* ==================== Carousel ==================== */
+.carousel-container {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.carousel-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0.8rem;
+}
+
+/* Step indicator dots */
+.step-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 1.2rem;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  transition: background 0.3s, transform 0.3s;
+}
+
+.step-dot.active {
+  background: linear-gradient(90deg, #edbc0c 0%, #ca06f1 100%);
+  transform: scale(1.3);
+}
+
+/* Navigation buttons */
+.carousel-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 1.2rem;
+  padding: 0 0.5rem;
+}
+
+.carousel-nav-spacer {
+  width: 90px;
+}
+
+.carousel-nav-btn {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 2px solid #ffd700;
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.carousel-nav-btn:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.carousel-nav-btn.next-btn {
+  background: linear-gradient(90deg, #f49f31 0%, #ffe066 100%);
+  color: #222;
+  border-color: #f49f31;
+}
+
+.carousel-nav-btn.next-btn:hover {
+  background: linear-gradient(90deg, #ffe066 0%, #f49f31 100%);
+}
+
+/* Category page */
+.category-title {
+  font-size: 1.2rem;
+  color: #1976d2;
+  font-weight: 600;
+  margin: 2rem 0 0 0;
+}
+
+.category-toggles {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.category-btn {
+  min-width: 10px;
+}
+
+/* Language toggle centered in carousel */
+.carousel-lang-toggle {
+  justify-content: center;
 }

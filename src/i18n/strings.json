@@ -44,7 +44,7 @@
   ],
   "start.wheelSectors": "Settori della ruota",
   "players.label": "Numero di giocatori:",
-  "player.placeholder": "Nome giocatore",
+  "player.placeholder": "Giocatore",
   "players.defaultName": "Giocatore",
   "start.button": "Inizia",
   "error.emptyNames": "Inserisci il nome per tutti i giocatori!",
@@ -181,7 +181,7 @@
     "start.submode.create": "Crea stanza",
     "start.submode.join": "Entra nella stanza",
     "start.roomCode.label": "Codice stanza",
-    "start.roomCode.placeholder": "Inserisci codice...",
+    "start.roomCode.placeholder": "Codice stanza",
     "start.button.create": "Crea stanza",
     "start.button.join": "Entra",
     "lobby.waiting": "In attesa che tutti i giocatori entrino nella stanza...",
@@ -192,7 +192,16 @@
     "lobby.copied": "Copiato",
     "lobby.playerLeft": " è uscito dal gioco.",
     "lobby.youLeft": "Hai lasciato la partita.",
-    "error.emptyRoomCode": "Inserisci un codice stanza"
+    "error.emptyRoomCode": "Inserisci un codice stanza",
+    "carousel.next": "Avanti",
+    "carousel.back": "Indietro",
+    "carousel.category": "Scegli una categoria",
+    "carousel.categoryRandom": "Random",
+    "carousel.categoryFood": "Cibo",
+    "carousel.categoryTravel": "Viaggi",
+    "carousel.categorySports": "Sport",
+    "carousel.categoryMusic": "Musica",
+    "carousel.categoryTechnology": "Tecnologia"
   },
   "en": {
   "rules.pageHeading": "Spinwords - Game Rules",
@@ -238,7 +247,7 @@
     }
     ],
   "players.label": "Number of players:",
-  "player.placeholder": "Player name",
+  "player.placeholder": "Player",
   "players.defaultName": "Player",
   "start.button": "Start",
   "error.emptyNames": "Enter a name for every player!",
@@ -382,7 +391,7 @@
     "start.submode.create": "Create Room",
     "start.submode.join": "Join Room",
     "start.roomCode.label": "Room Code",
-    "start.roomCode.placeholder": "Enter code...",
+    "start.roomCode.placeholder": "Room Code",
     "start.button.create": "Create Room",
     "start.button.join": "Join",
     "lobby.waiting": "Waiting for all players to join the room...",
@@ -393,6 +402,15 @@
     "lobby.copied": "Copied",
     "lobby.playerLeft": " has left the game.",
     "lobby.youLeft": "You have left the game.",
-    "error.emptyRoomCode": "Enter a room code"
+    "error.emptyRoomCode": "Enter a room code",
+    "carousel.next": "Next",
+    "carousel.back": "Back",
+    "carousel.category": "Choose a category",
+    "carousel.categoryRandom": "Random",
+    "carousel.categoryFood": "Food",
+    "carousel.categoryTravel": "Travel",
+    "carousel.categorySports": "Sports",
+    "carousel.categoryMusic": "Music",
+    "carousel.categoryTechnology": "Technology"
   }
 }

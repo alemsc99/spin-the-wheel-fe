@@ -644,7 +644,7 @@ function AppContent() {
     setErrorMsg(message);
   }
 
-  async function newGame(players: number, names: string[]){
+  async function newGame(players: number, names: string[], category?: string){
     try{
       const res = await fetch(`${API_URL}/new-game`, {
         method: 'POST',
@@ -654,7 +654,8 @@ function AppContent() {
           player_names: names,
           language: lang,
           room_code: roomCode,
-          player_name: myName
+          player_name: myName,
+          category: category
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
