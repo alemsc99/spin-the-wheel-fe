@@ -64,6 +64,19 @@
   align-items: center;
 }
 
+.players-names.players-names-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.players-names.players-names-grid .player-name-input {
+  width: 100%;
+  margin-top: 0;
+  box-sizing: border-box;
+}
+
 .player-name-input, .pretty-input {
   width: 130px;
   padding: 0.3rem 0.5rem;
@@ -838,6 +851,37 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: #5d4037;
+}
+
+/* ======= CATEGORY SELECTION ======= */
+.category-selection {
+  width: 100%;
+  text-align: center;
+}
+
+.category-label {
+  font-size: 0.92rem;
+  color: #555;
+  font-weight: 600;
+  margin: 0 0 0.4rem 0;
+  text-align: center;
+}
+
+.category-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.category-btn {
+  font-size: 0.78rem;
+  padding: 5px 10px;
+}
+
+/* ======= LOGIN LANG TOGGLE ======= */
+.login-lang-toggle {
+  margin-top: 0.5rem;
 }
 
 /* ======= RESPONSIVE ======= */

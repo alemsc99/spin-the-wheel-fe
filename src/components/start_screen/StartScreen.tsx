@@ -213,6 +213,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
 
   const handleOnlineSubModeChange = (subMode: OnlineSubMode) => {
+    setGameMode('online');
     setOnlineSubMode(subMode);
     setError('');
     if (subMode === 'create') {
@@ -276,7 +277,14 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
         finalPlayers = players;
       }
     }
-    return true;
+    await onStart({
+      players: finalPlayers,
+      names: finalNames,
+      mode: gameMode,
+      onlineSubMode: finalOnlineSubMode,
+      roomCode: finalRoomCode,
+      category,
+    });
   };
 
   const isJoin = gameMode === 'online' && onlineSubMode === 'join';
@@ -495,6 +503,24 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                   </div>
                 )}
               </div>
+
+              {/* Language toggle on first slide */}
+              <div className="lang-toggle login-lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
+                <Link
+                  to="/it"
+                  className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
+                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  {t('lang.it')}
+                </Link>
+                <Link
+                  to="/en"
+                  className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  {t('lang.en')}
+                </Link>
+              </div>
             </div>
 
             {/* ===== SLIDE 1: GAME MODE ===== */}
@@ -514,29 +540,18 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                     {t('start.mode.local')}
                   </button>
                   <button
-                    className={`mode-btn ${gameMode === 'online' ? 'active' : ''}`}
-                    onClick={() => handleModeChange('online')}
+                    className={`mode-btn ${gameMode === 'online' && onlineSubMode === 'create' ? 'active' : ''}`}
+                    onClick={() => handleOnlineSubModeChange('create')}
                   >
-                    {t('start.mode.online')}
+                    {t('start.submode.create')}
+                  </button>
+                  <button
+                    className={`mode-btn ${gameMode === 'online' && onlineSubMode === 'join' ? 'active' : ''}`}
+                    onClick={() => handleOnlineSubModeChange('join')}
+                  >
+                    {t('start.submode.join')}
                   </button>
                 </div>
-
-                {gameMode === 'online' && (
-                  <div className="game-mode-toggles sub-toggles" style={{ marginTop: '0px' }}>
-                    <button
-                      className={`mode-btn sub-mode-btn ${onlineSubMode === 'create' ? 'active' : ''}`}
-                      onClick={() => handleOnlineSubModeChange('create')}
-                    >
-                      {t('start.submode.create')}
-                    </button>
-                    <button
-                      className={`mode-btn sub-mode-btn ${onlineSubMode === 'join' ? 'active' : ''}`}
-                      onClick={() => handleOnlineSubModeChange('join')}
-                    >
-                      {t('start.submode.join')}
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -567,7 +582,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                       </div>
                     </div>
                     <p className="others-label">{t('players.othersOnly')}</p>
-                    <div className="players-names">
+                    <div className="players-names players-names-grid">
                       {otherNames.map((name, i) => (
                         <input
                           key={i}
@@ -624,7 +639,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               </div>
             </div>
 
-            {/* ===== SLIDE 3: CONFIRM / START ===== */}
+            {/* ===== SLIDE 3: CATEGORY / START ===== */}
             <div className="carousel-slide">
               <div className="slide-content start-slide">
                 <div className="start-summary">
@@ -653,6 +668,24 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                   )}
                 </div>
 
+                {/* Category selection for single / local modes */}
+                {(gameMode === 'single' || gameMode === 'local') && (
+                  <div className="category-selection">
+                    <p className="category-label">{t('category.label')}</p>
+                    <div className="category-buttons">
+                      {(['random', 'food', 'travel', 'sports', 'music', 'technology'] as const).map((cat) => (
+                        <button
+                          key={cat}
+                          className={`mode-btn category-btn ${category === cat ? 'active' : ''}`}
+                          onClick={() => setCategory(cat)}
+                        >
+                          {t(`category.${cat}`)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {error && <div className="error-message">{error}</div>}
 
                 <button className="start-btn pretty-btn" onClick={handleStart}>
@@ -662,26 +695,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                       : t('start.button.join')
                     : t('start.button')}
                 </button>
-
-                {/* Language toggle only on last slide */}
-                {!(gameMode === 'online' && onlineSubMode === 'join') && (
-                  <div className="lang-toggle" role="group" aria-label={t('start.langSelectionAria')}>
-                    <Link
-                      to="/it"
-                      className={`lang-btn ${lang === 'it' ? 'active' : ''}`}
-                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      {t('lang.it')}
-                    </Link>
-                    <Link
-                      to="/en"
-                      className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      {t('lang.en')}
-                    </Link>
-                  </div>
-                )}
               </div>
             </div>
           </div>
