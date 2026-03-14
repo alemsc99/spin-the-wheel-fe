@@ -29,7 +29,7 @@ export interface StartGameOptions {
   mode: GameMode;
   onlineSubMode?: OnlineSubMode;
   roomCode?: string;
-  category?: 'random' | 'food' | 'travel' | 'sports' | 'music' | 'technology';
+  category?: 'Random' | 'Food' | 'Travel' | 'Sports' | 'Music' | 'Technology';
 }
 
 type StartScreenProps = {
@@ -121,7 +121,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const [players, setPlayers] = useState(MIN_PLAYERS);
   const [otherNames, setOtherNames] = useState<string[]>([]); // names of OTHER players (not the current user)
   const [roomCode, setRoomCode] = useState('');
-  const [category, setCategory] = useState<'random' | 'food' | 'travel' | 'sports' | 'music' | 'technology'>('random');
+  const [category, setCategory] = useState<'Random' | 'Food' | 'Travel' | 'Sports' | 'Music' | 'Technology'>('Random');
   const [error, setError] = useState('');
 
   // ---- NAVIGATION ----
@@ -662,7 +662,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                 {(gameMode === 'single' || gameMode === 'local' || (gameMode === 'online' && onlineSubMode === 'create')) && (
                 <div className="category-selection">
                   <div className="category-buttons">
-                    {(['random', 'food', 'travel', 'sports', 'music', 'technology'] as const).map((cat) => (
+                    {(['Random', 'Food', 'Travel', 'Sports', 'Music', 'Technology'] as const).map((cat) => (
                       <button
                         key={cat}
                         className={`mode-btn category-btn ${category === cat ? 'active' : ''}`}

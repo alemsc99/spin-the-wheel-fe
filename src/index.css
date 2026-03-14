@@ -208,6 +208,7 @@ header { display:flex; justify-content:space-between; align-items:center }
 	gap: 6px;
 	width: 48px;
 }
+
 .new-game-btn:hover {
 	transform: scale(1.07) rotate(-2deg);
 	box-shadow: 0 4px 16px rgba(255, 183, 77, 0.28);

@@ -40,12 +40,12 @@ const COLORS = [
 ];
 
 const categoryIcons = {
-  random: '🎲',
-  food: '🍔',
-  travel: '✈️',
-  sports: '⚽',
-  music: '🎵',
-  technology: '💻'
+  Random: '🎲',
+  Food: '🍔',
+  Travel: '✈️',
+  Sports: '⚽',
+  Music: '🎵',
+  Technology: '💻'
 };
 
 

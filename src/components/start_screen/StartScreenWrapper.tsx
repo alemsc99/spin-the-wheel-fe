@@ -5,7 +5,7 @@ import { useTranslation } from '../../i18n/TranslationProvider';
 
 type Props = {
   newGame: (players: number, names: string[], category?: string) => Promise<void>;
-  createRoom: (players: number, language: string, hostName: string) => Promise<void>;
+  createRoom: (players: number, language: string, hostName: string, category?: string) => Promise<void>;
   joinRoom: (roomCode: string, playerName: string) => Promise<void>;
   setNumPlayers: React.Dispatch<React.SetStateAction<number>>;
   setPlayerNames: React.Dispatch<React.SetStateAction<string[]>>;
@@ -44,7 +44,7 @@ export default function StartScreenWrapper({
             await joinRoom(roomCode, myName);
           } else if (onlineSubMode === 'create') {
              // For create room, we probably use the set language
-             await createRoom(players, activeLang, myName);
+             await createRoom(players, activeLang, myName, category);
           }
         } else {
           // Single or Local

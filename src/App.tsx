@@ -714,7 +714,7 @@ function AppContent() {
     }
   }
 
-  async function createRoom(players: number, language: string, host_name: string) {
+  async function createRoom(players: number, language: string, host_name: string, category?: string) {
     try {
       const res = await fetch(`${API_URL}/create-room`, {
         method: 'POST',
@@ -722,7 +722,8 @@ function AppContent() {
         body: JSON.stringify({
           host_name: host_name,
           capacity: players,
-          language: language
+          language: language,
+          category: category
         })
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -730,7 +731,7 @@ function AppContent() {
       setPlayerNames(data.players);
       setRoomHost(host_name);
       const targetLang = data.language || language || lang;
-      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name } });
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name, category } });
     } catch (err) {
       console.error(err);
       showErrorMessage('Failed to create room');
@@ -1294,7 +1295,7 @@ function AppContent() {
     if (location.pathname !== targetPath) {
       navigate(targetPath);
     }
-    await newGame(numPlayers, playerNames);
+    await newGame(numPlayers, playerNames, topic);
   }
 
   function handleLettersGridClick() {
@@ -1372,6 +1373,7 @@ function AppContent() {
             <Lobby
               connectWebSocket={connectWebSocket} 
               playerNames={playerNames} // la lista nomi aggiornata
+              topic={topic}             // La categoria scelta
             />
           }
         />
@@ -1593,6 +1595,7 @@ function AppContent() {
             <div style={{ display: 'flex', gap: 12, marginTop: 12, justifyContent: 'center' }}>
                 <button className="new-game-btn" onClick={confirmNewGameYes} style={{ padding: '8px 14px' }}>{t('common.yes')}</button>
                 <button className="new-game-btn" onClick={confirmNewGameNo} style={{ padding: '8px 14px' }}>{t('common.no')}</button>
+                <button className="new-game-btn-cancel" onClick={() => setShowNewGameConfirm(false)} style={{ padding: '8px 14px' }}>{t('common.cancel')}</button>
             </div>
           </div>
         </div>

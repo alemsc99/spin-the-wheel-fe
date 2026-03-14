@@ -165,6 +165,24 @@
   justify-content: center !important;
 }
 
+.new-game-btn-cancel{
+	background: rgb(146, 144, 144);
+	color: #fff;
+	font-weight: bold;
+	font-size: 1.1em;
+	border: none;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(244, 67, 54, 0.18);
+	padding: 10px 22px;
+	cursor: pointer;
+	transition: transform 0.18s, box-shadow 0.18s;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: 95px;
+  text-align: center;;
+}
+
 .guess-phrase-btn:not(:disabled):hover {
   box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
 }
