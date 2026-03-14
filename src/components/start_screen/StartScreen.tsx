@@ -340,7 +340,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <span className="rules-btn-icon" role="img" aria-label="rules">📜</span>
-            {rulesLabel}
           </Link>
         </div>
 
@@ -707,23 +706,8 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           )}
         </div>
       </div>
-
-      {/* SEO Content */}
-      <article
-        className="seo-content-container"
-        style={{
-          maxWidth: '800px',
-          margin: '40px auto',
-          padding: '10px',
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: '15px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          color: '#333',
-          lineHeight: '1.5',
-          fontSize: '0.9rem',
-          textAlign: 'left',
-        }}
-      >
+      {/* --- NUOVO CONTENUTO SEO (Aggiungi questo blocco sotto la start-card) --- */}
+      <article className="seo-content-container">
         {isIt ? (
           <>
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
