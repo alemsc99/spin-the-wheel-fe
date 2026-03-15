@@ -68,6 +68,8 @@
 .players-names.players-names-grid .player-name-input {
   width: 90%;
   box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .player-name-input, .pretty-input {
