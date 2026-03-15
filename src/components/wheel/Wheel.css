@@ -16,7 +16,7 @@
   text-align: center;
 }
 
-/* --- REGOLE MOBILE (960px) --- */
+/* --- REGOLE MOBILE (≤ 960px) --- */
 @media (max-width: 960px) {
   #wheelOfFortune {
     width: 100% !important;
@@ -35,13 +35,12 @@
   }
 
   .spin-btn {
-    /* RESET PERFETTO PER MOBILE */
-    width: 50px !important;   /* Dimensione fissa per il centro */
-    height: 50px !important;
     left: 50% !important;     /* Posiziona al centro esatto */
     top: 50% !important;
     transform: translate(-50%, -50%) !important; /* Centratura matematica */
-    font-size: 0.8rem !important;
+    width: clamp(36px, 10vw, 60px) !important; /* Dimensione adattiva */
+    height: clamp(36px, 10vw, 60px) !important;
+    font-size: clamp(0.6rem, 2vw, 0.85rem) !important; /* Testo più piccolo su mobile */
   }
 }
 
@@ -74,9 +73,7 @@
   left: 50%;
   width: 25%;
   height: 25%;
-  /* Attenzione: questo translate(22%) su desktop sposta il tasto. 
-     Se su desktop lo vuoi al centro, usa translate(-50%, -50%) */
-  transform: translate(22%, -50%); 
+  transform: translate(-50%, -50%);
   background: #fb0303;
   color: #fff;
   box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);

@@ -1,11 +1,12 @@
 .letters-grid-container {
   position: relative;
 }
+
 .letters-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
-  margin: 16px auto; /* Centered horizontally */
+  margin: 16px auto;
   justify-content: center;
   max-width: 100%;
 }
@@ -13,28 +14,38 @@
 .letter-btn {
   background: #f7c948;
   color: #222;
-  font-size: 1.5rem;
+  font-size: clamp(0.8rem, 2vw, 1.5rem);
   font-weight: bold;
   border: none;
   border-radius: 6px;
-  padding: 12px 0;
+  padding: 10px 0;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   transition: background 0.2s;
 }
 
+.letter-btn.used {
+  background: #f7c948;
+  color: black;
+  cursor: not-allowed;
+  border: 2px solid #f7c948;
+  box-shadow: none;
+  opacity: 0.2;
+}
 @media (max-width: 960px) {
+  .letters-grid {
+    gap: 4px;
+    margin: 8px auto;
+  }
   .letter-btn {
-    font-size: 1.0rem;
-    padding: 8px 0;
+    font-size: clamp(0.7rem, 2.5vw, 1.1rem);
+    padding: 6px 0;
   }
 }
 
 .letter-btn:active {
   background: #b7b7b3;
 }
-
-
 
 .letter-btn.wrong {
   animation: shake 0.4s;
@@ -95,7 +106,7 @@
   background: rgba(0,0,0,0);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 820px) {
   .letters-grid {
     grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
     gap: 2px;
@@ -103,7 +114,8 @@
     width: 100%;
   }
   .letter-btn {
-    font-size: 0.8rem;
-    padding: 8px 0;
+    font-size: clamp(0.6rem, 2.8vw, 0.9rem);
+    padding: 5px 0;
   }
 }
+

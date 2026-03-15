@@ -32,69 +32,54 @@
   flex-direction: column;
   align-items: center;
 }
+
+/* ── Mobile (≤ 960px): bottoni circolari verticali ── */
 @media (max-width: 960px) {
-  /* Override wrapper styles for mobile to match "Right Column" layout */
   .powerups-wrapper {
-    /* Reset container styles */
-    background: none !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-
-    /* Positioning relative to Wheel (order 5) and Left Actions (order 4) */
-    order: 6 !important; 
-    width: 15% !important; /* Fits next to wheel (62%) and left actions (15%) */
-    margin: 0 !important;
-    
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: auto !important;
+    background: none;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
   }
-  
+
   .powerups-title {
-    display: none !important;
+    display: none;
   }
 
-  /* Force inner container to stack vertically */
   .game-actions-right-container {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 2px !important;
-    width: 100% !important;
-    grid-template-columns: none !important; /* Disable grid */
-    flex: column !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
   }
 
-  /* Adjust existing grid/card styles if necessary */
-  .powerups-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0px;
-  }
   .powerup-card {
     background: none;
     box-shadow: none;
-    gap: 0;
     cursor: pointer;
     min-width: 0;
     position: relative;
-    overflow: visible !important;
-    transition: none;
+    overflow: visible;
     font-weight: 700;
     font-size: 0.9rem;
-    width: 50px !important;  /* Ridotto un po' per sicurezza su schermi stretti */
-    height: 50px !important;
+    width: clamp(44px, 12vw, 60px) !important;
+    height: clamp(44px, 12vw, 60px) !important;
     border-radius: 50% !important;
-    flex-shrink: 0 !important; /* Impedisce che si schiaccino */
+    flex-shrink: 0 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     padding: 0 !important;
+    transform: none;
   }
+
   .powerup-btn {
     background: #1976d2;
     color: #fff;
@@ -102,11 +87,10 @@
     cursor: pointer;
     overflow: visible !important;
     font-weight: 700;
-    font-size: 0.9rem;
-    width: 75px !important;  /* Ridotto un po' per sicurezza su schermi stretti */
-    height: 75px !important;
+    width: clamp(44px, 12vw, 60px) !important;
+    height: clamp(44px, 12vw, 60px) !important;
     border-radius: 50% !important;
-    flex-shrink: 0 !important; /* Impedisce che si schiaccino */
+    flex-shrink: 0 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -120,11 +104,9 @@
     object-fit: contain;
     border-radius: 50% !important;
     display: block;
-    box-shadow: none;
     background: transparent;
     margin: 0;
     padding: 0;
-    transition: transform 0.18s cubic-bezier(.4,1.4,.6,1);
   }
 
   .powerup-img-wrapper {
@@ -137,33 +119,29 @@
 
   .powerup-price {
     position: absolute !important;
-    bottom: -5px !important;  /* Lo sposta sul bordo inferiore */
-    right: -5px !important;   /* Lo sposta verso destra */
-    background: #333 !important; /* Sfondo scuro per contrasto */
-    color: #ffd700 !important;   /* Oro per la moneta */
-    font-size: 9px !important;   /* Testo molto piccolo */
-    padding: 2px 30px !important;
+    bottom: -4px !important;
+    background: #333 !important;
+    color: #ffd700 !important;
+    padding: 1px 4px !important;
     border-radius: 10px !important;
     border: 1px solid white !important;
     white-space: nowrap !important;
     z-index: 10 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
     font-weight: bold !important;
     display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important; /* Centra verticalmente numero e moneta */
+    align-items: center !important;
     justify-content: center !important;
-    gap: 2px !important;            /* Spazio preciso tra numero e moneta */
-    font-size: 1.0rem !important;
-    scale: calc(0.8) !important;
-    transform: translate(-61%, -2px) !important;
+    gap: 2px !important;
+    font-size: 0.65rem !important;
+    transform: none !important;
+    left: auto !important;
+    scale: 1 !important;
   }
 
   .powerup-button.disabled .powerup-price {
     background: #888 !important;
     color: #eee !important;
   }
-  
 }
 
 .powerups-grid {
@@ -262,14 +240,14 @@
   left: 50%;
   transform: translate(-35%, -4px);
   bottom: 6px;
-  font-size: 0.72rem;
+  font-size: 0.69rem;
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 999px;
   color: #ffffff;
   background: rgba(0, 0, 0, 0.55);
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  pointer-events: none; /* let clicks pass through to the button */
+  pointer-events: none;
   z-index: 3;
   letter-spacing: 0.2px;
   scale: calc(1.5);
@@ -359,4 +337,5 @@
   background: #e3eafc;
   color: #0d47a1;
 }
+
 

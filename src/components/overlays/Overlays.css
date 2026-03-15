@@ -84,7 +84,10 @@
   gap: 16px;
   position: relative;
   max-width: 500px;
-  margin: 0 20px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: 0 auto;
 }
 
 .overlay-title {
@@ -338,3 +341,68 @@
   text-transform: uppercase;
 }
 
+
+/* ── Responsive: piccoli schermi ── */
+@media (max-width: 600px) {
+  .overlay-box {
+    padding: 28px 24px;
+    border-radius: 20px;
+    gap: 12px;
+  }
+
+  .overlay-title {
+    font-size: 1.6em;
+  }
+
+  .overlay-shield-title,
+  .overlay-double-title,
+  .overlay-wrong-letter-title,
+  .overlay-lose-it-all-title,
+  .overlay-wheel-bankrupt-title,
+  .overlay-wheel-next-title,
+  .overlay-swap-title,
+  .overlay-bought-vowel-title,
+  .overlay-guess-phrase-incorrect-title,
+  .overlay-reel-title {
+    font-size: 1.5em;
+  }
+
+  .overlay-text {
+    font-size: 1em;
+  }
+
+  .overlay-button {
+    padding: 10px 24px;
+    font-size: 16px;
+  }
+
+  .victory-box {
+    padding: 28px 24px;
+  }
+
+  .victory-title {
+    font-size: 2em;
+  }
+
+  .victory-ranking-item {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .victory-ranking-item.first {
+    font-size: 16px;
+  }
+
+  .guess-phrase-box {
+    max-width: 95vw;
+    min-width: 0;
+  }
+
+  .overlay-trophy-icon {
+    font-size: 48px;
+  }
+
+  .overlay-warning-icon {
+    font-size: 44px;
+  }
+}
