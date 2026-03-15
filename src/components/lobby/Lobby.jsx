@@ -2,15 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, Navigate, useNavigate } from 'react-router-dom';
 import './Lobby.css';
 import { useTranslation } from '../../i18n/TranslationProvider';
+import { categoryIcons } from '../../constants/constants';
+
 
 export default function Lobby({ 
   playerNames,       // Dalla prop di App.tsx (lista nomi aggiornata via socket)
-  connectWebSocket   // La funzione che crea il socket in App.tsx
+  connectWebSocket,   // La funzione che crea il socket in App.tsx
+  topic            // La categoria scelta (passata da App.tsx)
 }) {
   const { t, lang } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state;
+  const category = state?.category || topic || null;
 
   // 1. Controllo di sicurezza: se non abbiamo i dati della stanza, torniamo alla home
   if (!state || !state.room_code) {
@@ -72,6 +76,13 @@ export default function Lobby({
               )}
             </div>
           </div>
+
+          {category && (
+            <div className="lobby-section">
+              <span className="lobby-label">{t('lobby.category')}</span>
+              <span className="lobby-player-item">{categoryIcons[category]} {t(`category.${category}`)}</span>
+            </div>
+          )}
 
           <div className="lobby-section">
              <span className="lobby-label">{t('lobby.players')} ({playerNames.length}/{capacity})</span>

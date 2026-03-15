@@ -138,7 +138,8 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
               <span className="trophy-icon">🏆</span>
               <h1 className="victory-title ">{t('victory.title')}</h1>
               <p className="subtitle">
-                {t('victory.subtitle')} <span className="celebration-icon">🎉</span>
+                {t('victory.subtitle')}{ranking[0]?.name}!
+                <span className="celebration-icon">🎉</span>
               </p>
               <div className="ranking-container">
                 <h2 className="ranking-title">{t('victory.rankingTitle')}</h2>

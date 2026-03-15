@@ -108,18 +108,24 @@
     align-items: flex-start;
 }
 
+.lobby-category {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
+    align-items: center;
+}
+
 .lobby-label {
     font-size: 1rem;
     text-transform: uppercase;
     color: #1976d2; /* Primary Blue */
     font-weight: 600;
     letter-spacing: 1px;
-}
-
-.lobby-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #222;
 }
 
 .room-code {

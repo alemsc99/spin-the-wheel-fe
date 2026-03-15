@@ -16,6 +16,7 @@
   margin-right: 8px;
   font-size: 22px;
 }
+
 /* Stili per le azioni di gioco */
 .action-button {
   padding: 12px 28px;
@@ -29,70 +30,7 @@
   outline: none;
   position: relative;
   letter-spacing: 1px;
-  width: 100% !important
-}
-
-@media (max-width: 960px) {
-  .actions-buttons-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-  }
-
-  .action-button {
-    width: 60px !important;  /* Ridotto un po' per sicurezza su schermi stretti */
-    height: 60px !important;
-    border-radius: 50% !important;
-    flex-shrink: 0 !important; /* Impedisce che si schiaccino */
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 !important;
-  }
-
-  .action-icon {
-    font-size: 26px !important;        /* Dimensione dell'emoji (un po' più grande) */
-    display: inline-block !important;
-    margin: 0 !important;              /* Rimuove eventuali margini */
-    padding: 0 !important;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) !important;
-    transform: translateY(1px) !important;        /* A volte le emoji sembrano leggermente alte */
-  }
-
-  .btn-text {
-    display: none !important;          /* Nasconde il testo */
-  }
-
-  .buy-vowel-price {
-    position: absolute !important;
-    bottom: -5px !important;  /* Lo sposta sul bordo inferiore */
-    right: -5px !important;   /* Lo sposta verso destra */
-    background: #333 !important; /* Sfondo scuro per contrasto */
-    color: #ffd700 !important;   /* Oro per la moneta */
-    font-size: 9px !important;   /* Testo molto piccolo */
-    padding: 2px 30px !important;
-    border-radius: 10px !important;
-    border: 1px solid white !important;
-    white-space: nowrap !important;
-    z-index: 10 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-    font-weight: bold !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important; /* Centra verticalmente numero e moneta */
-    justify-content: center !important;
-    gap: 2px !important;            /* Spazio preciso tra numero e moneta */
-    font-size: 1.0rem !important;
-    scale: calc(0.67) !important;
-    transform: translate(-74%, 2px) !important;
-  }
-
-  .buy-vowel-button.disabled .buy-vowel-price {
-    background: #888 !important;
-    color: #eee !important;
-  }
+  width: 100% !important;
 }
 
 /* Small price tag centered at the bottom of each powerup card */
@@ -108,10 +46,9 @@
   color: #ffffff;
   background: rgba(0, 0, 0, 0.55);
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  pointer-events: none; /* let clicks pass through to the button */
+  pointer-events: none;
   z-index: 3;
   letter-spacing: 0.2px;
-  scale: calc(1.0);
 }
 
 .action-button:disabled {
@@ -127,8 +64,72 @@
   transform: scale(0.97);
 }
 
+/* ── Mobile (≤ 960px): bottoni circolari compatti ── */
+@media (max-width: 960px) {
+  .game-actions-container {
+    margin-top: 0;
+  }
+
+  .actions-buttons-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .action-button {
+    width: clamp(44px, 12vw, 60px) !important;
+    height: clamp(44px, 12vw, 60px) !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+  }
+
+  .action-icon {
+    font-size: clamp(18px, 5vw, 26px) !important;
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  .btn-text {
+    display: none !important;
+  }
+
+  .buy-vowel-price {
+    position: absolute !important;
+    bottom: -4px !important;
+    background: #333 !important;
+    color: #ffd700 !important;
+    padding: 1px 4px !important;
+    border-radius: 10px !important;
+    border: 1px solid white !important;
+    white-space: nowrap !important;
+    z-index: 10 !important;
+    font-weight: bold !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    font-size: 0.60rem !important;
+    transform: none !important;
+    left: auto !important;
+    pointer-events: none !important;
+  }
+
+  .buy-vowel-button.disabled .buy-vowel-price {
+    background: #888 !important;
+    color: #eee !important;
+  }
+}
+
 .guess-phrase-btn {
-  /* Gradiente dall'arancio-oro al giallo acceso */
   background: linear-gradient(135deg, #a036fc 0%, #fc4e4e 100%) !important;
   border: 2px solid #ffffff !important;
   box-shadow: 0 4px 12px rgba(245, 159, 0, 0.3) !important;
@@ -136,7 +137,6 @@
 }
 
 .buy-vowel-btn {
-  /* Gradiente dal rosso scuro al corallo vivace */
   background: linear-gradient(135deg, #036e04 0%, #0cc402 100%) !important;
   border: 2px solid #ffffff !important;
   box-shadow: 0 4px 12px rgba(224, 49, 49, 0.3) !important;
@@ -144,25 +144,36 @@
 }
 
 .show-rules-btn {
-  /* 1. Rendiamo il gradiente più profondo (blu più saturo) */
   background: linear-gradient(135deg, #1971c2 0%, #4dabf7 100%) !important;
-  
-  /* 2. Un bordo bianco sottile crea un distacco netto */
   border: 2px solid #ffffff !important;
-  
-  /* 3. Ombra più definita per dare profondità al bottone */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-  
-  color: #ffffff; /* Testo/Icona bianca se non è un'emoji */
+  color: #ffffff;
 }
 
 .new-game-btn {
-  /* Gradiente dal viola al rosa acceso */
   background: linear-gradient(135deg, #d50202 0%, #ffa05d 100%) !important;
   border: 2px solid #ffffff !important;
   box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3) !important;
   color: #ffffff !important;
   justify-content: center !important;
+}
+
+.new-game-btn-cancel{
+	background: rgb(146, 144, 144);
+	color: #fff;
+	font-weight: bold;
+	font-size: 1.1em;
+	border: none;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(244, 67, 54, 0.18);
+	padding: 10px 22px;
+	cursor: pointer;
+	transition: transform 0.18s, box-shadow 0.18s;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: 95px;
+  text-align: center;;
 }
 
 .guess-phrase-btn:not(:disabled):hover {

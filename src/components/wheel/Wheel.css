@@ -9,40 +9,13 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  overflow: visible;
   width: 100%;
-  max-width: 100%;
   margin: 0 auto;
+  max-width: min(85vw, 35vh, 450px); 
+  aspect-ratio: 1 / 1; /* Forza il contenitore a essere un quadrato perfetto */
   text-align: center;
-}
-
-/* --- REGOLE MOBILE (960px) --- */
-@media (max-width: 960px) {
-  #wheelOfFortune {
-    width: 100% !important;
-    max-width: none !important; /* Toglie il limite precedente */
-    margin: 0 !important;
-    display: flex !important;
-  }
-
-  .wheel-canvas {
-    min-width: 0 !important;       /* CAMBIATO DA 250px A 0 */
-    width: 100% !important;        /* Si adatta al contenitore */
-    max-width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    aspect-ratio: 1 / 1;           /* Mantiene la ruota perfettamente tonda */
-  }
-
-  .spin-btn {
-    /* RESET PERFETTO PER MOBILE */
-    width: 50px !important;   /* Dimensione fissa per il centro */
-    height: 50px !important;
-    left: 50% !important;     /* Posiziona al centro esatto */
-    top: 50% !important;
-    transform: translate(-50%, -50%) !important; /* Centratura matematica */
-    font-size: 0.8rem !important;
-  }
+  padding: 5px;
+  z-index: 5;
 }
 
 /* --- REGOLE GENERALI / DESKTOP --- */
@@ -51,45 +24,100 @@
 }
 
 .wheel-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important; /* Segue il contenitore quadrato */
   transform-origin: 50% 50%;
   will-change: transform;
-  transition: transform 0.8s;
-  width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  min-width: 300px; /* Questo viene sovrascritto dallo 0 nella media query */
+  transition: transform 0.8s cubic-bezier(0.15, 0, 0.15, 1);
 }
 
 .spin-btn, .spin {
-  font: 1em / 0 sans-serif;
-  user-select: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
+  
+  /* Dimensione fissa proporzionale al contenitore */
   width: 25%;
   height: 25%;
-  /* Attenzione: questo translate(22%) su desktop sposta il tasto. 
-     Se su desktop lo vuoi al centro, usa translate(-50%, -50%) */
-  transform: translate(22%, -50%); 
+  
   background: #fb0303;
-  color: #fff;
-  box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
   border-radius: 50%;
-  transition: 0.8s;
-  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 0 0 4px currentColor, 0 4px 10px rgba(215, 10, 10, 0);
+  font-family: sans-serif;
+  font-weight: bold;
+  
+  /* Font che si adatta alla dimensione della ruota */
+  font-size: clamp(0.6rem, 2.5vmin, 1rem); 
+  text-transform: uppercase;
 }
 
 .spin-btn::after {
   content: '';
   position: absolute;
-  top: -17px;
-  border: 10px solid transparent;
+  top: -13%;
+  border: 8px solid transparent;
   border-bottom-color: currentColor;
   border-top: none;
+}
+
+.spin-btn:active {
+  transform: translate(-50%, -50%) scale(0.92);
+}
+
+/* 2. SMARTPHONE MOLTO PICCOLI (es. iPhone SE) */
+@media (max-width: 360px) {
+  #wheelOfFortune {
+    max-width: min(85vw, 30vh);
+  }
+
+  .spin-btn::after {
+    top: -10%;
+    border-width: 6px;
+  }
+}
+
+/* 3. LANDSCAPE (Telefono o Tablet in orizzontale) */
+@media (max-height: 500px) {
+  #wheelOfFortune {
+    /* In orizzontale la ruota deve essere piccola per non richiedere scroll */
+    max-width: 25vh; 
+    margin: 5px auto;
+  }
+  .spin-btn::after {
+    top: -10%;
+    border-width: 6px;
+  }
+}
+
+
+/* --- REGOLE MOBILE (≤ 960px) --- */
+@media (max-width: 960px) {
+  #wheelOfFortune {
+    /* Riduciamo ulteriormente l'altezza massima per far stare i powerups */
+    max-width: min(80vw, 32vh); 
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+
+  .spin-btn::after {
+    top: -22%;
+    border-width: 6px;
+  }
+
+}
+
+/* 4. SCHERMI ENORMI (Desktop) */
+@media (min-width: 1200px) {
+  #wheelOfFortune {
+    max-width: 450px; /* Limite massimo per desktop */
+  }
 }
