@@ -8,6 +8,8 @@ import { GoogleLogin } from '@react-oauth/google';
 
 import { API_URL, categoryIcons, VITE_GOOGLE_CLIENT_ID } from '../../constants/constants';
 import LoadingSpinner from '../loading_spinner/LoadingSpinner';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
 
 declare global {
   namespace JSX {
@@ -453,13 +455,25 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                     {googleClientId ? (
                       <div className="google-login-wrapper">
                         <GoogleLogin
-                          onSuccess={(credentialResponse) => {
-                            const profile = credentialResponse.credential
-                              ? decodeGoogleJwt(credentialResponse.credential)
-                              : null;
-                            if (profile?.name) {
-                              setCurrentUser({ name: profile.name, isGoogle: true });
+                          onSuccess={async (credentialResponse) => {
+                            try {
+                              // 1. Crea la credenziale Firebase usando il token ricevuto da Google
+                              const credential = GoogleAuthProvider.credential(credentialResponse.credential);
+                              
+                              // 2. "Accedi" su Firebase con questa credenziale
+                              // Questo passaggio è quello che crea l'utente nella console di Google Cloud!
+                              const result = await signInWithCredential(auth, credential);
+                              
+                              // 3. Ora puoi impostare lo stato dell'app con i dati certi di Firebase
+                              setCurrentUser({ 
+                                name: result.user.displayName || "Utente", 
+                                isGoogle: true 
+                              });
                               setLoginError('');
+                              
+                            } catch (error) {
+                              console.error("Errore durante il collegamento a Firebase:", error);
+                              setLoginError(t('login.googleError'));
                             }
                           }}
                           onError={() => {
