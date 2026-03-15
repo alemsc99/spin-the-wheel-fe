@@ -5,5 +5,4 @@ dist/
 .env.*.local
 .vscode/
 .DS_Store
-package-lock.json
 tmpclaude-*
