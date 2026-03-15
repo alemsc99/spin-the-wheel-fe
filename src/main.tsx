@@ -14,6 +14,7 @@ posthog.init('phc_B3NBaN3DFIywYW6JBKoc62Bp552jTxhYwtl18g7vmy8',
     }
 )
 
+
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HelmetProvider>
