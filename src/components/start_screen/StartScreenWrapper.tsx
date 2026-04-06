@@ -4,9 +4,9 @@ import StartScreen, { StartGameOptions } from './StartScreen';
 import { useTranslation } from '../../i18n/TranslationProvider';
 
 type Props = {
-  newGame: (players: number, names: string[], category?: string) => Promise<void>;
-  createRoom: (players: number, language: string, hostName: string, category?: string) => Promise<void>;
-  joinRoom: (roomCode: string, playerName: string) => Promise<void>;
+  newGame: (players: number, names: string[], category?: string, userId?: string) => Promise<void>;
+  createRoom: (players: number, language: string, hostName: string, category?: string, userId?: string) => Promise<void>;
+  joinRoom: (roomCode: string, playerName: string, userId?: string) => Promise<void>;
   setNumPlayers: React.Dispatch<React.SetStateAction<number>>;
   setPlayerNames: React.Dispatch<React.SetStateAction<string[]>>;
   setPlayerScores: React.Dispatch<React.SetStateAction<Record<string, number>>>;
@@ -36,15 +36,15 @@ export default function StartScreenWrapper({
   return (
     <StartScreen
       onStart={async (options: StartGameOptions) => {
-        const { players, names, mode, onlineSubMode, roomCode, category } = options;
+        const { players, names, mode, onlineSubMode, roomCode, category, userId } = options;
 
         if (mode === 'online') {
           const myName = names[0] || 'Player';
           if (onlineSubMode === 'join' && roomCode) {
-            await joinRoom(roomCode, myName);
+            await joinRoom(roomCode, myName, userId);
           } else if (onlineSubMode === 'create') {
              // For create room, we probably use the set language
-             await createRoom(players, activeLang, myName, category);
+             await createRoom(players, activeLang, myName, category, userId);
           }
         } else {
           // Single or Local
@@ -59,7 +59,7 @@ export default function StartScreenWrapper({
           setTurnOverlayIsError(false);
           setShowTurnOverlay(true);
           // start the new game
-          await newGame(players, finalNames, category);
+          await newGame(players, finalNames, category, userId);
           navigate(`/${activeLang}/game`);
         }
       }}

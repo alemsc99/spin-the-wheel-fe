@@ -98,6 +98,7 @@ function AppContent() {
   const prevPlayerScores = useRef<Record<string, number>>({});
   const [pendingSpinData, setPendingSpinData] = useState<any>(null);
   const [myName, setMyName] = useState<string>("");
+  const [userId, setUserId] = useState<string | null>(null);
   const [roomCode, setRoomCode] = useState<string>("");
   const [roomHost, setRoomHost] = useState<string>("");
   const navigate = useNavigate();
@@ -106,8 +107,9 @@ function AppContent() {
   const socketRef = useRef<WebSocket | null>(null);
 
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
-  const connectWebSocket = useCallback((roomCode: string, playerName: string) => {
+  const connectWebSocket = useCallback((roomCode: string, playerName: string, userId: string | null) => {
     setMyName(playerName);
+    setUserId(userId);
     setRoomCode(roomCode);
     if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
       console.log("WebSocket connection already active/pending.");
@@ -126,7 +128,8 @@ function AppContent() {
       ws.send(JSON.stringify({
         action: "join",
         room_code: roomCode,
-        player: playerName
+        player: playerName,
+        user_id: userId
       }));
     };
 
@@ -645,7 +648,10 @@ function AppContent() {
     setErrorMsg(message);
   }
 
-  async function newGame(players: number, names: string[], category?: string){
+  async function newGame(players: number, names: string[], category?: string, userId?: string){
+    if (userId) {
+      setUserId(userId);
+    }
     try{
       const res = await fetch(`${API_URL}/new-game`, {
         method: 'POST',
@@ -655,8 +661,8 @@ function AppContent() {
           player_names: names,
           language: lang,
           room_code: roomCode,
-          player_name: myName,
-          category: category
+          category: category,
+          user_id: userId
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -713,7 +719,7 @@ function AppContent() {
     }
   }
 
-  async function createRoom(players: number, language: string, host_name: string, category?: string) {
+  async function createRoom(players: number, language: string, host_name: string, category?: string, userId?: string) {
     try {
       const res = await fetch(`${API_URL}/create-room`, {
         method: 'POST',
@@ -722,7 +728,8 @@ function AppContent() {
           host_name: host_name,
           capacity: players,
           language: language,
-          category: category
+          category: category,
+          host_id: userId
         })
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -730,27 +737,28 @@ function AppContent() {
       setPlayerNames(data.players);
       setRoomHost(host_name);
       const targetLang = data.language || language || lang;
-      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name, category } });
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name, category, userId } });
     } catch (err) {
       console.error(err);
       showErrorMessage('Failed to create room');
     }
   }
 
-  async function joinRoom(roomCode: string, playerName: string) {
+  async function joinRoom(roomCode: string, playerName: string, userId?: string) {
     try {
       const res = await fetch(`${API_URL}/join-room`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           room_code: roomCode,
-          player_name: playerName
+          player_name: playerName,
+          user_id: userId
         })
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data = await res.json();
       const targetLang = data.language || lang;
-      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName } });
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName, userId } });
     } catch (err) {
       console.error(err);
       showErrorMessage('Failed to join room');
@@ -878,7 +886,6 @@ function AppContent() {
   // Each case is intentionally left empty for you to implement the desired behavior.
   async function handlePowerupUse(powerup: string, targetPlayer: string | null = null) {
     const currentPlayer = firstPlayerIdx !== null ? playerNames[firstPlayerIdx] : null;
-    const prevScores = playerScores;
 
     if (!currentPlayer) {
       showErrorMessage('Nessun giocatore attivo');
@@ -888,7 +895,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/use-powerup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: myName, user_id: userId })
       });
       if (!res.ok) {
         if (res.status === 409){
@@ -1178,7 +1185,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-phrase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName, user_id: userId })
       })
       if (!res.ok) {
         setVictory(false);
