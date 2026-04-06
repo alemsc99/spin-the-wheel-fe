@@ -1330,7 +1330,7 @@ function AppContent() {
 
   const pageName = t('start.title');
   const currentPathSuffix = restPath ? `/${restPath}` : '';
-  const baseUrl = "https://spinwords.pages.dev";
+  const baseUrl = "https://spinwords.web.app";
   const urlIt = `${baseUrl}/it${currentPathSuffix}`;
   const urlEn = `${baseUrl}/en${currentPathSuffix}`;
   const urlDefault = `${baseUrl}/en${currentPathSuffix}`; // Default inglese

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://spinwords.pages.dev/sitemap.xml
+Sitemap: https://spinwords.web.app/sitemap.xml
