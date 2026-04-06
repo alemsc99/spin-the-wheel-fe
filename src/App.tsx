@@ -660,7 +660,7 @@ function AppContent() {
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
-      const data: NewGameResp & { num_players?: number, player_names?: string[], player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, last_spin?: string | number, masked?: string, complete?: boolean, phrase?: string } = await res.json()
+      const data: NewGameResp = await res.json()
       
       // Reset score tracking to avoid "deduction" animations when resetting scores
       prevPlayerScores.current = {}; 
@@ -670,18 +670,17 @@ function AppContent() {
       setGameId(data.game_id ?? null)
       if (typeof data.topic === 'string') setTopic(data.topic)
       if (typeof data.masked === 'string') setMasked(data.masked)
-      if (data.powerups) setPowerups(data.powerups);
       setLastSpin(data.last_spin !== undefined ? data.last_spin : 0)
       setUsedLetters(data.used_letters ?? {})
       setGuessInput('')
-      setVictory(!!data.complete)
+      setVictory(false)
       setDefeat(false)
       setCanGuess(false)
       setCanBuyVowel(false)
       setIsSpinning(false)
       setShowPhraseInput(false)
       setWrongLetters({})
-      setPowerups(data.powerups ?? {});
+      setPowerups({});
       setTerminatedVowels(false);
       if (numPlayers > 1){
         setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
@@ -767,7 +766,6 @@ function AppContent() {
         body: JSON.stringify({ game_id: gameId, language: lang })
       });
       const data: ReelSpinResponse = await res.json();
-      debugLog(data)
       // Only store result; apply effects when reel animation ends
       setReelResult(data.value);
       switch (data.value) {
@@ -1103,7 +1101,7 @@ function AppContent() {
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
         return;
       }
-      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]>} = await res.json()
+      const data: GuessResp = await res.json()
       // Apply server-provided masked / used letters
       if (typeof data.masked === 'string') setMasked(data.masked)
       if (data.powerups) setPowerups(data.powerups);
@@ -1153,9 +1151,6 @@ function AppContent() {
           const curr = playerNames[data.current_player_idx]
           setScore(data.player_scores[curr] ?? 0)
         }
-      } else {
-        // If server did not provide player_scores, we don't mutate authoritative totals locally.
-        // We still show UI animation for added_score above, but rely on the server to provide final totals.
       }
 
       // Set current player index only if server provided it. Do not locally compute/rotate turn.
@@ -1198,7 +1193,7 @@ function AppContent() {
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
         return;
       }
-      const data: GuessPhraseResp & { player_scores?: Record<string,number>, current_player_idx?: number, masked?: string, success?: boolean, complete?: boolean, total_score?: number } = await res.json()
+      const data: GuessPhraseResp = await res.json()
       if (typeof data.masked === 'string') setMasked(data.masked);
 
 
