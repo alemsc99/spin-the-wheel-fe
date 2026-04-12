@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet-async';
 export type ScoreboardEntry = {
   name: string;
   score: number;
+  secretPhrase: string;
 };
 
 export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: ScoreboardEntry[]; onPlayAgain: () => void; }): React.ReactElement {
@@ -80,7 +81,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
       ? "game rules, online wheel game, online multiplayer game, online scoring game, phrase guessing, score bonuses"
       : "final scores, leaderboard, winner, game over, SpinWords";
   }
-  const canonicalUrl = `https://spinwords.pages.dev/${currentLang}/scoreboard`;
+  const canonicalUrl = `https://spinwords.web.app/${currentLang}/scoreboard`;
 
 
   return (
@@ -140,6 +141,9 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
               <p className="subtitle">
                 {t('victory.subtitle')}{ranking[0]?.name}!
                 <span className="celebration-icon">🎉</span>
+              </p>
+              <p className="subtitle">
+                {t('victory.secretPhrase')} <strong>{ranking[0]?.secretPhrase}</strong>
               </p>
               <div className="ranking-container">
                 <h2 className="ranking-title">{t('victory.rankingTitle')}</h2>

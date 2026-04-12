@@ -1099,7 +1099,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-letter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, letter, player_name: myName, user_id: userId})
       })
       if (!res.ok) {
         const text = await res.text();
@@ -1225,6 +1225,7 @@ function AppContent() {
 
       if (data.success || data.complete) {
         setVictory(true)
+        setMasked(data.masked)
       } else {
         // Rely on server-provided current_player_idx for turn changes when available
         if (numPlayers > 1 && typeof data.current_player_idx === 'number' && playerNames.length > 0) {
@@ -1319,9 +1320,9 @@ function AppContent() {
   const localizedGamePath = `${localizedStartPath}/game`;
   const localizedRulesPath = `${localizedStartPath}/rules`;
   const localizedScoreboardPath = `${localizedStartPath}/scoreboard`;
- const ranking = useMemo(
-    () => playerNames.map((name) => ({ name, score: playerScores[name] ?? 0 })).sort((a, b) => b.score - a.score),
-    [playerNames, playerScores]
+  const ranking = useMemo(
+      () => playerNames.map((name) => ({ name, score: playerScores[name] ?? 0, secretPhrase: masked })).sort((a, b) => b.score - a.score),
+      [playerNames, playerScores, masked]
   );
 
   useEffect(() => {
@@ -1332,7 +1333,7 @@ function AppContent() {
 
   const pageName = t('start.title');
   const currentPathSuffix = restPath ? `/${restPath}` : '';
-  const baseUrl = "https://spinwords.pages.dev";
+  const baseUrl = "https://spinwords.web.app";
   const urlIt = `${baseUrl}/it${currentPathSuffix}`;
   const urlEn = `${baseUrl}/en${currentPathSuffix}`;
   const urlDefault = `${baseUrl}/en${currentPathSuffix}`; // Default inglese
