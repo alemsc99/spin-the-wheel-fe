@@ -335,6 +335,20 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <div className="bg-decor bg-circle c5"></div>
 
       <div className="start-card start-card-relative">
+        {/* Account button - visible only when logged in */}
+        {currentUser && (
+          <div className="account-btn-container">
+            <Link
+              to="account"
+              className="account-btn pretty-btn cute-account-btn"
+              aria-label={t('start.account')}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <span className="account-btn-icon" role="img" aria-label="account">👤</span>
+            </Link>
+          </div>
+        )}
+
         {/* Rules button */}
         <div className="rules-btn-container">
           <Link

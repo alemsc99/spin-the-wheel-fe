@@ -22,6 +22,7 @@ import useScoreManager from './hooks/ScoreManager.ts';
 import HalfGameReel from './components/half_game_reel/HalfGameReel.jsx';
 import RulesPage from './components/rules/RulesPage';
 import ScoreboardPage from './components/scoreboard/ScoreboardPage.tsx';
+import AccountPage from './components/account/AccountPage';
 import ShieldOverlay from './components/overlays/ShieldOverlay.tsx';
 import DoubleOverlay from './components/overlays/DoubleOverlay.tsx';
 import LoseItAllOverlay from './components/overlays/LoseItAllOverlay.tsx';
@@ -1534,6 +1535,7 @@ function AppContent() {
           )}
         />
         <Route path="/:lang/rules" element={<RulesPage />} />
+        <Route path="/:lang/account" element={<AccountPage />} />
         <Route path="*" element={<Navigate to={localizedStartPath} replace />} />
           </Routes>
 
