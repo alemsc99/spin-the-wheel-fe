@@ -21,16 +21,16 @@ export default function Lobby({
     return <Navigate to={`/${lang}`} replace />;
   }
 
-  const { room_code, capacity, my_name } = state;
+  const { room_code, capacity, my_name, userId } = state;
 
   const [copied, setCopied] = useState(false);
 
   // 2. Connessione al WebSocket al caricamento del componente
   useEffect(() => {
     // Chiamiamo la funzione passata da App.tsx
-    // Passiamo room_code e my_name così il socket può fare la "join"
-    connectWebSocket(room_code, my_name);
-  }, [room_code, my_name, connectWebSocket]);
+    // Passiamo room_code, my_name e userId così il socket può fare la "join"
+    connectWebSocket(room_code, my_name, userId);
+  }, [room_code, my_name, userId, connectWebSocket]);
 
   return (
     <div className="lobby-page">

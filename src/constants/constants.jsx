@@ -42,7 +42,7 @@ const COLORS = [
 const categoryIcons = {
   Random: '🎲',
   Food: '🍔',
-  Travel: '✈️',
+  Travels: '✈️',
   Sports: '⚽',
   Music: '🎵',
   Technology: '💻'

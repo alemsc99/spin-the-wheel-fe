@@ -31,7 +31,8 @@ export interface StartGameOptions {
   mode: GameMode;
   onlineSubMode?: OnlineSubMode;
   roomCode?: string;
-  category?: 'Random' | 'Food' | 'Travel' | 'Sports' | 'Music' | 'Technology';
+  category?: 'Random' | 'Food' | 'Travels' | 'Sports' | 'Music' | 'Technology';
+  userId?: string;
 }
 
 type StartScreenProps = {
@@ -111,7 +112,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const [currentStep, setCurrentStep] = useState(0); // 0=login, 1=gameMode, 2=playerNames, 3=start
 
   // ---- LOGIN STATE ----
-  const [currentUser, setCurrentUser] = useState<{ name: string; isGoogle: boolean } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{id: string | null; name: string; isGoogle: boolean } | null>(null);
   const [showGuestForm, setShowGuestForm] = useState(false);
   const [guestName, setGuestName] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -123,7 +124,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const [players, setPlayers] = useState(MIN_PLAYERS);
   const [otherNames, setOtherNames] = useState<string[]>([]); // names of OTHER players (not the current user)
   const [roomCode, setRoomCode] = useState('');
-  const [category, setCategory] = useState<'Random' | 'Food' | 'Travel' | 'Sports' | 'Music' | 'Technology'>('Random');
+  const [category, setCategory] = useState<'Random' | 'Food' | 'Travels' | 'Sports' | 'Music' | 'Technology'>('Random');
   const [error, setError] = useState('');
 
   // ---- NAVIGATION ----
@@ -286,6 +287,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       onlineSubMode: finalOnlineSubMode,
       roomCode: finalRoomCode,
       category,
+      userId: currentUser?.id,
     });
   };
 
@@ -413,7 +415,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && guestName.trim()) {
-                          setCurrentUser({ name: guestName.trim(), isGoogle: false });
+                          setCurrentUser({ id: null, name: guestName.trim(), isGoogle: false });
                           setLoginError('');
                         }
                       }}
@@ -439,7 +441,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                             setLoginError(t('error.emptyUsername'));
                             return;
                           }
-                          setCurrentUser({ name: guestName.trim(), isGoogle: false });
+                          setCurrentUser({ id: null, name: guestName.trim(), isGoogle: false });
                           setLoginError('');
                         }}
                       >
@@ -463,14 +465,14 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                               // 2. "Accedi" su Firebase con questa credenziale
                               // Questo passaggio è quello che crea l'utente nella console di Google Cloud!
                               const result = await signInWithCredential(auth, credential);
-                              
+                        
                               // 3. Ora puoi impostare lo stato dell'app con i dati certi di Firebase
                               setCurrentUser({ 
+                                id: result.user.uid,
                                 name: result.user.displayName || "Utente", 
                                 isGoogle: true 
                               });
                               setLoginError('');
-                              
                             } catch (error) {
                               console.error("Errore durante il collegamento a Firebase:", error);
                               setLoginError(t('login.googleError'));
@@ -675,7 +677,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                 {(gameMode === 'single' || gameMode === 'local' || (gameMode === 'online' && onlineSubMode === 'create')) && (
                 <div className="category-selection">
                   <div className="category-buttons">
-                    {(['Random', 'Food', 'Travel', 'Sports', 'Music', 'Technology'] as const).map((cat) => (
+                    {(['Random', 'Food', 'Travels', 'Sports', 'Music', 'Technology'] as const).map((cat) => (
                       <button
                         key={cat}
                         className={`mode-btn category-btn ${category === cat ? 'active' : ''}`}

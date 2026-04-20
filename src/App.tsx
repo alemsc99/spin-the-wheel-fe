@@ -98,6 +98,7 @@ function AppContent() {
   const prevPlayerScores = useRef<Record<string, number>>({});
   const [pendingSpinData, setPendingSpinData] = useState<any>(null);
   const [myName, setMyName] = useState<string>("");
+  const [userId, setUserId] = useState<string | null>(null);
   const [roomCode, setRoomCode] = useState<string>("");
   const [roomHost, setRoomHost] = useState<string>("");
   const navigate = useNavigate();
@@ -106,8 +107,9 @@ function AppContent() {
   const socketRef = useRef<WebSocket | null>(null);
 
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
-  const connectWebSocket = useCallback((roomCode: string, playerName: string) => {
+  const connectWebSocket = useCallback((roomCode: string, playerName: string, userId: string | null) => {
     setMyName(playerName);
+    setUserId(userId);
     setRoomCode(roomCode);
     if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
       console.log("WebSocket connection already active/pending.");
@@ -126,7 +128,8 @@ function AppContent() {
       ws.send(JSON.stringify({
         action: "join",
         room_code: roomCode,
-        player: playerName
+        player: playerName,
+        user_id: userId
       }));
     };
 
@@ -645,7 +648,10 @@ function AppContent() {
     setErrorMsg(message);
   }
 
-  async function newGame(players: number, names: string[], category?: string){
+  async function newGame(players: number, names: string[], category?: string, userId?: string){
+    if (userId) {
+      setUserId(userId);
+    }
     try{
       const res = await fetch(`${API_URL}/new-game`, {
         method: 'POST',
@@ -655,12 +661,12 @@ function AppContent() {
           player_names: names,
           language: lang,
           room_code: roomCode,
-          player_name: myName,
-          category: category
+          category: category,
+          user_id: userId
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
-      const data: NewGameResp & { num_players?: number, player_names?: string[], player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, last_spin?: string | number, masked?: string, complete?: boolean, phrase?: string } = await res.json()
+      const data: NewGameResp = await res.json()
       
       // Reset score tracking to avoid "deduction" animations when resetting scores
       prevPlayerScores.current = {}; 
@@ -670,18 +676,17 @@ function AppContent() {
       setGameId(data.game_id ?? null)
       if (typeof data.topic === 'string') setTopic(data.topic)
       if (typeof data.masked === 'string') setMasked(data.masked)
-      if (data.powerups) setPowerups(data.powerups);
       setLastSpin(data.last_spin !== undefined ? data.last_spin : 0)
       setUsedLetters(data.used_letters ?? {})
       setGuessInput('')
-      setVictory(!!data.complete)
+      setVictory(false)
       setDefeat(false)
       setCanGuess(false)
       setCanBuyVowel(false)
       setIsSpinning(false)
       setShowPhraseInput(false)
       setWrongLetters({})
-      setPowerups(data.powerups ?? {});
+      setPowerups({});
       setTerminatedVowels(false);
       if (numPlayers > 1){
         setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
@@ -714,7 +719,7 @@ function AppContent() {
     }
   }
 
-  async function createRoom(players: number, language: string, host_name: string, category?: string) {
+  async function createRoom(players: number, language: string, host_name: string, category?: string, userId?: string) {
     try {
       const res = await fetch(`${API_URL}/create-room`, {
         method: 'POST',
@@ -723,7 +728,8 @@ function AppContent() {
           host_name: host_name,
           capacity: players,
           language: language,
-          category: category
+          category: category,
+          host_id: userId
         })
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -731,27 +737,28 @@ function AppContent() {
       setPlayerNames(data.players);
       setRoomHost(host_name);
       const targetLang = data.language || language || lang;
-      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name, category } });
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: host_name, category, userId } });
     } catch (err) {
       console.error(err);
       showErrorMessage('Failed to create room');
     }
   }
 
-  async function joinRoom(roomCode: string, playerName: string) {
+  async function joinRoom(roomCode: string, playerName: string, userId?: string) {
     try {
       const res = await fetch(`${API_URL}/join-room`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           room_code: roomCode,
-          player_name: playerName
+          player_name: playerName,
+          user_id: userId
         })
       });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data = await res.json();
       const targetLang = data.language || lang;
-      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName } });
+      navigate(`/${targetLang}/lobby`, { state: { ...data, my_name: playerName, userId } });
     } catch (err) {
       console.error(err);
       showErrorMessage('Failed to join room');
@@ -767,7 +774,6 @@ function AppContent() {
         body: JSON.stringify({ game_id: gameId, language: lang })
       });
       const data: ReelSpinResponse = await res.json();
-      debugLog(data)
       // Only store result; apply effects when reel animation ends
       setReelResult(data.value);
       switch (data.value) {
@@ -880,7 +886,6 @@ function AppContent() {
   // Each case is intentionally left empty for you to implement the desired behavior.
   async function handlePowerupUse(powerup: string, targetPlayer: string | null = null) {
     const currentPlayer = firstPlayerIdx !== null ? playerNames[firstPlayerIdx] : null;
-    const prevScores = playerScores;
 
     if (!currentPlayer) {
       showErrorMessage('Nessun giocatore attivo');
@@ -890,7 +895,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/use-powerup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: myName, user_id: userId })
       });
       if (!res.ok) {
         if (res.status === 409){
@@ -1094,7 +1099,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-letter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, letter, player_name: myName, user_id: userId})
       })
       if (!res.ok) {
         const text = await res.text();
@@ -1103,7 +1108,7 @@ function AppContent() {
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
         return;
       }
-      const data: GuessResp & { player_scores?: Record<string,number>, current_player_idx?: number, used_letters?: Record<string, boolean>, masked?: string, complete?: boolean, powerups?: Record<string, string[]>} = await res.json()
+      const data: GuessResp = await res.json()
       // Apply server-provided masked / used letters
       if (typeof data.masked === 'string') setMasked(data.masked)
       if (data.powerups) setPowerups(data.powerups);
@@ -1153,9 +1158,6 @@ function AppContent() {
           const curr = playerNames[data.current_player_idx]
           setScore(data.player_scores[curr] ?? 0)
         }
-      } else {
-        // If server did not provide player_scores, we don't mutate authoritative totals locally.
-        // We still show UI animation for added_score above, but rely on the server to provide final totals.
       }
 
       // Set current player index only if server provided it. Do not locally compute/rotate turn.
@@ -1183,7 +1185,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-phrase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName, user_id: userId })
       })
       if (!res.ok) {
         setVictory(false);
@@ -1198,7 +1200,7 @@ function AppContent() {
         showErrorMessage(json.error || json.message || `Server error ${res.status}`);
         return;
       }
-      const data: GuessPhraseResp & { player_scores?: Record<string,number>, current_player_idx?: number, masked?: string, success?: boolean, complete?: boolean, total_score?: number } = await res.json()
+      const data: GuessPhraseResp = await res.json()
       if (typeof data.masked === 'string') setMasked(data.masked);
 
 
@@ -1223,6 +1225,7 @@ function AppContent() {
 
       if (data.success || data.complete) {
         setVictory(true)
+        setMasked(data.masked)
       } else {
         // Rely on server-provided current_player_idx for turn changes when available
         if (numPlayers > 1 && typeof data.current_player_idx === 'number' && playerNames.length > 0) {
@@ -1317,9 +1320,9 @@ function AppContent() {
   const localizedGamePath = `${localizedStartPath}/game`;
   const localizedRulesPath = `${localizedStartPath}/rules`;
   const localizedScoreboardPath = `${localizedStartPath}/scoreboard`;
- const ranking = useMemo(
-    () => playerNames.map((name) => ({ name, score: playerScores[name] ?? 0 })).sort((a, b) => b.score - a.score),
-    [playerNames, playerScores]
+  const ranking = useMemo(
+      () => playerNames.map((name) => ({ name, score: playerScores[name] ?? 0, secretPhrase: masked })).sort((a, b) => b.score - a.score),
+      [playerNames, playerScores, masked]
   );
 
   useEffect(() => {

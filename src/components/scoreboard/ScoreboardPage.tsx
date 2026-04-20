@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet-async';
 export type ScoreboardEntry = {
   name: string;
   score: number;
+  secretPhrase: string;
 };
 
 export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: ScoreboardEntry[]; onPlayAgain: () => void; }): React.ReactElement {
@@ -140,6 +141,9 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
               <p className="subtitle">
                 {t('victory.subtitle')}{ranking[0]?.name}!
                 <span className="celebration-icon">🎉</span>
+              </p>
+              <p className="subtitle">
+                {t('victory.secretPhrase')} <strong>{ranking[0]?.secretPhrase}</strong>
               </p>
               <div className="ranking-container">
                 <h2 className="ranking-title">{t('victory.rankingTitle')}</h2>
