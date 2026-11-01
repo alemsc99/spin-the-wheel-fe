@@ -82,8 +82,8 @@ export default function RulesPage(): React.ReactElement {
       : "Game Rules - SpinWords | How to Play Spinwords";
       
   const metaDescription = activeLang === 'it'
-    ? "Gioca gratis a GiraParole! Sfida i tuoi amici in un gioco multiplayer a turni, indovina la frase misteriosa e usa potenziamenti strategici per vincere."
-    : "Play SpinWords for free! Challenge your friends in a turn-based multiplayer game, guess the mystery phrase, and use strategic power-ups to win.";
+    ? "Scopri tutte le regole di GiraParole: come girare la ruota, indovinare la frase misteriosa, guadagnare punti e usare i potenziamenti."
+    : "Learn the SpinWords rules: how to spin the wheel, guess the mystery phrase, earn points, and use power-ups in solo or multiplayer games.";
 
   const metaKeywords = activeLang === 'it'
     ? "gioco della ruota online, ruota della fortuna online, gioco indovina la frase, gioco multiplayer online, gioco gratis online, quiz di parole"
@@ -115,6 +115,12 @@ export default function RulesPage(): React.ReactElement {
         {pageName}
       </h1>
 
+      <p className="rules-intro">
+        {activeLang === 'it'
+          ? 'GiraParole è un gioco della ruota online in cui devi indovinare una frase misteriosa, accumulare punti e usare i potenziamenti al momento giusto.'
+          : 'SpinWords is an online wheel and word game where you guess a mystery phrase, earn points, and use power-ups at the right time.'}
+      </p>
+
       {/* 2. IL BOX DELLE REGOLE */}
       <div className="rules-page-wrapper">
         <div className="rules-modal pretty-card">
@@ -145,6 +151,9 @@ export default function RulesPage(): React.ReactElement {
 
       {/* 3. PULSANTE INDIETRO (SOTTO IL BOX) */}
       <div className="rules-footer-action">
+        <a href={`/${activeLang}`} className="rules-home-link">
+          {activeLang === 'it' ? 'Torna a GiraParole' : 'Back to SpinWords'}
+        </a>
         <button onClick={handleClose} className="rules-close-btn">
             {activeLang === 'it' ? 'Indietro' : 'Back'}
         </button>
