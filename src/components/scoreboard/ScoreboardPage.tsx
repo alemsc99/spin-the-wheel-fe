@@ -134,8 +134,8 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
                 ))}
               </ul>
               <p className="scoreboard-rules-link">
-                <a href={`/${currentLang}/rules`}>
-                  {currentLang === 'it' ? 'Consulta tutte le regole di GiraParole' : 'Read the complete SpinWords rules'}
+                <a href={`/${currentLang}`}>
+                  {currentLang === 'it' ? 'Torna in home' : 'Back to home'}
                 </a>
               </p>
               {/* <p className="rules-note">{rulesNote}</p> */}
