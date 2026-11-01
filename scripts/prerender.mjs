@@ -13,7 +13,7 @@ function safeRuleHtml(value) {
   return escapeHtml(value).replace(/&lt;strong&gt;/gi, '<strong>').replace(/&lt;\/strong&gt;/gi, '</strong>');
 }
 function upsertMeta(document, attribute, value, content) {
-  const pattern = new RegExp('<meta[^>]*' + attribute + '=["\\']' + value + '["\\'][^>]*>', 'i');
+  const pattern = new RegExp('<meta[^>]*' + attribute + '="' + value + '"[^>]*>', 'i');
   const tag = '<meta ' + attribute + '="' + value + '" content="' + escapeHtml(content) + '" />';
   if (pattern.test(document)) return document.replace(pattern, tag);
   return document.replace('</head>', tag + '\n</head>');
