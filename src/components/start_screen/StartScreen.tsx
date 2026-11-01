@@ -482,6 +482,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                             setLoginError(t('login.googleError'));
                           }}
                           text="signin_with"
+                          locale={lang}
                           shape="rectangular"
                           size="large"
                           logo_alignment="left"
