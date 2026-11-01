@@ -61,6 +61,32 @@ function renderDocument(options) {
   html = html.replace(/<div id="root">[\s\S]*?<\/div>/i, '<div id="root">' + body + '</div>');
   return html;
 }
+function renderHome(lang) {
+  if (lang === 'it') {
+    return '<article class="seo-content-container"><h2>Il più divertente dei giochi di parole da fare con gli amici</h2>' +
+      '<p>GiraParole è un gioco di parole online gratuito ispirato alla Ruota della Fortuna. Gira la ruota, scegli le consonanti, acquista le vocali e prova a indovinare la frase misteriosa prima degli avversari. Puoi giocare direttamente dal browser, senza installare programmi.</p>' +
+      '<h3>Come si gioca</h3><p>Ogni partita mette alla prova intuito, memoria e strategia: osserva le lettere già scoperte, scegli quando rischiare e usa i punti conquistati per avvicinarti alla soluzione. Attenzione agli spicchi speciali della ruota: possono cambiare il risultato di un turno.</p>' +
+      '<h3>Modalità di gioco e caratteristiche</h3><ul>' +
+      '<li><strong>Giocatore singolo:</strong> allenati a risolvere le frasi e migliora le tue abilità.</li>' +
+      '<li><strong>Multiplayer locale:</strong> sfida amici e parenti sullo stesso dispositivo.</li>' +
+      '<li><strong>Multiplayer online:</strong> crea una stanza privata o entra in una stanza per giocare a distanza.</li>' +
+      '<li><strong>Ruota e potenziamenti:</strong> accumula punti, sfrutta gli aiuti strategici e fai attenzione agli imprevisti.</li>' +
+      '<li><strong>Rullo sorpresa:</strong> gli eventi a metà partita possono ribaltare la classifica e rendere ogni sfida diversa.</li></ul>' +
+      '<p>GiraParole è adatto a chi ama enigmi, cruciverba, puzzle e giochi da fare in compagnia. È gratuito e funziona su computer, tablet e smartphone. Scegli la modalità, invita gli amici e prova a indovinare la frase!</p>' +
+      '<p><a href="/it/rules">Leggi tutte le regole di GiraParole</a></p></article>';
+  }
+  return '<article class="seo-content-container"><h2>A fun online word game to play with friends</h2>' +
+    '<p>SpinWords is a free online word game inspired by the classic Wheel of Fortune. Spin the wheel, choose consonants, buy vowels, and try to guess the hidden phrase before your opponents. Play directly in your browser without installing any software.</p>' +
+    '<h3>How to play</h3><p>Every round puts your vocabulary, memory, and strategy to the test. Use the revealed letters to work out the phrase, decide when to take a risk, and make the most of the points you earn. Watch out for special wheel spaces that can change the outcome of a turn.</p>' +
+    '<h3>Game modes and features</h3><ul>' +
+    '<li><strong>Single player:</strong> practise solving phrases and sharpen your skills.</li>' +
+    '<li><strong>Local multiplayer:</strong> challenge friends and family on the same device.</li>' +
+    '<li><strong>Online multiplayer:</strong> create a private room or join one to play remotely.</li>' +
+    '<li><strong>Wheel and power-ups:</strong> earn points, use strategic boosts, and watch out for surprises.</li>' +
+    '<li><strong>Mid-game reel:</strong> special events can turn the leaderboard around and make every match different.</li></ul>' +
+    '<p>SpinWords is made for fans of puzzles, crosswords, and party games. It is free to play and works on desktop, tablet, and mobile. Choose a mode, invite your friends, and solve the mystery phrase!</p>' +
+    '<p><a href="/en/rules">Read all SpinWords game rules</a></p></article>';
+}
 function renderRules(lang) {
   const strings = translations[lang] || {};
   const sections = Array.isArray(strings['start.rulesBody']) ? strings['start.rulesBody'] : [];
@@ -82,12 +108,12 @@ const pages = [
     description:'Gioca gratis a GiraParole: gira la ruota, indovina la frase misteriosa e sfida gli amici in un gioco di parole online, in solitaria o in multiplayer.',
     keywords:'gioco della ruota online, gioco di parole online, indovina la frase, gioco online gratis, gioco multiplayer con amici',
     canonical:baseUrl+'/it',
-    body:'<main class="seo-prerender-content"><h1>GiraParole: gioco della ruota della fortuna online gratis</h1><p>Gira la ruota, indovina la frase misteriosa e accumula punti. Gioca da solo o sfida i tuoi amici in multiplayer: GiraParole è un gioco di parole online gratuito, direttamente dal browser.</p><p><a href="/it/rules">Scopri le regole del gioco</a></p></main>' },
+    body:renderHome('it') },
   { lang:'en', route:'en', title:'SpinWords – Free Online Wheel and Word Game',
     description:'Play SpinWords for free: spin the wheel, guess the mystery phrase, and challenge friends in this online word game, solo or in multiplayer mode.',
     keywords:'online wheel game, online word game, guess the phrase, free online game, multiplayer game with friends',
     canonical:baseUrl+'/en',
-    body:'<main class="seo-prerender-content"><h1>SpinWords: free online wheel and word game</h1><p>Spin the wheel, guess the mystery phrase, and earn points. Play solo or challenge your friends in multiplayer mode: SpinWords is a free online word game that runs in your browser.</p><p><a href="/en/rules">Read the game rules</a></p></main>' },
+    body:renderHome('en') },
   { lang:'it', route:'it/rules', title:'Regole del Gioco GiraParole – Come Giocare e Fare Punti',
     description:'Scopri tutte le regole di GiraParole: come girare la ruota, indovinare la frase misteriosa, guadagnare punti e usare i potenziamenti.',
     keywords:'regole GiraParole, come giocare alla ruota della fortuna, regole gioco di parole, punteggio, potenziamenti',
