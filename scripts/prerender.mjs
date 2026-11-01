@@ -63,7 +63,7 @@ function renderDocument(options) {
 }
 function renderHome(lang) {
   if (lang === 'it') {
-    return '<article class="seo-content-container"><h2>Il più divertente dei giochi di parole da fare con gli amici</h2>' +
+    return '<article class="seo-content-container"><h1>Il più divertente dei giochi di parole da fare con gli amici</h1>' +
       '<p>GiraParole è un gioco di parole online gratuito ispirato alla Ruota della Fortuna. Gira la ruota, scegli le consonanti, acquista le vocali e prova a indovinare la frase misteriosa prima degli avversari. Puoi giocare direttamente dal browser, senza installare programmi.</p>' +
       '<h3>Come si gioca</h3><p>Ogni partita mette alla prova intuito, memoria e strategia: osserva le lettere già scoperte, scegli quando rischiare e usa i punti conquistati per avvicinarti alla soluzione. Attenzione agli spicchi speciali della ruota: possono cambiare il risultato di un turno.</p>' +
       '<h3>Modalità di gioco e caratteristiche</h3><ul>' +
@@ -75,7 +75,7 @@ function renderHome(lang) {
       '<p>GiraParole è adatto a chi ama enigmi, cruciverba, puzzle e giochi da fare in compagnia. È gratuito e funziona su computer, tablet e smartphone. Scegli la modalità, invita gli amici e prova a indovinare la frase!</p>' +
       '<p><a href="/it/rules">Leggi tutte le regole di GiraParole</a></p></article>';
   }
-  return '<article class="seo-content-container"><h2>A fun online word game to play with friends</h2>' +
+  return '<article class="seo-content-container"><h1>A fun online word game to play with friends</h1>' +
     '<p>SpinWords is a free online word game inspired by the classic Wheel of Fortune. Spin the wheel, choose consonants, buy vowels, and try to guess the hidden phrase before your opponents. Play directly in your browser without installing any software.</p>' +
     '<h3>How to play</h3><p>Every round puts your vocabulary, memory, and strategy to the test. Use the revealed letters to work out the phrase, decide when to take a risk, and make the most of the points you earn. Watch out for special wheel spaces that can change the outcome of a turn.</p>' +
     '<h3>Game modes and features</h3><ul>' +

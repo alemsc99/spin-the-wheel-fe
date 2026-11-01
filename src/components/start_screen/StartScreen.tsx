@@ -727,7 +727,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <article className="seo-content-container">
         {isIt ? (
           <>
-            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
+            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h1>
             <p>
               GiraParole è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
               Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
@@ -747,7 +747,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           </>
         ) : (
           <>
-            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>The Funniest Free Online Word Game</h2>
+            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>The Funniest Free Online Word Game</h1>
             <p>
               SpinWords is a <strong>free puzzle word game</strong> perfect for word game enthusiasts.
               Spin the wheel, guess the consonants, buy vowels, and solve the hidden phrase before your opponents!
