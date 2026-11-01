@@ -90,6 +90,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
       <Helmet>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Aggiungi anche qui Open Graph per completezza */}
@@ -132,6 +133,11 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
                   </li>
                 ))}
               </ul>
+              <p className="scoreboard-rules-link">
+                <a href={`/${currentLang}`}>
+                  {currentLang === 'it' ? 'Torna in home' : 'Back to home'}
+                </a>
+              </p>
               {/* <p className="rules-note">{rulesNote}</p> */}
             </div>
           ) : (
