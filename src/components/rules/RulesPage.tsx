@@ -109,7 +109,6 @@ export default function RulesPage(): React.ReactElement {
       <div className="bg-decor bg-circle c1" />
       <div className="bg-decor bg-circle c2" />
       
-
       {/* 1. TITOLO PRINCIPALE (ESTERNO) */}
       <h1 className="title fancy-title">
         {pageName}
@@ -134,7 +133,7 @@ export default function RulesPage(): React.ReactElement {
             {rulesPages.length > 0 ? (
               rulesPages.map((section, sectionIdx) => (
                 <div className="rules-section" key={sectionIdx}>
-                  {section.title && section.title !== baseTitle && <h2 className="rules-section-title">{section.title}</h3>}
+                  {section.title && section.title !== baseTitle && <h2 className="rules-section-title">{section.title}</h2>}
                   <div className="rules-list">
                     {section.content.map((line, lineIdx) => (
                       <p key={lineIdx} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }} />
