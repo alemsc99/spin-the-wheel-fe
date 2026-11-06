@@ -1337,8 +1337,8 @@ function AppContent() {
   const isLocalizedHomePage = !restPath && SUPPORTED_LANGS.includes(pathLangCandidate as Lang);
   const isIndexablePage = isLocalizedHomePage || restPath === 'rules';
   const homeTitle = effectiveLang === 'it'
-    ? 'GiraParole – Gioco della Ruota della Fortuna Online Gratis'
-    : 'SpinWords – Free Online Wheel and Word Game';
+    ? 'GiraParole: Gioco di Parole Gratis Online con Amici'
+    : 'SpinWords – Free Online Phrase Guessing Game';
   const homeDescription = effectiveLang === 'it'
     ? 'Gioca gratis a GiraParole: gira la ruota, indovina la frase misteriosa e sfida gli amici in un gioco di parole online, in solitaria o in multiplayer.'
     : 'Play SpinWords for free: spin the wheel, guess the mystery phrase, and challenge friends in this online word game, solo or in multiplayer mode.';
