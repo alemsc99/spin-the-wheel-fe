@@ -727,9 +727,9 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <article className="seo-content-container">
         {isIt ? (
           <>
-            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h1>
+            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Gioca gratis a GiraParole, il gioco di parole online</h1>
             <p>
-              GiraParole è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
+              GiraParole è un <strong>gioco di parole online gratis</strong> ispirato alla Ruota della Fortuna. Gira la ruota, scegli le consonanti, acquista le vocali e indovina la frase misteriosa prima degli avversari.
               Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
             </p>
             <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
@@ -747,9 +747,9 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           </>
         ) : (
           <>
-            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>The Funniest Free Online Word Game</h1>
+            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Play SpinWords, the Free Online Phrase Guessing Game</h1>
             <p>
-              SpinWords is a <strong>free puzzle word game</strong> perfect for word game enthusiasts.
+              SpinWords is a <strong>free online phrase guessing game</strong>. Spin the wheel, choose consonants, buy vowels, and guess the hidden phrase before your opponents.
               Spin the wheel, guess the consonants, buy vowels, and solve the hidden phrase before your opponents!
             </p>
             <h2>Game Features:</h2>
