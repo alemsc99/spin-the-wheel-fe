@@ -150,9 +150,6 @@ export default function RulesPage(): React.ReactElement {
 
       {/* 3. PULSANTE INDIETRO (SOTTO IL BOX) */}
       <div className="rules-footer-action">
-        <a href={`/${activeLang}`} className="rules-home-link">
-          {activeLang === 'it' ? 'Torna a GiraParole' : 'Back to SpinWords'}
-        </a>
         <button onClick={handleClose} className="rules-close-btn">
             {activeLang === 'it' ? 'Indietro' : 'Back'}
         </button>
