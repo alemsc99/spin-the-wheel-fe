@@ -71,15 +71,15 @@ export default function RulesPage(): React.ReactElement {
     navigate(`/${activeLang}`);
   };
 
-  const pageNameRaw = t('rules.pageHeading');
+  const pageNameRaw = activeLang === 'it' ? 'Come si gioca a GiraParole' : 'How to play SpinWords';
   const pageName = (typeof pageNameRaw === 'string' && pageNameRaw !== 'rules.pageHeading' && pageNameRaw.trim() !== '')
     ? pageNameRaw
     : (activeLang === 'it' ? 'Regole del Gioco' : 'Game Rules');
 
   const canonicalUrl = `https://spinwords.web.app/${activeLang}/rules`;
   const metaTitle = activeLang === 'it' 
-      ? "Regole del Gioco - GiraParole | Come Giocare a GiraParole" 
-      : "Game Rules - SpinWords | How to Play Spinwords";
+      ? "Come si Gioca a GiraParole: Regole del Gioco" 
+      : "How to Play SpinWords: Game Rules";
       
   const metaDescription = activeLang === 'it'
     ? "Scopri tutte le regole di GiraParole: come girare la ruota, indovinare la frase misteriosa, guadagnare punti e usare i potenziamenti."
@@ -134,7 +134,7 @@ export default function RulesPage(): React.ReactElement {
             {rulesPages.length > 0 ? (
               rulesPages.map((section, sectionIdx) => (
                 <div className="rules-section" key={sectionIdx}>
-                  {section.title && section.title !== baseTitle && <h3 className="rules-section-title">{section.title}</h3>}
+                  {section.title && section.title !== baseTitle && <h2 className="rules-section-title">{section.title}</h3>}
                   <div className="rules-list">
                     {section.content.map((line, lineIdx) => (
                       <p key={lineIdx} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }} />
