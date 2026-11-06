@@ -63,7 +63,7 @@ function renderDocument(options) {
 }
 function renderHome(lang) {
   if (lang === 'it') {
-    return '<article class="seo-content-container"><h1>Il più divertente dei giochi di parole da fare con gli amici</h1>' +
+    return '<article class="seo-content-container"><h1>Gioca gratis a GiraParole, il gioco di parole online</h1>' +
       '<p>GiraParole è un gioco di parole online gratuito ispirato alla Ruota della Fortuna. Gira la ruota, scegli le consonanti, acquista le vocali e prova a indovinare la frase misteriosa prima degli avversari. Puoi giocare direttamente dal browser, senza installare programmi.</p>' +
       '<h3>Come si gioca</h3><p>Ogni partita mette alla prova intuito, memoria e strategia: osserva le lettere già scoperte, scegli quando rischiare e usa i punti conquistati per avvicinarti alla soluzione. Attenzione agli spicchi speciali della ruota: possono cambiare il risultato di un turno.</p>' +
       '<h3>Modalità di gioco e caratteristiche</h3><ul>' +
@@ -75,7 +75,7 @@ function renderHome(lang) {
       '<p>GiraParole è adatto a chi ama enigmi, cruciverba, puzzle e giochi da fare in compagnia. È gratuito e funziona su computer, tablet e smartphone. Scegli la modalità, invita gli amici e prova a indovinare la frase!</p>' +
       '<p><a href="/it/rules">Leggi tutte le regole di GiraParole</a></p></article>';
   }
-  return '<article class="seo-content-container"><h1>A fun online word game to play with friends</h1>' +
+  return '<article class="seo-content-container"><h1>Play SpinWords, the Free Online Phrase Guessing Game</h1>' +
     '<p>SpinWords is a free online word game inspired by the classic Wheel of Fortune. Spin the wheel, choose consonants, buy vowels, and try to guess the hidden phrase before your opponents. Play directly in your browser without installing any software.</p>' +
     '<h3>How to play</h3><p>Every round puts your vocabulary, memory, and strategy to the test. Use the revealed letters to work out the phrase, decide when to take a risk, and make the most of the points you earn. Watch out for special wheel spaces that can change the outcome of a turn.</p>' +
     '<h3>Game modes and features</h3><ul>' +
@@ -90,7 +90,7 @@ function renderHome(lang) {
 function renderRules(lang) {
   const strings = translations[lang] || {};
   const sections = Array.isArray(strings['start.rulesBody']) ? strings['start.rulesBody'] : [];
-  const heading = strings['rules.pageHeading'] || (lang === 'it' ? 'Regole del Gioco' : 'Game Rules');
+  const heading = lang === 'it' ? 'Come si gioca a GiraParole' : 'How to play SpinWords';
   const intro = lang === 'it'
     ? 'GiraParole è un gioco della ruota online in cui devi indovinare una frase misteriosa, accumulare punti e usare i potenziamenti al momento giusto.'
     : 'SpinWords is an online wheel and word game where you guess a mystery phrase, earn points, and use power-ups at the right time.';
@@ -104,14 +104,14 @@ function renderRules(lang) {
     escapeHtml(intro) + '</p>' + sectionHtml + '<p><a href="/' + lang + '">' + homeLabel + '</a></p></main>';
 }
 const pages = [
-  { lang:'it', route:'it', title:'GiraParole – Gioco della Ruota della Fortuna Online Gratis',
-    description:'Gioca gratis a GiraParole: gira la ruota, indovina la frase misteriosa e sfida gli amici in un gioco di parole online, in solitaria o in multiplayer.',
+  { lang:'it', route:'it', title:'GiraParole: Gioco di Parole Gratis Online con Amici',
+    description:'Gioca gratis a GiraParole, un gioco di parole online: gira la ruota, indovina la frase misteriosa e sfida gli amici in multiplayer.',
     keywords:'gioco della ruota online, gioco di parole online, indovina la frase, gioco online gratis, gioco multiplayer con amici',
     canonical:baseUrl+'/it',
     body:renderHome('it') },
-  { lang:'en', route:'en', title:'SpinWords – Free Online Wheel and Word Game',
-    description:'Play SpinWords for free: spin the wheel, guess the mystery phrase, and challenge friends in this online word game, solo or in multiplayer mode.',
-    keywords:'online wheel game, online word game, guess the phrase, free online game, multiplayer game with friends',
+  { lang:'en', route:'en', title:'SpinWords – Free Online Phrase Guessing Game',
+    description:'Play SpinWords for free: spin the wheel, guess the hidden phrase, and challenge friends in this online phrase guessing game.',
+    keywords:'online phrase guessing game, online word game, guess the phrase, free online game, multiplayer game with friends',
     canonical:baseUrl+'/en',
     body:renderHome('en') },
   { lang:'it', route:'it/rules', title:'Regole del Gioco GiraParole – Come Giocare e Fare Punti',
