@@ -1426,7 +1426,7 @@ function AppContent() {
                  powerups={powerups}
                  scoreChanges={scoreChanges}
                />
-                {dailyMode && <div className="daily-game-status">🎡 {lang === 'it' ? 'La ruota del giorno' : 'Daily Wheel'} · {dailyPuzzleDate}</div>}
+                {dailyMode && <div className="daily-game-status">🎡 {lang === 'it' ? 'La frase del giorno' : 'Daily sentence'} · {dailyPuzzleDate}</div>}
                {/* POWERUPS: in its own container directly below the players list */}
                 {numPlayers > 1 && (
                     <Powerups

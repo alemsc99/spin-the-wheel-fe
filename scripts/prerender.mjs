@@ -91,17 +91,14 @@ function renderRules(lang) {
   const strings = translations[lang] || {};
   const sections = Array.isArray(strings['start.rulesBody']) ? strings['start.rulesBody'] : [];
   const heading = lang === 'it' ? 'Come si gioca a SpinWords' : 'How to play SpinWords';
-  const intro = lang === 'it'
-    ? 'SpinWords è un gioco online in cui devi indovinare una frase misteriosa, accumulare punti e usare i potenziamenti al momento giusto.'
-    : 'SpinWords is an online wheel and word game where you guess a mystery phrase, earn points, and use power-ups at the right time.';
   const sectionHtml = sections.map(function(section) {
     const sectionTitle = section.title ? '<h2>' + escapeHtml(section.title) + '</h2>' : '';
     const lines = (section.content || []).map(function(line) { return '<p>' + safeRuleHtml(line) + '</p>'; }).join('');
     return '<section>' + sectionTitle + lines + '</section>';
   }).join('');
   const homeLabel = lang === 'it' ? 'Torna a SpinWords' : 'Back to SpinWords';
-  return '<main class="seo-prerender-content"><h1>' + escapeHtml(heading) + '</h1><p>' +
-    escapeHtml(intro) + '</p>' + sectionHtml + '<p><a href="/' + lang + '">' + homeLabel + '</a></p></main>';
+  return '<main class="seo-prerender-content"><h1>' + escapeHtml(heading) + '</h1>' +
+    sectionHtml + '<p><a href="/' + lang + '">' + homeLabel + '</a></p></main>';
 }
 const pages = [
   { lang:'it', route:'it', title:'SpinWords: Gioco di Parole Gratis Online con Amici',

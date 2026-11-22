@@ -31,7 +31,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dail
     const text = `${shareText}\n${shareUrl}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'SpinWords — La ruota del giorno', text: shareText, url: shareUrl });
+        await navigator.share({ title: 'SpinWords - La frase del giorno', text: shareText, url: shareUrl });
       }
       else { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800); }
     } catch (error) {
@@ -135,7 +135,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dail
           {showDaily ? (
             <section className="daily-result">
               <span className="trophy-icon">🎡</span>
-              <h1 className="victory-title">{currentLang === 'it' ? 'La ruota del giorno' : 'Daily Wheel'}</h1>
+              <h1 className="victory-title">{currentLang === 'it' ? 'La frase del giorno' : 'Daily Sentence'}</h1>
               <p className="subtitle">{dailyResult?.alreadyPlayed ? (currentLang === 'it' ? 'Hai già completato il puzzle di oggi.' : 'You already completed today’s puzzle.') : (currentLang === 'it' ? 'Puzzle completato!' : 'Puzzle completed!')} 🎉</p>
               <div className="daily-result-cards">
                 <div><strong>🪙 {dailyResult?.score ?? 0}</strong><span>{currentLang === 'it' ? 'Punteggio' : 'Points'}</span></div>

@@ -62,8 +62,12 @@ body,
   border-color: rgba(18, 59, 58, .12) !important;
 }
 
+.seo-content-container h1,
 .seo-content-container h2,
-.seo-content-container h4 {
+.seo-content-container h3,
+.seo-content-container h4,
+.seo-content-container h5,
+.seo-content-container h6 {
   color: var(--color-contrast) !important;
 }
 
@@ -121,6 +125,20 @@ body,
   color: var(--color-ink) !important;
   border-color: var(--color-primary) !important;
   box-shadow: 0 3px 10px rgba(11, 39, 39, .2) !important;
+}
+
+.board-cell {
+  border: 2px solid var(--color-accent) !important;
+}
+
+.board-cell,
+.board-separator.visible-separator {
+  width: clamp(22px, 3.8vw, 38px) !important;
+  height: clamp(22px, 3.8vw, 38px) !important;
+  min-width: clamp(22px, 3.8vw, 38px) !important;
+  min-height: clamp(22px, 3.8vw, 38px) !important;
+  aspect-ratio: 1 / 1 !important;
+  box-sizing: border-box !important;
 }
 
 .board-separator.visible-separator {

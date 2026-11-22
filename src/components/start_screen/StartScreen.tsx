@@ -95,7 +95,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     applicationCategory: 'Game',
     gamePlatform: ['Web Browser', 'Desktop', 'Mobile'],
     numberOfPlayers: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 4 },
-    image: 'https://spinwords.web.app/og-image-v2.jpg',
+    image: 'https://spinwords.web.app/og-image-v3.png',
     operatingSystem: 'Any',
     inLanguage: ['it', 'en'],
     author: { '@type': 'Person', name: 'SpinWords Team' },
@@ -762,12 +762,12 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <article className="seo-content-container">
         {isIt ? (
           <>
-            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Gioca gratis a SpinWords, il gioco di parole online</h1>
+            <h1 style={{ marginTop: 0 }}>Gioca gratis a SpinWords, il gioco di parole online</h1>
             <p>
               SpinWords è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
               Gira, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
             </p>
-            <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
+            <h4 style={{ marginTop: 0 }}>Caratteristiche del gioco:</h4>
             <ul style={{ paddingLeft: '20px' }}>
               <li>🕹️ <strong>Modalità Single Player:</strong> Allenati a risolvere le frasi e migliora le tue abilità nei <strong>giochi enigmistici</strong>.</li>
               <li>👥 <strong>Multiplayer Locale:</strong> Sfida amici e parenti sullo stesso dispositivo.</li>
@@ -783,7 +783,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           </>
         ) : (
           <>
-            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Play SpinWords, the Free Online Phrase Guessing Game</h1>
+            <h1 style={{ marginTop: 0 }}>Play SpinWords, the Free Online Phrase Guessing Game</h1>
             <p>
               SpinWords is a <strong>free online phrase guessing game</strong>. Spin the wheel, choose consonants, buy vowels, and guess the hidden phrase before your opponents.
               Spin the wheel, guess the consonants, buy vowels, and solve the hidden phrase before your opponents!

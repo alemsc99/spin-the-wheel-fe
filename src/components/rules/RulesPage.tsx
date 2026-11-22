@@ -114,12 +114,6 @@ export default function RulesPage(): React.ReactElement {
         {pageName}
       </h1>
 
-      <p className="rules-intro">
-        {activeLang === 'it'
-          ? 'SpinWords è un gioco online in cui devi indovinare una frase misteriosa, accumulare punti e usare i potenziamenti al momento giusto.'
-          : 'SpinWords is an online wheel and word game where you guess a mystery phrase, earn points, and use power-ups at the right time.'}
-      </p>
-
       {/* 2. IL BOX DELLE REGOLE */}
       <div className="rules-page-wrapper">
         <div className="rules-modal pretty-card">
