@@ -4,7 +4,7 @@ import StartScreen, { StartGameOptions } from './StartScreen';
 import { useTranslation } from '../../i18n/TranslationProvider';
 
 type Props = {
-  newGame: (players: number, names: string[], category?: string, userId?: string) => Promise<void>;
+  newGame: (players: number, names: string[], category?: string, userId?: string, daily?: boolean, timezone?: string) => Promise<'started' | 'completed' | 'failed'>;
   createRoom: (players: number, language: string, hostName: string, category?: string, userId?: string) => Promise<void>;
   joinRoom: (roomCode: string, playerName: string, userId?: string) => Promise<void>;
   setNumPlayers: React.Dispatch<React.SetStateAction<number>>;
@@ -36,7 +36,7 @@ export default function StartScreenWrapper({
   return (
     <StartScreen
       onStart={async (options: StartGameOptions) => {
-        const { players, names, mode, onlineSubMode, roomCode, category, userId } = options;
+        const { players, names, mode, onlineSubMode, roomCode, category, userId, timezone } = options;
 
         if (mode === 'online') {
           const myName = names[0] || 'Player';
@@ -55,12 +55,20 @@ export default function StartScreenWrapper({
           // choose a random first player
           const idx = Math.floor(Math.random() * players);
           setFirstPlayerIdx(idx);
-          setTurnOverlayMsg('overlay.turnSpin');
-          setTurnOverlayIsError(false);
-          setShowTurnOverlay(true);
+          if (mode === 'daily') {
+            setTurnOverlayMsg('');
+            setTurnOverlayIsError(false);
+            setShowTurnOverlay(false);
+          } else {
+            setTurnOverlayMsg('overlay.turnSpin');
+            setTurnOverlayIsError(false);
+            setShowTurnOverlay(true);
+          }
           // start the new game
-          await newGame(players, finalNames, category, userId);
-          navigate(`/${activeLang}/game`);
+          const started = await newGame(players, finalNames, category, userId, mode === 'daily', timezone);
+          if (started === 'failed') { setShowTurnOverlay(false); return; }
+          if (started === 'completed') setShowTurnOverlay(false);
+          navigate(`/${activeLang}/${started === 'started' ? 'game' : 'scoreboard'}`);
         }
       }}
     />

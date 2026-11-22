@@ -7,9 +7,32 @@
 
 .actions-buttons-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   justify-items: center;
+  width: 100%;
+}
+
+.guess-phrase-btn {
+  grid-column: 1 / -1;
+  min-height: 58px;
+  font-size: 1.15rem;
+}
+
+.secondary-actions {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.secondary-actions .action-button {
+  padding: 8px 14px;
+  border-width: 1px !important;
+  font-size: .92rem;
+  letter-spacing: .4px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, .16) !important;
 }
 
 .action-icon {
@@ -31,24 +54,6 @@
   position: relative;
   letter-spacing: 1px;
   width: 100% !important;
-}
-
-/* Small price tag centered at the bottom of each powerup card */
-.buy-vowel-price {
-  position: absolute;
-  left: 50%;
-  transform: translate(-52%, 6px);
-  bottom: 6px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0px 3px;
-  border-radius: 999px;
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.55);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  pointer-events: none;
-  z-index: 3;
-  letter-spacing: 0.2px;
 }
 
 .action-button:disabled {
@@ -78,6 +83,14 @@
     width: 100%;
   }
 
+  .secondary-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
   .action-button {
     width: clamp(44px, 12vw, 60px) !important;
     height: clamp(44px, 12vw, 60px) !important;
@@ -87,6 +100,16 @@
     justify-content: center !important;
     align-items: center !important;
     padding: 0 !important;
+  }
+
+  .guess-phrase-btn {
+    width: clamp(54px, 14vw, 68px) !important;
+    height: clamp(54px, 14vw, 68px) !important;
+  }
+
+  .secondary-actions .action-button {
+    width: clamp(38px, 10vw, 48px) !important;
+    height: clamp(38px, 10vw, 48px) !important;
   }
 
   .action-icon {
@@ -101,45 +124,12 @@
     display: none !important;
   }
 
-  .buy-vowel-price {
-    position: absolute !important;
-    bottom: -4px !important;
-    background: #333 !important;
-    color: #ffd700 !important;
-    padding: 1px 4px !important;
-    border-radius: 10px !important;
-    border: 1px solid white !important;
-    white-space: nowrap !important;
-    z-index: 10 !important;
-    font-weight: bold !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 2px !important;
-    font-size: 0.60rem !important;
-    transform: none !important;
-    left: auto !important;
-    pointer-events: none !important;
-  }
-
-  .buy-vowel-button.disabled .buy-vowel-price {
-    background: #888 !important;
-    color: #eee !important;
-  }
 }
 
 .guess-phrase-btn {
   background: linear-gradient(135deg, #a036fc 0%, #fc4e4e 100%) !important;
   border: 2px solid #ffffff !important;
   box-shadow: 0 4px 12px rgba(245, 159, 0, 0.3) !important;
-  color: #ffffff;
-}
-
-.buy-vowel-btn {
-  background: linear-gradient(135deg, #036e04 0%, #0cc402 100%) !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 0 4px 12px rgba(224, 49, 49, 0.3) !important;
   color: #ffffff;
 }
 
@@ -177,9 +167,5 @@
 }
 
 .guess-phrase-btn:not(:disabled):hover {
-  box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
-}
-
-.buy-vowel-btn:not(:disabled):hover {
   box-shadow: 0 4px 12px rgba(66, 188, 255, 0.25);
 }

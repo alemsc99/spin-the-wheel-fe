@@ -903,3 +903,92 @@
     margin-bottom: auto;
   }
 }
+.daily-stats-cards,
+.daily-result-cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px auto;
+}
+
+.daily-stats-cards {
+  flex-wrap: nowrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.daily-stats-cards > div,
+.daily-result-cards > div {
+  display: flex;
+  min-width: 105px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 205, 66, .55);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 5px 18px rgba(40, 25, 5, .12);
+}
+
+.daily-stats-cards > div {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 10px 6px;
+}
+
+.daily-stats-cards strong,
+.daily-result-cards strong { font-size: 1.25rem; color: #8b4b08; }
+.daily-stats-cards span,
+.daily-result-cards span { font-size: .78rem; text-align: center; }
+.daily-mode-row {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 8px;
+}
+
+.game-mode-slide-content .game-mode-toggles {
+  margin: 0;
+}
+
+.daily-mode-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: min(100%, 310px);
+  padding: 13px 24px;
+  border: 2px solid #ffd166;
+  border-radius: 999px;
+  background: #54208f;
+  color: #fff;
+  box-shadow: 0 7px 22px rgba(114, 42, 186, .34), 0 0 0 4px rgba(255, 209, 102, .24);
+  font-size: 1.08rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.daily-mode-chip:hover,
+.daily-mode-chip.active {
+  transform: translateY(-2px) scale(1.025);
+  box-shadow: 0 10px 28px rgba(114, 42, 186, .42), 0 0 0 5px rgba(255, 209, 102, .32);
+}
+
+.daily-mode-chip-tag {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #ffe08a;
+  color: #50218e;
+  font-size: .65rem;
+  letter-spacing: .08em;
+}
+
+@media (max-width: 520px) {
+  .daily-mode-chip { min-width: 100%; padding: 12px 14px; font-size: .98rem; }
+  .daily-stats-cards { gap: 6px; }
+  .daily-stats-cards > div { padding: 9px 4px; }
+  .daily-stats-cards strong { font-size: 1.05rem; }
+  .daily-stats-cards span { font-size: .68rem; }
+}

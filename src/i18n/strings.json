@@ -2,7 +2,7 @@
   "it": {
     "rules.pageHeading": "Regole del gioco",
     "rules.backToStart": "Torna alla schermata iniziale",
-    "start.title": "GiraParole",
+    "start.title": "SpinWords",
     "start.rules": "Regole",
     "start.rulesBody": [
       {

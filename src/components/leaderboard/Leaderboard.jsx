@@ -20,7 +20,7 @@ export default function Leaderboard({
   playerStatuses = {}, 
   powerups = {}, 
   recentDeductions = {}, 
-  scoreChanges 
+  scoreChanges
 }) {
   const { t } = useTranslation();
   const changes = scoreChanges ?? recentDeductions ?? {};

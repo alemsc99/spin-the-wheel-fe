@@ -5,12 +5,8 @@ import { useTranslation } from '../../i18n/TranslationProvider';
 export default function GameActions({
   showPhraseInput,
   victory,
-  score,
-  canGuess,
-  terminatedVowels,
   guessInput,
   onShowPhraseInput,
-  onBuyVowel,
   onShowRules,
   onNewGame,
   onGuessInputChange,
@@ -31,34 +27,26 @@ export default function GameActions({
           <span className="btn-text">{t('actions.guessPhrase')}</span>
         </button>
 
-        {/* Button to buy a vowel */}
-        <button
-          className="action-button buy-vowel-btn"
-          onClick={onBuyVowel}
-          disabled={victory || score < 500 || canGuess || terminatedVowels == true}
-        >
-          <span role="img" aria-label="vowel" className="action-icon">🅰️</span>
-          <span className="btn-text">{t('actions.buyVowel')}</span> {/* Testo avvolto */}
-          <span className="buy-vowel-price">500🪙</span>
-        </button>
-        {/* Button to show rules */}
-        <button
-          className="action-button show-rules-btn"
-          onClick={onShowRules}
-          disabled={victory}
-        >
-          <span role="img" aria-label="rules" className="action-icon">📜</span>
-          <span className="btn-text">{t('start.rules')}</span> {/* Testo avvolto */}
-        </button>
-        {/* Button to start a new game */}
-        <button
-          className="action-button new-game-btn"
-          onClick={onNewGame}
-          disabled={victory}
-        >
-          <span role="img" aria-label="sparkles" className="action-icon">✨</span>
-          <span className="btn-text">{t('game.newGame')}</span> {/* Testo avvolto */}
-        </button>
+        <div className="secondary-actions">
+          {/* Button to show rules */}
+          <button
+            className="action-button show-rules-btn"
+            onClick={onShowRules}
+            disabled={victory}
+          >
+            <span role="img" aria-label="rules" className="action-icon">📜</span>
+            <span className="btn-text">{t('start.rules')}</span>
+          </button>
+          {/* Button to start a new game */}
+          <button
+            className="action-button new-game-btn"
+            onClick={onNewGame}
+            disabled={victory}
+          >
+            <span role="img" aria-label="play" className="action-icon">▶️</span>
+            <span className="btn-text">{t('game.newGame')}</span>
+          </button>
+        </div>
       </div>
 
       <GuessPhraseOverlay

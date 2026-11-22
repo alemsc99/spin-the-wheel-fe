@@ -66,6 +66,8 @@ type GuessPhraseResp = {
 	current_player_idx?: number;
 	used_letters?: Record<string, boolean>;
 	can_guess?: boolean;
+	daily_stats?: { current_streak: number; best_streak: number; best_score: number; completed_count: number };
+	daily_result?: { date: string; score: number; spins: number };
 }
 
 type CreateRoomResponse = {

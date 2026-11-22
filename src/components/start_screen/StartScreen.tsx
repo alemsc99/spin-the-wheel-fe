@@ -22,7 +22,7 @@ declare global {
 const MIN_PLAYERS = 1;
 const MAX_PLAYERS = 4;
 
-export type GameMode = 'single' | 'local' | 'online';
+export type GameMode = 'single' | 'daily' | 'local' | 'online';
 export type OnlineSubMode = 'create' | 'join';
 
 export interface StartGameOptions {
@@ -33,6 +33,7 @@ export interface StartGameOptions {
   roomCode?: string;
   category?: 'Random' | 'Food' | 'Travels' | 'Sports' | 'Music' | 'Technology';
   userId?: string;
+  timezone?: string;
 }
 
 type StartScreenProps = {
@@ -84,7 +85,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const schemaData = {
     '@context': 'https://schema.org',
     '@type': 'VideoGame',
-    name: isIt ? 'GiraParole' : 'SpinWords',
+    name: isIt ? 'SpinWords' : 'SpinWords',
     description: isIt
       ? 'Gioco di parole e di enigmistica online gratuito. Gira la ruota, usa i powerups e indovina la frase prima degli altri giocatori.'
       : 'Free online word puzzle game. Spin the wheel, use power-ups, and guess the phrase before other players.',
@@ -102,10 +103,10 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   };
 
   const metaTitle = isIt
-    ? 'GiraParole - Gioco Enigmistico Online Gratis'
+    ? 'SpinWords - Gioco Enigmistico Online Gratis'
     : 'SpinWords -  Online Word Game';
   const metaDescription = isIt
-    ? 'Gioca a GiraParole online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici.'
+    ? 'Gioca a SpinWords online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici.'
     : 'Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.';
 
   // ---- CAROUSEL STATE ----
@@ -125,7 +126,27 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const [otherNames, setOtherNames] = useState<string[]>([]); // names of OTHER players (not the current user)
   const [roomCode, setRoomCode] = useState('');
   const [category, setCategory] = useState<'Random' | 'Food' | 'Travels' | 'Sports' | 'Music' | 'Technology'>('Random');
+  const [dailyStats, setDailyStats] = useState<{current_streak?: number; best_streak?: number; best_score?: number} | null>(null);
   const [error, setError] = useState('');
+
+  React.useEffect(() => {
+    if (!currentUser?.id) { setDailyStats(null); return; }
+    let cancelled = false;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    void (async () => {
+      try {
+        const token = await auth.currentUser?.getIdToken();
+        const response = await fetch(`${API_URL}/daily-stats/${encodeURIComponent(currentUser.id)}?timezone=${encodeURIComponent(timezone)}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const stats = response.ok ? await response.json() : null;
+        if (!cancelled) setDailyStats(stats);
+      } catch {
+        if (!cancelled) setDailyStats(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [currentUser?.id]);
 
   // ---- NAVIGATION ----
   function navigateTo(step: number) {
@@ -145,7 +166,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     } else if (currentStep === 1) {
       // Game mode step
       setError('');
-      if (gameMode === 'single') {
+      if (gameMode === 'single' || gameMode === 'daily') {
         // Skip player names step for single player
         navigateTo(3);
       } else {
@@ -190,7 +211,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     } else if (currentStep === 2) {
       navigateTo(1);
     } else if (currentStep === 3) {
-      if (gameMode === 'single') {
+      if (gameMode === 'single' || gameMode === 'daily') {
         navigateTo(1);
       } else {
         navigateTo(2);
@@ -202,7 +223,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const handleModeChange = (mode: GameMode) => {
     setGameMode(mode);
     setError('');
-    if (mode === 'single') {
+    if (mode === 'single' || mode === 'daily') {
       setPlayers(1);
       setOtherNames([]);
     } else if (mode === 'local') {
@@ -259,7 +280,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     let finalRoomCode: string | undefined;
     let finalOnlineSubMode: OnlineSubMode | undefined;
 
-    if (gameMode === 'single') {
+    if (gameMode === 'single' || gameMode === 'daily') {
       finalPlayers = 1;
       finalNames = [myName];
     } else if (gameMode === 'local') {
@@ -288,6 +309,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       roomCode: finalRoomCode,
       category,
       userId: currentUser?.id,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     });
   };
 
@@ -347,7 +369,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           </Link>
         </div>
 
-        <h1 className="title fancy-title">{isIt ? 'GiraParole' : 'SpinWords'}</h1>
+        <h1 className="title fancy-title">{isIt ? 'SpinWords' : 'SpinWords'}</h1>
 
         {/* Step progress indicator */}
         <div className="carousel-steps">
@@ -538,7 +560,16 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
 
             {/* ===== SLIDE 1: GAME MODE ===== */}
             <div className="carousel-slide">
-              <div className="slide-content">
+              <div className="slide-content game-mode-slide-content">
+                <div className="daily-mode-row">
+                  <button
+                    className={`daily-mode-chip ${gameMode === 'daily' ? 'active' : ''}`}
+                    onClick={() => handleModeChange('daily')}
+                  >
+                    <span aria-hidden="true">🎡</span>
+                    {isIt ? 'La frase del giorno' : 'Daily Sentence'}
+                  </button>
+                </div>
                 <div className="game-mode-toggles">
                   <button
                     className={`mode-btn ${gameMode === 'single' ? 'active' : ''}`}
@@ -655,10 +686,17 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             <div className="carousel-slide">
               <div className="slide-content start-slide">
                 <div className="start-summary">
-                  {gameMode === 'single' && (
+                  {(gameMode === 'single' || gameMode === 'daily') && (
                     <p className="summary-text">
-                      {t("start.category.selection")}
+                      {gameMode === 'daily' ? (isIt ? 'Ogni giorno una nuova frase da indovinare nel minor tempo possibile! Sfida i tuoi amici!' : 'Everyday a new sentence to guess as fast as you can! Challenge your friends!') : t("start.category.selection")}
                     </p>
+                  )}
+                  {gameMode === 'daily' && currentUser?.isGoogle && dailyStats && (
+                    <div className="daily-stats-cards">
+                      <div><strong>🔥 {dailyStats.current_streak || 0}</strong><span>{isIt ? 'Streak' : 'Current streak'}</span></div>
+                      <div><strong>🏆 {dailyStats.best_streak || 0}</strong><span>{isIt ? 'Record streak' : 'Best streak'}</span></div>
+                      <div><strong>🪙 {dailyStats.best_score || 0}</strong><span>{isIt ? 'Miglior punteggio' : 'Best score'}</span></div>
+                    </div>
                   )}
                   {gameMode === 'local' && (
                     <>
@@ -728,7 +766,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
           <>
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
             <p>
-              GiraParole è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
+              SpinWords è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
               Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
             </p>
             <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
@@ -743,6 +781,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             <p>
               Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone e <strong>indovina la frase!</strong>
             </p>
+            <p>SpinWords è un gioco indipendente, non affiliato a programmi TV o a terzi.</p>
           </>
         ) : (
           <>
@@ -763,6 +802,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             <p>
               Perfect for crossword lovers, puzzle enthusiasts, and party game fans. No download required: play directly in your browser on PC, tablet or smartphone.
             </p>
+            <p>SpinWords is an independent game, unaffiliated with any TV shows or third parties.</p>
           </>
         )}
       </article>

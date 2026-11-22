@@ -1,4 +1,5 @@
 import './LettersGrid.css';
+import { useTranslation } from '../../i18n/TranslationProvider';
 
 const IT_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const VOWELS = ['A', 'E', 'I', 'O', 'U'];
@@ -6,14 +7,16 @@ const VOWELS = ['A', 'E', 'I', 'O', 'U'];
 export default function LettersGrid({
   usedLetters,
   wrongLetters,
-  canBuyVowel,
   canGuess,
   isSpinning,
   victory,
+  score,
+  terminatedVowels,
+  isBuyingVowel,
   onGuessLetter,
-  onGuessVowel,
-  onGridClick
+  onGuessVowel
 }) {
+  const { lang } = useTranslation();
   return (
     <div className="letters-grid-container">
       <div className="letters-grid">
@@ -22,47 +25,34 @@ export default function LettersGrid({
           const isUsed = !!usedLetters[letter];
           const isWrong = !!wrongLetters[letter];
           
-          let disabled = true;
-          let additionalClasses = '';
-          
-          if (canBuyVowel) {
-            // Buy vowel mode: only vowels are clickable
-            disabled = !isVowel || isUsed || victory;
-            if (isVowel && !isUsed) {
-              additionalClasses = 'vowel-mode-active';
-            } else {
-              additionalClasses = 'consonant-mode-disabled';
-            }
-          } else {
-            // Normal mode: only consonants are clickable if canGuess is true
-            disabled = isVowel || isSpinning || !canGuess || isUsed || victory;
-            if (isVowel) {
-              additionalClasses = 'vowel-mode-disabled';
-            }
-          }
+          const canPurchaseVowel = isVowel && score >= 500 && !canGuess && !isSpinning && !terminatedVowels;
+          const disabled = isUsed || victory || isSpinning || isBuyingVowel || (isVowel
+            ? !canPurchaseVowel
+            : !canGuess);
+          const additionalClasses = isVowel ? 'vowel-key' : '';
           
           return (
             <button
               key={letter}
               className={`letter-btn ${isUsed ? 'used' : ''} ${isWrong ? 'wrong' : ''} ${additionalClasses}`}
+              title={isVowel ? `500 ${lang === 'it' ? 'monete' : 'coins'}` : letter}
+              aria-label={isVowel ? `${letter}, 500 ${lang === 'it' ? 'monete' : 'coins'}` : letter}
               onClick={() => {
-                if (canBuyVowel && isVowel) {
+                if (isVowel) {
                   onGuessVowel(letter);
-                } else if (!canBuyVowel && !isVowel) {
+                } else {
                   onGuessLetter(letter);
                 }
               }}
               disabled={disabled}
             >
-              {letter}
+              {isVowel && !isUsed && <span className="vowel-price-lock"><span aria-hidden="true">🔒</span><span>500🪙</span></span>}
+              <span className="letter-label">{letter}</span>
             </button>
           );
         })}
       </div>
       
-      {(isSpinning || (!canGuess && !canBuyVowel)) && (
-        <div className="letters-grid-overlay" onClick={onGridClick} />
-      )}
     </div>
   );
 }

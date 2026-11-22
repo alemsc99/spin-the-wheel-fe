@@ -78,16 +78,16 @@ export default function RulesPage(): React.ReactElement {
 
   const canonicalUrl = `https://spinwords.web.app/${activeLang}/rules`;
   const metaTitle = activeLang === 'it' 
-      ? "Regole del Gioco - GiraParole | Come Giocare a GiraParole" 
+      ? "Regole del Gioco - SpinWords | Come Giocare a SpinWords" 
       : "Game Rules - SpinWords | How to Play Spinwords";
       
   const metaDescription = activeLang === 'it'
-    ? "Gioca gratis a GiraParole! Sfida i tuoi amici in un gioco multiplayer a turni, indovina la frase misteriosa e usa potenziamenti strategici per vincere."
+    ? "Gioca gratis a SpinWords! Sfida i tuoi amici in un gioco multiplayer a turni, indovina la frase misteriosa e usa potenziamenti strategici per vincere."
     : "Play SpinWords for free! Challenge your friends in a turn-based multiplayer game, guess the mystery phrase, and use strategic power-ups to win.";
 
   const metaKeywords = activeLang === 'it'
-    ? "gioco della ruota online, ruota della fortuna online, gioco indovina la frase, gioco multiplayer online, gioco gratis online, quiz di parole"
-    : "online wheel game, online wheel of fortune, phrase guessing game, online multiplayer game, free online game, word quiz";
+    ? "gioco della ruota online, gioco indovina la frase, gioco multiplayer online, gioco gratis online, quiz di parole"
+    : "online wheel game, phrase guessing game, online multiplayer game, free online game, word quiz";
   return (
     <div className="rules-page">
       {/* SEZIONE SEO: Definisce questa pagina come unica ai motori di ricerca */}

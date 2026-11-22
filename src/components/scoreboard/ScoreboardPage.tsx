@@ -14,13 +14,32 @@ export type ScoreboardEntry = {
   secretPhrase: string;
 };
 
-export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: ScoreboardEntry[]; onPlayAgain: () => void; }): React.ReactElement {
+type DailyResult = { date?: string; score?: number; spins?: number; stats?: {current_streak?: number; best_streak?: number; best_score?: number; completed_count?: number}; alreadyPlayed?: boolean };
+
+export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dailyMode, isAuthenticated, onDailyBack }: { ranking: ScoreboardEntry[]; onPlayAgain: () => void; dailyResult?: DailyResult | null; dailyMode?: boolean; isAuthenticated?: boolean; onDailyBack?: () => void }): React.ReactElement {
   const { t } = useTranslation();
   const translate = t as unknown as (key: string, options?: Record<string, unknown>) => unknown;
   let lang = (window.localStorage && window.localStorage.getItem('lang')) || 'it';
 
   // Se la pagina viene aperta senza ranking, mostra le regole
   const showRules = !ranking || ranking.length === 0;
+  const showDaily = !!dailyMode && !!dailyResult;
+  const [copied, setCopied] = React.useState(false);
+  const shareText = currentLangText(dailyResult);
+  async function shareResult() {
+    const shareUrl = `https://spinwords.web.app/${currentLang}`;
+    const text = `${shareText}\n${shareUrl}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'SpinWords — La ruota del giorno', text: shareText, url: shareUrl });
+      }
+      else { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800); }
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { /* clipboard unavailable */ }
+      }
+    }
+  }
   // Fix universale per i18next: usa returnObjects: true
   let rulesList: any = translate('scoreboard.rulesList', { returnObjects: true });
   // Fallback: se la traduzione restituisce letteralmente 'scoreboard.rulesList', prendi la lista dal json
@@ -56,16 +75,16 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
   if (currentLang === 'it') {
     // ITALIANO
     metaTitle = showRules 
-      ? t('scoreboard.rulesTitle') + " - GiraParole" 
-      : "Partita Terminata - GiraParole";
+      ? t('scoreboard.rulesTitle') + " - SpinWords" 
+      : "Partita Terminata - SpinWords";
       
     metaDescription = showRules 
-      ? "Leggi le regole ufficiali di GiraParole. Scopri come girare la ruota, risolvere i puzzle e competere con gli amici."
-      : "Guarda i punteggi finali e scopri chi ha vinto la partita a GiraParole!";
+      ? "Leggi le regole ufficiali di SpinWords. Scopri come girare la ruota, risolvere i puzzle e competere con gli amici."
+      : "Guarda i punteggi finali e scopri chi ha vinto la partita a SpinWords!";
 
     metaKeywords = showRules
       ? "regole punteggio gioco online, gioco della ruota online, gioco multiplayer online, gioco a punteggio online, indovina la frase, bonus punteggio gioco"
-      : "punteggi finali, classifica, vincitore, partita terminata, GiraParole";
+      : "punteggi finali, classifica, vincitore, partita terminata, SpinWords";
 
   } else {
     // INGLESE (Default)
@@ -112,7 +131,26 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
 
       <div className="scoreboard-wrapper">
         <div className="scoreboard-card">
-          {showRules ? (
+          {showDaily ? (
+            <section className="daily-result">
+              <span className="trophy-icon">🎡</span>
+              <h1 className="victory-title">{currentLang === 'it' ? 'La ruota del giorno' : 'Daily Wheel'}</h1>
+              <p className="subtitle">{dailyResult?.alreadyPlayed ? (currentLang === 'it' ? 'Hai già completato il puzzle di oggi.' : 'You already completed today’s puzzle.') : (currentLang === 'it' ? 'Puzzle completato!' : 'Puzzle completed!')} 🎉</p>
+              <div className="daily-result-cards">
+                <div><strong>🪙 {dailyResult?.score ?? 0}</strong><span>{currentLang === 'it' ? 'Punteggio' : 'Points'}</span></div>
+                <div><strong>🎯 {dailyResult?.spins ?? 0}</strong><span>{currentLang === 'it' ? 'Giri ruota' : 'Wheel spins'}</span></div>
+              </div>
+              {isAuthenticated && dailyResult?.stats && <div className="daily-stats-cards">
+                <div><strong>🔥 {dailyResult.stats.current_streak || 0}</strong><span>{currentLang === 'it' ? 'Streak' : 'Current streak'}</span></div>
+                <div><strong>🏆 {dailyResult.stats.best_streak || 0}</strong><span>{currentLang === 'it' ? 'Migliore streak' : 'Best streak'}</span></div>
+                <div><strong>🪙 {dailyResult.stats.best_score || 0}</strong><span>{currentLang === 'it' ? 'Miglior punteggio' : 'Best score'}</span></div>
+              </div>}
+              <div className="scoreboard-actions">
+                <button type="button" className="play-again-btn" onClick={shareResult}>{copied ? (currentLang === 'it' ? 'Copiato!' : 'Copied!') : (currentLang === 'it' ? 'Condividi risultato' : 'Share result')}</button>
+                <button type="button" className="play-again-btn" onClick={onDailyBack}>{currentLang === 'it' ? 'Torna alla home' : 'Back to home'}</button>
+              </div>
+            </section>
+          ) : showRules ? (
             <div className="scoreboard-rules">
               <h1 className="scoreboard-rules-title">
                 <span role="img" aria-label="lightbulb">💡</span>
@@ -169,4 +207,10 @@ export default function ScoreboardPage({ ranking, onPlayAgain }: { ranking: Scor
       </div>
     </div>
   );
+}
+
+function currentLangText(result?: DailyResult | null) {
+  const lang = (window.location.pathname.split('/').find((part) => part === 'it' || part === 'en')) || 'en';
+  if (lang === 'it') return `🎡 Ho indovinato la frase del giorno di SpinWords in ${result?.spins ?? 0} giri e ho fatto ${result?.score ?? 0} punti! 🪙 Tocca a te: riesci a battermi? 🎯`;
+  return `🎡 I guessed today's phrase on SpinWords in ${result?.spins ?? 0} spins and scored ${result?.score ?? 0} points! 🪙 Your turn: can you beat me? 🎯`;
 }

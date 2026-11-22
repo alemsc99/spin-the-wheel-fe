@@ -62,6 +62,20 @@
   flex-shrink: 0;
 }
 
+.daily-game-status {
+  align-self: center;
+  margin-top: -4px;
+  padding: 7px 12px;
+  border: 1px solid #ffd166;
+  border-radius: 999px;
+  background: linear-gradient(100deg, #6c2bd9, #bb39d7);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(84, 32, 143, .2);
+  font-size: .78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 .powerups-container {
   background: #f7f7f7;
   border-radius: 12px;
@@ -180,6 +194,7 @@
     order: 10;
     width: 48px;
   }
+
 }
 
 /* ── Extra-small phones (≤ 480px) ── */

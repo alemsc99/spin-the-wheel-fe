@@ -34,6 +34,7 @@ import BoughtVowelOverlay from './components/overlays/BoughtVowelOverlay.tsx';
 import GuessPhraseIncorrectOverlay from './components/overlays/GuessPhraseIncorrectOverlay.tsx';
 import ReelOverlay from './components/overlays/ReelOverlay.tsx';
 import { Helmet } from 'react-helmet-async';
+import { auth } from './firebaseConfig';
 
 
 const SUPPORTED_LANGS: Lang[] = ['it', 'en'];
@@ -73,7 +74,6 @@ function AppContent() {
   const [showReelOverlay, setShowReelOverlay] = useState(false);
 
   const { t, lang, setLang } = useTranslation();
-  const [canBuyVowel, setCanBuyVowel] = useState(false);
   const [wrongLetters, setWrongLetters] = useState({} as Record<string, boolean>);
   const [gameId, setGameId] = useState<string | null>(null);
   const [topic, setTopic] = useState('');
@@ -87,6 +87,7 @@ function AppContent() {
   const [usedLetters, setUsedLetters] = useState<Record<string, boolean>>({});
   const [guessInput, setGuessInput] = useState('');
   const [terminatedVowels, setTerminatedVowels] = useState(false);
+  const [isBuyingVowel, setIsBuyingVowel] = useState(false);
   const [victory, setVictory] = useState(false);
   const [defeat, setDefeat] = useState(false);
   const [canGuess, setCanGuess] = useState(false);
@@ -99,6 +100,9 @@ function AppContent() {
   const [pendingSpinData, setPendingSpinData] = useState<any>(null);
   const [myName, setMyName] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [dailyMode, setDailyMode] = useState(false);
+  const [dailyResult, setDailyResult] = useState<any>(null);
+  const [dailyPuzzleDate, setDailyPuzzleDate] = useState('');
   const [roomCode, setRoomCode] = useState<string>("");
   const [roomHost, setRoomHost] = useState<string>("");
   const navigate = useNavigate();
@@ -184,7 +188,6 @@ function AppContent() {
           setVictory(!!payload.complete)
           setDefeat(false)
           setCanGuess(false)
-          setCanBuyVowel(false)
           setIsSpinning(false)
           setShowPhraseInput(false)
           setWrongLetters({})
@@ -375,6 +378,7 @@ function AppContent() {
           break;
 
         case "REEL_SPIN":
+          if (dailyMode) break;
           console.log("Received REEL_SPIN via WebSocket");
           // Only store result; apply effects when reel animation ends
           setReelResult(payload.value);
@@ -403,7 +407,7 @@ function AppContent() {
     };
 
     socketRef.current = ws;
-  }, [lang, navigate, t]);
+  }, [dailyMode, lang, navigate, t]);
 
   useEffect(() => {
     const changes: Record<string, number> = {};
@@ -648,15 +652,19 @@ function AppContent() {
     setErrorMsg(message);
   }
 
-  async function newGame(players: number, names: string[], category?: string, userId?: string){
-    if (userId) {
-      setUserId(userId);
-    }
+  async function newGame(players: number, names: string[], category?: string, userId?: string, daily = false, timezone = 'UTC'): Promise<'started' | 'completed' | 'failed'>{
+    setDailyMode(daily);
+    setDailyResult(null);
+    if (names[0]) setMyName(names[0]);
+    setUserId(userId || null);
     try{
-      const res = await fetch(`${API_URL}/new-game`, {
+      const token = daily && userId ? await auth.currentUser?.getIdToken() : undefined;
+      const res = await fetch(`${API_URL}/${daily ? 'daily-puzzle' : 'new-game'}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify(daily ? {
+          player_name: names[0], language: lang, timezone, user_id: userId || null
+        } : {
           num_players: players,
           player_names: names,
           language: lang,
@@ -666,7 +674,13 @@ function AppContent() {
         })
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
-      const data: NewGameResp = await res.json()
+      const data: any = await res.json()
+      if (daily && data.date) setDailyPuzzleDate(data.date);
+      if (daily && data.already_played) {
+        setDailyResult({ ...(data.result || {}), stats: data.stats, alreadyPlayed: true, date: data.date });
+        setGameId(null);
+        return 'completed';
+      }
       
       // Reset score tracking to avoid "deduction" animations when resetting scores
       prevPlayerScores.current = {}; 
@@ -682,18 +696,23 @@ function AppContent() {
       setVictory(false)
       setDefeat(false)
       setCanGuess(false)
-      setCanBuyVowel(false)
       setIsSpinning(false)
       setShowPhraseInput(false)
       setWrongLetters({})
       setPowerups({});
       setTerminatedVowels(false);
-      if (numPlayers > 1){
-        setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
-      }else if (numPlayers === 1){
-        setTurnOverlayMsg(t('newGame.firstTurnSinglePlayer'));
+      if (daily) {
+        setTurnOverlayMsg('');
+        setTurnOverlayIsError(false);
+        setShowTurnOverlay(false);
+      } else {
+        if (numPlayers > 1){
+          setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
+        }else if (numPlayers === 1){
+          setTurnOverlayMsg(t('newGame.firstTurnSinglePlayer'));
+        }
+        setShowTurnOverlay(true);
       }
-      setShowTurnOverlay(true);
 
       if (data.player_scores && Object.keys(data.player_scores).length > 0) {
         setPlayerScores(data.player_scores)
@@ -714,8 +733,11 @@ function AppContent() {
       } else {
         setFirstPlayerIdx(0)
       }
+      return 'started';
     }catch(err){
       console.error(err)
+      showErrorMessage(daily ? (lang === 'it' ? 'Impossibile caricare il puzzle del giorno.' : 'Could not load today’s puzzle.') : (lang === 'it' ? 'Impossibile avviare la partita.' : 'Could not start the game.'));
+      return 'failed';
     }
   }
 
@@ -837,51 +859,6 @@ function AppContent() {
     navigate(localizedRulesPath);
   }
 
-  async function handleBuyVowel() {
-    if (!gameId) return;
-    // Ask server to charge the vowel cost and return authoritative state.
-    try {
-      const res = await fetch(`${API_URL}/buy-vowel`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, player_name: myName})
-      });
-      if (!res.ok) {
-        if (res.status == 403){
-          showErrorMessage(t('buyVowelNotYourTurn'));
-          return;
-        }
-        const text = await res.text();
-        let json: any = {};
-        try { json = text ? JSON.parse(text) : {}; } catch (e) { json = {}; }
-        showErrorMessage(json.detail || json.error || json.message || t('buyVowel.lowMoney'));
-        return;
-      }
-      const data: any = await res.json();
-      console.log("Buy vowel response:", data);
-      if (data.boughtVowels > 0 && data.boughtVowels % 5 === 0){
-        setTerminatedVowels(true);
-      }else{
-        setTerminatedVowels(false);
-      }
-      // Apply authoritative state from server
-      if (data.player_scores) {
-        setPlayerScores(data.player_scores);
-        if (typeof data.current_player_idx === 'number') {
-          const currentName = playerNames[data.current_player_idx];
-          setScore(data.player_scores[currentName] ?? 0);
-        }
-      }
-      if (data.used_letters) setUsedLetters(data.used_letters);
-      if (typeof data.current_player_idx === 'number') setFirstPlayerIdx(data.current_player_idx);
-      // Enable vowel selection in the UI only after server confirmed the purchase
-      setCanBuyVowel(true);
-    } catch (err) {
-      console.error(err);
-      showErrorMessage(t('buyVowel.lowMoney'));
-    }
-  }
-
   // Handler for clicks on powerup buttons (called by <Powerups onUse={...} />)
   // Each case is intentionally left empty for you to implement the desired behavior.
   async function handlePowerupUse(powerup: string, targetPlayer: string | null = null) {
@@ -951,15 +928,18 @@ function AppContent() {
   }
 
   async function handleGuessVowel(vowel: string) {
-    if (!gameId) return;
-  // Do not rely on client-side usedLetters for validation/security; server will reject already-used vowels.
-    // Trigger buy+reveal in a single server request: POST /buy-vowel with letter
-    setCanBuyVowel(false);
+    if (!gameId || isBuyingVowel || usedLetters[vowel] || canGuess || isSpinning || victory) return;
+    if (score < 500) {
+      showErrorMessage(t('buyVowel.lowMoney'));
+      return;
+    }
+    if (terminatedVowels) return;
+    setIsBuyingVowel(true);
     try {
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter: vowel, player_name: myName })
+        body: JSON.stringify({ game_id: gameId, letter: vowel, player_name: myName, direct_purchase: true })
       });
       if (!res.ok) {
         const text = await res.text();
@@ -969,6 +949,9 @@ function AppContent() {
         return;
       }
       const data: any = await res.json();
+      if (data.boughtVowels > 0 && data.boughtVowels % 5 === 0) {
+        setTerminatedVowels(true);
+      }
       if (data.occurrences === 0) {
         setBoughtVowelOverlayMsg(t('overlay.YouBoughtVowelNoOccurrences'));
         setShowBoughtVowelOverlay(true);
@@ -1000,11 +983,13 @@ function AppContent() {
         setFirstPlayerIdx(data.current_player_idx);
       }
       if (data.complete) setVictory(true);
-      if (data.showReel && !showReel) {
+      if (!dailyMode && data.showReel && !showReel) {
         setPendingShowReel(true);
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsBuyingVowel(false);
     }
   }
 
@@ -1167,7 +1152,7 @@ function AppContent() {
 
       if (data.complete) setVictory(true)
 
-      if (data.showReel && !showReel) {
+      if (!dailyMode && data.showReel && !showReel) {
         setPendingShowReel(true);
       }
       if (data.used_shields && data.used_shields.length > 0){
@@ -1182,9 +1167,10 @@ function AppContent() {
   async function handleGuessPhrase(){
     if(!gameId) return
     try{
+      const token = dailyMode && userId ? await auth.currentUser?.getIdToken() : undefined;
       const res = await fetch(`${API_URL}/guess-phrase`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName, user_id: userId })
       })
       if (!res.ok) {
@@ -1201,6 +1187,7 @@ function AppContent() {
         return;
       }
       const data: GuessPhraseResp = await res.json()
+      if (data.daily_result) setDailyResult({ ...data.daily_result, stats: data.daily_stats, alreadyPlayed: false });
       if (typeof data.masked === 'string') setMasked(data.masked);
 
 
@@ -1301,16 +1288,17 @@ function AppContent() {
     await newGame(numPlayers, playerNames, topic);
   }
 
-  function handleLettersGridClick() {
-    if (canBuyVowel) {
-      showErrorMessage(t('lettersGrid.selectVowel'));
-    } else {
-      showErrorMessage(t('wheel.mustSpinFirst'));
-    }
-  }
-
   function handleWheelClick() {
     showErrorMessage(t('wheel.mustSpinFirst'));
+  }
+
+  function handleDailyBackToHome() {
+    setVictory(false);
+    setDailyMode(false);
+    setDailyResult(null);
+    setDailyPuzzleDate('');
+    setGameId(null);
+    navigate(localizedStartPath);
   }
 
   // language is handled by TranslationProvider (localStorage + context)
@@ -1401,6 +1389,7 @@ function AppContent() {
                  powerups={powerups}
                  scoreChanges={scoreChanges}
                />
+                {dailyMode && <div className="daily-game-status">🎡 {lang === 'it' ? 'La ruota del giorno' : 'Daily Wheel'} · {dailyPuzzleDate}</div>}
                {/* POWERUPS: in its own container directly below the players list */}
                 {numPlayers > 1 && (
                     <Powerups
@@ -1420,22 +1409,20 @@ function AppContent() {
                 <LettersGrid
                   usedLetters={usedLetters}
                   wrongLetters={wrongLetters}
-                  canBuyVowel={canBuyVowel}
                   canGuess={canGuess}
                   isSpinning={isSpinning}
                   victory={victory}
+                  score={score}
+                  terminatedVowels={terminatedVowels}
+                  isBuyingVowel={isBuyingVowel}
                   onGuessLetter={handleGuess}
                   onGuessVowel={handleGuessVowel}
-                  onGridClick={handleLettersGridClick}
                 />
 
                 <GameActions
                   showPhraseInput={showPhraseInput}
                   victory={victory}
-                  score={score}
-                  canGuess={canGuess}
                   guessInput={guessInput}
-                  terminatedVowels={terminatedVowels}
                   onShowPhraseInput={() => {
                     if (myName && myName !== playerNames[firstPlayerIdx || 0]) {
                       showErrorMessage(t('actions.notYourTurnToGuess'));
@@ -1444,7 +1431,6 @@ function AppContent() {
                     setShowPhraseInput(true);
                     return;
                   }}
-                  onBuyVowel={handleBuyVowel}
                   onShowRules={handleShowRules}
                   onNewGame={handleNewGameRequest}
                   onGuessInputChange={setGuessInput}
@@ -1530,6 +1516,10 @@ function AppContent() {
             <ScoreboardPage
               ranking={ranking}
               onPlayAgain={handleNewGameRequest}
+              dailyResult={dailyResult}
+              dailyMode={dailyMode}
+              isAuthenticated={!!userId}
+              onDailyBack={handleDailyBackToHome}
             />
           )}
         />
