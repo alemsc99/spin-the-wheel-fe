@@ -134,7 +134,7 @@ export default function Wheel({ onSpin, lastSpin, onSpinEnd, disabled, numPlayer
       ctx.save();
       ctx.beginPath(); ctx.fillStyle = s.color; ctx.moveTo(rad, rad); ctx.arc(rad, rad, rad, startAng, startAng + arc); ctx.fill();
       ctx.translate(rad, rad); ctx.rotate(startAng + arc / 2.65); ctx.rotate(Math.PI);
-      ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.font = `bold ${Math.floor(rad * 0.08)}px sans-serif`;
+      ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.font = `700 ${Math.floor(rad * 0.08)}px Nunito, sans-serif`;
       ctx.fillText(s.label, -Math.floor(rad * 0.65), 0);
       ctx.restore();
     });

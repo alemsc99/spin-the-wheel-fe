@@ -127,7 +127,7 @@
     border: 1px solid white !important;
     white-space: nowrap !important;
     z-index: 10 !important;
-    font-weight: bold !important;
+    font-weight: 700 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -306,7 +306,7 @@
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 10px 0;
   margin-bottom: 4px;
   cursor: pointer;
@@ -325,7 +325,7 @@
   border: none;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 10px 0;
   margin-top: 10px;
   cursor: pointer;

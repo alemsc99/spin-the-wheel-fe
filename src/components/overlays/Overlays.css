@@ -40,13 +40,13 @@
   border-radius: 10px;
   padding: 8px 18px;
   margin-bottom: 6px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
   color: #333;
 }
 .victory-ranking-item.first {
   background: #ffe082;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 20px;
   color: #d84315;
   box-shadow: 0 2px 8px #ffd54f;
@@ -92,7 +92,7 @@
 
 .overlay-title {
   font-size: 2.2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 2px;
   text-align: center;
@@ -100,7 +100,7 @@
 
 .overlay-shield-title {
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -109,7 +109,7 @@
 
 .overlay-double-title {
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -118,7 +118,7 @@
 
 .overlay-wrong-letter-title {
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -127,7 +127,7 @@
 
 .overlay-lose-it-all-title {
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -136,7 +136,7 @@
 
 .overlay-wheel-bankrupt-title{
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -145,7 +145,7 @@
 
 .overlay-wheel-next-title{
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -154,7 +154,7 @@
 
 .overlay-swap-title {
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -163,7 +163,7 @@
 
 .overlay-bought-vowel-title{
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -172,7 +172,7 @@
 
 .overlay-guess-phrase-incorrect-title{
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -181,7 +181,7 @@
 
 .overlay-reel-title{
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1.5px;
   text-align: center;
@@ -190,7 +190,7 @@
 
 .overlay-text {
   font-size: 1.15em;
-  font-weight: 500;
+  font-weight: 400;
   margin: 0;
   text-align: center;
   letter-spacing: 1px;
@@ -202,7 +202,7 @@
   margin-top: 18px;
   padding: 12px 32px;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   border: none;
   border-radius: 24px;
   cursor: pointer;

@@ -85,7 +85,7 @@
     font-size: 1.2rem;
     margin-bottom: 2rem;
     color: #555;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .lobby-details {
@@ -124,7 +124,7 @@
     font-size: 1rem;
     text-transform: uppercase;
     color: #1976d2; /* Primary Blue */
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 1px;
 }
 
@@ -147,7 +147,7 @@
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
     white-space: nowrap;
@@ -205,7 +205,7 @@
     border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-top: 1rem;
     transition: transform 0.2s ease, opacity 0.2s ease;
 }

@@ -78,7 +78,7 @@ export default function HalfGameReel({ show, result, onClose }) {
       <div className="reel-box">
         <div className="reel-values" style={{ minWidth: `${maxLabel.length + 5}ch`, textAlign: 'center' }}>
           {valueMap.map((v, i) => (
-            <div key={v.key} className={`reel-value${i === currentIdx ? ' selected' : ''}`}>{v.label}</div>
+            <div key={v.key} className={`reel-value${v.key.startsWith('x') ? ' multiplier' : ''}${i === currentIdx ? ' selected' : ''}`}>{v.label}</div>
           ))}
         </div>
       </div>

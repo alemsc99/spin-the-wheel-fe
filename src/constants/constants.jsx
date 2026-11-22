@@ -16,7 +16,7 @@ const IMAGES = {
 const POWERUP_PRICES = {
   Double: 500,
   Skip: 250,
-  Lose: 1000,
+  Lose: 900,
   Shield: 750,
 };
 

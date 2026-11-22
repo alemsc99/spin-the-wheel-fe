@@ -44,7 +44,7 @@
 .action-button {
   padding: 12px 28px;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   border: none;
   border-radius: 24px !important;
   justify-content: center !important;
@@ -151,7 +151,7 @@
 .new-game-btn-cancel{
 	background: rgb(146, 144, 144);
 	color: #fff;
-	font-weight: bold;
+	font-weight: 700;
 	font-size: 1.1em;
 	border: none;
 	border-radius: 8px;

@@ -10,7 +10,7 @@
         "content": [
           "Indovina la frase misteriosa prima dei tuoi avversari!",
           "Il vincitore è il giocatore con lo score più alto alla fine della partita.",
-          "Durante il tuo turno gira la ruota e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
+          "Durante il tuo turno gira e scegli una consonante: se la consonante scelta è presente nella frase, tutte le occorrenze vengono rivelate e guadagni punti pari al valore della ruota moltiplicato per il numero di occorrenze; se la consonante non è presente, il turno passa al giocatore successivo.",
           "Le vocali si comprano sempre al costo fisso di 500🪙: non sono influenzate dal valore della ruota ma rivelano tutte le occorrenze se presenti.",
           "Puoi provare a indovinare la frase nascosta in qualsiasi momento del tuo turno: se sbagli perdi il turno; se indovini vinci il round e ricevi 500 punti bonus sul tuo punteggio finale."
         ]
@@ -60,7 +60,6 @@
     "buyPowerup.lowMoney": "Il tuo score non è sufficiente per acquistare questo potenziamento.",
     "buyPowerup.cannotUseNow": "Questo potenziamento è già in uso",
     "buyPowerupNotYourTurn": "Aspetta il tuo turno per comprare un potenziamento.",
-    "overlay.turnSpin": "Gira la ruota!",
     "overlay.changeTurn": "Cambio turno! È il turno di:",
     "overlay.swapPlayers": "Punteggio scambiato con:",
     "overlay.bankrupt": "Oh no! Il tuo punteggio si azzera! Il turno va a:",
@@ -170,7 +169,7 @@
     "lang.en": "Inglese",
     "start.langSelectionAria": "Selezione lingua",
     "score.label": "Punteggio:",
-    "category.label": "Categoria:",
+    "category.label": "Categoria: ",
     "category.Random": "Casuale",
     "category.Food": "Cibo",
     "category.Travels": "Viaggi",
@@ -279,7 +278,6 @@
     "start.button": "Start",
     "error.emptyNames": "Enter a name for every player!",
     "error.duplicateNames": "Player names must be distinct!",
-    "overlay.turnSpin": "Spin the wheel!",
     "overlay.changeTurn": "Change turn! It's now:",
     "overlay.swapPlayers": "Score swapped with:",
     "overlay.bankrupt": "Oh no! Your score is reset! The turn goes to:",
@@ -398,7 +396,7 @@
     },
     "start.langSelectionAria": "Language selection",
     "score.label": "Score:",
-    "category.label": "Category:",
+    "category.label": "Category: ",
     "category.Random": "Random",
     "category.Food": "Food",
     "category.Travels": "Travels",

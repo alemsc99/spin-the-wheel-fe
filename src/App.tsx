@@ -110,6 +110,13 @@ function AppContent() {
  
   const socketRef = useRef<WebSocket | null>(null);
 
+  // Local multiplayer is a pass-and-play game: send the active player's name.
+  // Online games must keep sending this client's name so the backend can enforce ownership.
+  function getRequestPlayerName() {
+    if (socketRef.current) return myName;
+    return playerNames[firstPlayerIdx ?? 0] || myName;
+  }
+
   // 2. Funzione per collegarsi (la chiamerai dalla Lobby o dallo Start)
   const connectWebSocket = useCallback((roomCode: string, playerName: string, userId: string | null) => {
     setMyName(playerName);
@@ -872,7 +879,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/use-powerup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: myName, user_id: userId })
+        body: JSON.stringify({ game_id: gameId, used_powerup: powerup, target_player: targetPlayer, player_name: getRequestPlayerName(), user_id: userId })
       });
       if (!res.ok) {
         if (res.status === 409){
@@ -939,7 +946,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/buy-vowel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter: vowel, player_name: myName, direct_purchase: true })
+        body: JSON.stringify({ game_id: gameId, letter: vowel, player_name: getRequestPlayerName(), direct_purchase: true })
       });
       if (!res.ok) {
         const text = await res.text();
@@ -1017,7 +1024,7 @@ function AppContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           game_id: gameId,
-          player_name: myName || playerNames[firstPlayerIdx || 0] 
+          player_name: getRequestPlayerName()
         })
       });
 
@@ -1052,9 +1059,12 @@ function AppContent() {
             }
             break;
           case 'Scambia':
-            if (data.previous_player === myName || (!myName && data.swapped_player)){
-              setWheelSwapOverlayMsg(t('overlay.YouLandedSwap') + ' ' + data.swapped_player);
-            }
+          case 'Swap':
+            setWheelSwapOverlayMsg(
+              data.swapped_player
+                ? `${t('overlay.YouLandedSwap')} ${data.swapped_player}`
+                : t('overlay.YouLandedSwap')
+            );
             break;
         }
       setLastSpin(data.value);
@@ -1084,7 +1094,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-letter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_id: gameId, letter, player_name: myName, user_id: userId})
+        body: JSON.stringify({ game_id: gameId, letter, player_name: getRequestPlayerName(), user_id: userId})
       })
       if (!res.ok) {
         const text = await res.text();
@@ -1171,7 +1181,7 @@ function AppContent() {
       const res = await fetch(`${API_URL}/guess-phrase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: myName, user_id: userId })
+        body: JSON.stringify({ game_id: gameId, guess: guessInput, player_name: getRequestPlayerName(), user_id: userId })
       })
       if (!res.ok) {
         setVictory(false);
@@ -1189,6 +1199,7 @@ function AppContent() {
       const data: GuessPhraseResp = await res.json()
       if (data.daily_result) setDailyResult({ ...data.daily_result, stats: data.daily_stats, alreadyPlayed: false });
       if (typeof data.masked === 'string') setMasked(data.masked);
+      if (typeof data.can_guess === 'boolean') setCanGuess(data.can_guess);
 
 
       // Prefer server authoritative player totals. Do NOT mutate authoritative totals locally.
@@ -1327,7 +1338,7 @@ function AppContent() {
   const urlDefault = `${baseUrl}/en${currentPathSuffix}`; // Default inglese
 
   return (
-    <div className="app-root" style={{ padding: 16, fontFamily: 'sans-serif', position: 'relative' }}>
+    <div className="app-root" style={{ padding: 16, position: 'relative' }}>
       <Helmet>
         <html lang={effectiveLang} />
         <link rel="alternate" hrefLang="it" href={urlIt} />
@@ -1397,8 +1408,8 @@ function AppContent() {
                       powerups={powerups}
                       isSpinning={isSpinning}
                       canGuess={canGuess}
-                      playerNames={playerNames.filter(name => name !== (myName || playerNames[firstPlayerIdx || 0]))}
-                      playerName={myName}
+                      playerNames={playerNames.filter(name => name !== getRequestPlayerName())}
+                      playerName={getRequestPlayerName()}
                     />
                 )}
               </div>
@@ -1424,7 +1435,7 @@ function AppContent() {
                   victory={victory}
                   guessInput={guessInput}
                   onShowPhraseInput={() => {
-                    if (myName && myName !== playerNames[firstPlayerIdx || 0]) {
+                    if (socketRef.current && myName && myName !== playerNames[firstPlayerIdx ?? 0]) {
                       showErrorMessage(t('actions.notYourTurnToGuess'));
                       return;
                     }

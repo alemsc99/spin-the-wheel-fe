@@ -84,7 +84,7 @@
 
 .wheel-info-label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: #666;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -92,7 +92,7 @@
 
 .wheel-info-value {
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 700;
   color: #333;
 }
 
@@ -101,7 +101,7 @@
   top: -30px;
   right: -20px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
   pointer-events: none;
   animation: scoreAnim 1.2s ease-out forwards;
 }
@@ -111,7 +111,7 @@
   left: 100%;
   top: 0;
   font-size: 1.3em;
-  font-weight: bold;
+  font-weight: 700;
   color: #4caf50;
   pointer-events: none;
   animation: scorePop 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -124,7 +124,7 @@
   left: 100%;
   top: 0;
   font-size: 1.3em;
-  font-weight: bold;
+  font-weight: 700;
   color: #f44336;
   pointer-events: none;
   animation: scoreDecrease 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -150,7 +150,7 @@
 .new-game-btn-gc {
   background: linear-gradient(90deg, #ffb74d 0%, #ffd54f 100%);
   color: #222;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 1.1em;
   border: none;
   border-radius: 8px;

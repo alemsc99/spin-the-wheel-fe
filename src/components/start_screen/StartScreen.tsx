@@ -87,7 +87,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     '@type': 'VideoGame',
     name: isIt ? 'SpinWords' : 'SpinWords',
     description: isIt
-      ? 'Gioco di parole e di enigmistica online gratuito. Gira la ruota, usa i powerups e indovina la frase prima degli altri giocatori.'
+      ? 'Gioco di parole e di enigmistica online gratuito. Gira, usa i powerups e indovina la frase prima degli altri giocatori.'
       : 'Free online word puzzle game. Spin the wheel, use power-ups, and guess the phrase before other players.',
     genre: ['Puzzle', 'Word Game', 'Trivia', 'Enigmistic'],
     url: 'https://spinwords.web.app',
@@ -106,7 +106,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
     ? 'SpinWords - Gioco Enigmistico Online Gratis'
     : 'SpinWords -  Online Word Game';
   const metaDescription = isIt
-    ? 'Gioca a SpinWords online gratis! Gira la ruota, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici.'
+    ? 'Gioca a SpinWords online gratis! Gira, indovina le consonanti e risolvi la frase misteriosa prima dei tuoi amici.'
     : 'Play SpinWords online for free! Spin the wheel, guess consonants, and solve the mystery phrase before your friends.';
 
   // ---- CAROUSEL STATE ----
@@ -405,9 +405,6 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                 {currentUser ? (
                   // Already logged in - show who they are
                   <div className="logged-in-state">
-                    {currentUser.isGoogle && (
-                      <div className="google-avatar">🟢</div>
-                    )}
                     <p className="logged-in-label">{t('login.loggedInAs')}</p>
                     <p className="logged-in-name">{currentUser.name}</p>
                     <button
@@ -767,7 +764,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
             <p>
               SpinWords è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
-              Gira la ruota, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
+              Gira, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
             </p>
             <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
             <ul style={{ paddingLeft: '20px' }}>

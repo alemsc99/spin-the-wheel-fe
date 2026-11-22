@@ -1,0 +1,406 @@
+:root {
+  --color-primary: #123B3A;
+  --color-surface: #F5EFE3;
+  --color-accent: #F2B84B;
+  --color-contrast: #825AC7;
+  --color-primary-deep: #0B2727;
+  --color-ink: #123330;
+  --color-surface-soft: #FFF9EF;
+  --color-white: #FFFEFB;
+}
+
+html,
+body,
+#root {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.app-root {
+  color: var(--color-white);
+}
+
+/* Forest teal anchors the large areas; warm ivory groups content surfaces. */
+.start-screen,
+.pretty-bg,
+.scoreboard-page,
+.rules-page {
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
+}
+
+.rules-page {
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
+}
+
+.start-card {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+}
+
+.start-card,
+.seo-content-container,
+.wheel-info-bar,
+.powerups-container,
+.powerups-wrapper,
+.leaderboard-root,
+.scoreboard-card,
+.rules-card,
+.overlay-box,
+.daily-stats-cards > div,
+.daily-result-cards > div {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-surface-soft) !important;
+}
+
+.start-screen .start-card,
+.start-screen .seo-content-container {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: rgba(18, 59, 58, .12) !important;
+}
+
+.seo-content-container h2,
+.seo-content-container h4 {
+  color: var(--color-contrast) !important;
+}
+
+.fancy-title {
+  background: var(--color-primary) !important;
+  color: var(--color-accent) !important;
+  text-shadow: none !important;
+  border-bottom-color: var(--color-accent) !important;
+  box-shadow: 0 5px 20px rgba(11, 39, 39, .32);
+}
+
+.category-label-fancy,
+.logged-in-state {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-surface-soft) !important;
+}
+
+.daily-mode-chip {
+  background: var(--color-contrast) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-contrast) !important;
+  box-shadow: 0 5px 16px rgba(205, 185, 255, .28) !important;
+}
+
+.daily-mode-chip:hover,
+.daily-mode-chip.active {
+  background: var(--color-contrast) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 6px 20px rgba(205, 185, 255, .36), 0 0 0 3px rgba(242, 184, 75, .24) !important;
+}
+
+.daily-mode-chip-tag {
+  background: var(--color-accent) !important;
+  color: var(--color-ink) !important;
+}
+
+.daily-stats-cards strong,
+.daily-result-cards strong,
+.category-title,
+.category-value,
+.players-label,
+.logged-in-name,
+.wheel-info-value,
+.wheel-info-label,
+.powerups-title,
+.leaderboard-title,
+.scoreboard-title {
+  color: var(--color-ink) !important;
+}
+
+.board-cell,
+.board-separator.visible-separator {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 3px 10px rgba(11, 39, 39, .2) !important;
+}
+
+.board-separator.visible-separator {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  width: clamp(22px, 3.8vw, 38px) !important;
+  height: clamp(22px, 3.8vw, 38px) !important;
+  min-width: clamp(22px, 3.8vw, 38px) !important;
+  min-height: clamp(22px, 3.8vw, 38px) !important;
+  aspect-ratio: 1 / 1 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.board-cell .letter,
+.board-cell .letter.revealed {
+  color: var(--color-ink) !important;
+  text-shadow: 0 0 8px rgba(242, 184, 75, .7) !important;
+}
+
+.letter-btn,
+.letter-button,
+.letter-key,
+.board-vowel-button {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-surface-soft) !important;
+}
+
+.start-btn,
+.next-btn,
+.guest-confirm-btn,
+.confirm-btn,
+.target-btn,
+.new-game-btn,
+.new-game-btn-gc,
+.guess-phrase-btn,
+.play-again-btn {
+  background: var(--color-accent) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 3px 12px rgba(11, 39, 39, .22) !important;
+}
+
+.start-btn:hover,
+.next-btn:hover,
+.guest-confirm-btn:hover,
+.confirm-btn:not(:disabled):hover,
+.rules-btn:hover,
+.new-game-btn:hover,
+.new-game-btn-gc:hover {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+}
+
+.mode-btn {
+  background: var(--color-surface) !important;
+  border-color: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+}
+
+.mode-btn.active,
+.lang-btn.active {
+  background: var(--color-primary) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--color-accent) !important;
+}
+
+.lang-toggle,
+.players-select-label-group {
+  background: var(--color-surface-soft) !important;
+  border-color: var(--color-surface) !important;
+}
+
+.lang-btn:not(.active),
+.guest-btn,
+.players-label {
+  color: var(--color-primary) !important;
+}
+
+.guest-btn {
+  background: var(--color-surface-soft) !important;
+  border-color: var(--color-accent) !important;
+}
+
+.carousel-step-item.completed:not(:last-child)::after {
+  background: var(--color-accent) !important;
+}
+
+.carousel-step-item.active .carousel-step-dot {
+  background: var(--color-contrast) !important;
+  color: var(--color-white) !important;
+  box-shadow: 0 2px 8px rgba(205, 185, 255, .35) !important;
+}
+
+.carousel-step-item.completed .carousel-step-dot {
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
+}
+
+.carousel-step-item.active .carousel-step-label,
+.carousel-step-item.completed .carousel-step-label {
+  color: var(--color-primary) !important;
+}
+
+.carousel-step-item.active .carousel-step-label {
+  color: var(--color-contrast) !important;
+}
+
+.secondary-actions .show-rules-btn,
+.secondary-actions .new-game-btn,
+.rules-btn,
+.rules-page-btn,
+.back-btn,
+.cancel-btn,
+.guest-back-btn {
+  background: var(--color-surface) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.start-screen .rules-btn,
+.start-screen .mode-btn,
+.start-screen .daily-mode-chip,
+.start-screen .players-select-label-group {
+  border: 2px solid var(--color-accent) !important;
+}
+
+.start-screen .players-select-label-group {
+  border-radius: 14px !important;
+}
+
+.start-screen .logged-in-state {
+  border: 2px solid var(--color-accent) !important;
+}
+
+.start-screen .mode-btn.active {
+  border-color: var(--color-accent) !important;
+}
+
+.start-screen .guest-back-btn,
+.start-screen .guest-confirm-btn {
+  border-radius: 14px !important;
+}
+
+.leaderboard-entry.active {
+  background: var(--color-primary) !important;
+  color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 2px rgba(242, 184, 75, .18) !important;
+}
+
+.leaderboard-entry {
+  background: var(--color-surface-soft) !important;
+}
+
+.leaderboard-name {
+  color: var(--color-primary) !important;
+}
+
+.leaderboard-entry.active .leaderboard-name {
+  color: var(--color-surface) !important;
+}
+
+.leaderboard-score,
+.leaderboard-title,
+.ranking-item.first,
+.victory-title,
+.victory-ranking-title,
+.scoreboard-rules-title {
+  color: var(--color-ink) !important;
+}
+
+.scoreboard-rules,
+.scoreboard-rules-list li,
+.victory-ranking-item {
+  background: var(--color-surface-soft) !important;
+  color: var(--color-ink) !important;
+  border-color: var(--color-surface) !important;
+}
+
+.daily-stats-cards > div,
+.daily-result-cards > div {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 4px 14px rgba(11, 39, 39, .2) !important;
+}
+
+.daily-stats-cards strong,
+.daily-result-cards strong {
+  color: var(--color-ink) !important;
+}
+
+.letter-btn:not(.used):not(.wrong):hover,
+.letter-btn.vowel-key:not(:disabled):hover {
+  background: var(--color-accent) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.phrase-input,
+.player-name-input,
+.pretty-input,
+.custom-dropdown {
+  background-color: var(--color-surface-soft) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-ink) !important;
+}
+
+.phrase-input:focus,
+.player-name-input:focus,
+.pretty-input:focus,
+.custom-dropdown:focus {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px rgba(242, 184, 75, .35) !important;
+}
+
+.spin-btn {
+  background: var(--color-accent) !important;
+  color: var(--color-ink) !important;
+  border: 0 !important;
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: 0 0 0 4px var(--color-surface), 0 4px 10px rgba(11, 39, 39, .28) !important;
+}
+
+.spin-btn:focus-visible {
+  outline: 3px solid var(--color-surface) !important;
+  outline-offset: 7px;
+}
+
+.powerup-price {
+  background: var(--color-primary) !important;
+  color: var(--color-accent) !important;
+}
+
+.powerup-image {
+  border: 2px solid var(--color-accent) !important;
+  border-radius: 12px !important;
+}
+
+.reel-value.multiplier {
+  color: var(--color-accent) !important;
+}
+
+@media (max-width: 960px) {
+  .powerups-wrapper {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .powerup-image {
+    border-radius: 50% !important;
+  }
+}
+
+.rules-page .rules-modal {
+  background: var(--color-surface) !important;
+  border: 3px solid var(--color-accent) !important;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, .18) !important;
+}
+
+.rules-page .rules-modal-icon-wrapper {
+  background: linear-gradient(90deg, #FFE680 0%, #F2B84B 100%) !important;
+  border-color: var(--color-white) !important;
+}
+
+.rules-page .rules-section-title {
+  color: var(--color-contrast) !important;
+}
+
+.rules-page .rules-list {
+  color: var(--color-ink) !important;
+}
+
+.rules-page .bg-star polygon {
+  fill: var(--color-accent) !important;
+}
+
+@media (max-width: 520px) {
+  .start-card {
+    background: var(--color-surface) !important;
+  }
+}

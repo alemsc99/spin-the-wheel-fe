@@ -1,8 +1,45 @@
+@font-face {
+	font-family: 'Fredoka';
+	src: url('/fonts/Fredoka-Variable.ttf') format('truetype');
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Nunito';
+	src: url('/fonts/Nunito-Variable.ttf') format('truetype');
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Lilita One';
+	src: url('/fonts/LilitaOne-Regular.ttf') format('truetype');
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+}
+
+:root {
+	font-family: 'Nunito', sans-serif;
+	font-synthesis: none;
+}
+
+h1, h2, h3, h4, h5, h6, .title, .fancy-title {
+	font-family: 'Fredoka', sans-serif;
+}
+
+button, input, select, textarea {
+	font-family: inherit;
+}
+
 .fancy-title {
 	background: linear-gradient(90deg, #ffb74d 0%, #e0c3fc 100%);
 	color: #222;
 	font-size: 2em;
-	font-weight: 900;
+	font-weight: 700;
 	border-radius: 16px;
 	box-shadow: 0 4px 24px rgba(224, 195, 252, 0.18);
 	padding: 16px 28px;
@@ -61,7 +98,7 @@
 	left: 100%;
 	top: 0;
 	font-size: 1.3em;
-	font-weight: bold;
+	font-weight: 700;
 	color: #4caf50;
 	pointer-events: none;
 	animation: scorePop 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -94,7 +131,7 @@
 	left: 100%;
 	top: 0;
 	font-size: 1.3em;
-	font-weight: bold;
+	font-weight: 700;
 	color: #f44336;
 	pointer-events: none;
 	animation: scoreDecrease 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -122,19 +159,19 @@
 }
 
 html, body, #root { height: 100%; }
-body { font-family: Inter, system-ui, sans-serif; }
+body { font-family: 'Nunito', sans-serif; }
 
 .app-root {
 	max-width: 1400px;
 	margin: 0 auto;
 	padding: 0 8px;
-	font-family: Inter, system-ui, sans-serif;
+	font-family: 'Nunito', sans-serif;
 }
 
 .new-game-btn {
 	background: linear-gradient(90deg, #ffb74d 0%, #ffd54f 100%);
 	color: #222;
-	font-weight: bold;
+	font-weight: 700;
 	font-size: 1.1em;
 	border: none;
 	border-radius: 8px;
