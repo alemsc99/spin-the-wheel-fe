@@ -71,7 +71,7 @@ export default function RulesPage(): React.ReactElement {
     navigate(`/${activeLang}`);
   };
 
-  const pageNameRaw = t('rules.pageHeading');
+  const pageNameRaw = activeLang === 'it' ? 'Come si gioca a SpinWords' : 'How to play SpinWords';
   const pageName = (typeof pageNameRaw === 'string' && pageNameRaw !== 'rules.pageHeading' && pageNameRaw.trim() !== '')
     ? pageNameRaw
     : (activeLang === 'it' ? 'Regole del Gioco' : 'Game Rules');
@@ -86,7 +86,7 @@ export default function RulesPage(): React.ReactElement {
     : "Play SpinWords for free! Challenge your friends in a turn-based multiplayer game, guess the mystery phrase, and use strategic power-ups to win.";
 
   const metaKeywords = activeLang === 'it'
-    ? "gioco della ruota online, gioco indovina la frase, gioco multiplayer online, gioco gratis online, quiz di parole"
+    ? "gioco online, gioco indovina la frase, gioco multiplayer online, gioco gratis online, quiz di parole"
     : "online wheel game, phrase guessing game, online multiplayer game, free online game, word quiz";
   return (
     <div className="rules-page">
@@ -109,11 +109,16 @@ export default function RulesPage(): React.ReactElement {
       <div className="bg-decor bg-circle c1" />
       <div className="bg-decor bg-circle c2" />
       
-
       {/* 1. TITOLO PRINCIPALE (ESTERNO) */}
       <h1 className="title fancy-title">
         {pageName}
       </h1>
+
+      <p className="rules-intro">
+        {activeLang === 'it'
+          ? 'SpinWords è un gioco online in cui devi indovinare una frase misteriosa, accumulare punti e usare i potenziamenti al momento giusto.'
+          : 'SpinWords is an online wheel and word game where you guess a mystery phrase, earn points, and use power-ups at the right time.'}
+      </p>
 
       {/* 2. IL BOX DELLE REGOLE */}
       <div className="rules-page-wrapper">
@@ -128,7 +133,7 @@ export default function RulesPage(): React.ReactElement {
             {rulesPages.length > 0 ? (
               rulesPages.map((section, sectionIdx) => (
                 <div className="rules-section" key={sectionIdx}>
-                  {section.title && section.title !== baseTitle && <h3 className="rules-section-title">{section.title}</h3>}
+                  {section.title && section.title !== baseTitle && <h2 className="rules-section-title">{section.title}</h2>}
                   <div className="rules-list">
                     {section.content.map((line, lineIdx) => (
                       <p key={lineIdx} className="rules-list-item" dangerouslySetInnerHTML={{ __html: line }} />

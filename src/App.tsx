@@ -1333,9 +1333,20 @@ function AppContent() {
   const pageName = t('start.title');
   const currentPathSuffix = restPath ? `/${restPath}` : '';
   const baseUrl = "https://spinwords.web.app";
+  const isLocalizedHomePage = !restPath && SUPPORTED_LANGS.includes(pathLangCandidate as Lang);
+  const isIndexablePage = isLocalizedHomePage || restPath === 'rules';
+  const homeTitle = effectiveLang === 'it'
+    ? 'SpinWords: Gioco di Parole Gratis Online con Amici'
+    : 'SpinWords – Free Online Phrase Guessing Game';
+  const homeDescription = effectiveLang === 'it'
+    ? 'Gioca gratis a SpinWords: gira la ruota, indovina la frase misteriosa e sfida gli amici in un gioco di parole online, in solitaria o in multiplayer.'
+    : 'Play SpinWords for free: spin the wheel, guess the mystery phrase, and challenge friends in this online word game, solo or in multiplayer mode.';
+  const homeKeywords = effectiveLang === 'it'
+    ? 'gioco online, gioco di parole online, indovina la frase, gioco online gratis, gioco multiplayer con amici'
+    : 'online wheel game, online word game, guess the phrase, free online game, multiplayer game with friends';
   const urlIt = `${baseUrl}/it${currentPathSuffix}`;
   const urlEn = `${baseUrl}/en${currentPathSuffix}`;
-  const urlDefault = `${baseUrl}/en${currentPathSuffix}`; // Default inglese
+  const urlDefault = `${baseUrl}/it${currentPathSuffix}`; // Lingua predefinita coerente con il redirect iniziale
 
   return (
     <div className="app-root" style={{ padding: 16, position: 'relative' }}>
@@ -1344,8 +1355,23 @@ function AppContent() {
         <link rel="alternate" hrefLang="it" href={urlIt} />
         <link rel="alternate" hrefLang="en" href={urlEn} />
         <link rel="alternate" hrefLang="x-default" href={urlDefault} />
-        {/* Canonical: punta alla pagina corrente */}
         <link rel="canonical" href={`${baseUrl}/${effectiveLang}${currentPathSuffix}`} />
+        {isLocalizedHomePage && (
+          <>
+            <title>{homeTitle}</title>
+            <meta name="description" content={homeDescription} />
+            <meta name="keywords" content={homeKeywords} />
+            <meta property="og:type" content="website" />
+            <meta property="og:site_name" content="SpinWords" />
+            <meta property="og:title" content={homeTitle} />
+            <meta property="og:description" content={homeDescription} />
+            <meta property="og:url" content={`${baseUrl}/${effectiveLang}`} />
+            <meta property="og:locale" content={effectiveLang === 'it' ? 'it_IT' : 'en_US'} />
+            <meta name="twitter:title" content={homeTitle} />
+            <meta name="twitter:description" content={homeDescription} />
+          </>
+        )}
+        <meta name="robots" content={isIndexablePage ? 'index, follow' : 'noindex, follow'} />
       </Helmet>
       <Routes>
         <Route path="/" element={<Navigate to={localizedStartPath} replace />} />

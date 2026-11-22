@@ -83,7 +83,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dail
       : "Guarda i punteggi finali e scopri chi ha vinto la partita a SpinWords!";
 
     metaKeywords = showRules
-      ? "regole punteggio gioco online, gioco della ruota online, gioco multiplayer online, gioco a punteggio online, indovina la frase, bonus punteggio gioco"
+      ? "regole punteggio gioco online, gioco online, gioco multiplayer online, gioco a punteggio online, indovina la frase, bonus punteggio gioco"
       : "punteggi finali, classifica, vincitore, partita terminata, SpinWords";
 
   } else {
@@ -109,6 +109,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dail
       <Helmet>
         <title>{metaTitle}</title>
         <meta name="description" content={metaDescription} />
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Aggiungi anche qui Open Graph per completezza */}
@@ -170,6 +171,11 @@ export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dail
                   </li>
                 ))}
               </ul>
+              <p className="scoreboard-rules-link">
+                <a href={`/${currentLang}`}>
+                  {currentLang === 'it' ? 'Torna in home' : 'Back to home'}
+                </a>
+              </p>
               {/* <p className="rules-note">{rulesNote}</p> */}
             </div>
           ) : (

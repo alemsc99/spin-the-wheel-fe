@@ -501,6 +501,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                             setLoginError(t('login.googleError'));
                           }}
                           text="signin_with"
+                          locale={lang}
                           shape="rectangular"
                           size="large"
                           logo_alignment="left"
@@ -761,14 +762,14 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
       <article className="seo-content-container">
         {isIt ? (
           <>
-            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>Il più divertente dei giochi da fare con gli amici</h2>
+            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Gioca gratis a SpinWords, il gioco di parole online</h1>
             <p>
               SpinWords è un <strong>gioco enigmistico gratuito</strong> perfetto per gli appassionati dei giochi di parole.
               Gira, chiama le consonanti, compra le vocali e risolvi la frase misteriosa prima dei tuoi avversari!
             </p>
             <h4 style={{ color: '#d91b5c', marginTop: 0 }}>Caratteristiche del gioco:</h4>
             <ul style={{ paddingLeft: '20px' }}>
-              <li>🕹️ <strong>Modalità Single Player:</strong> Allenati per migliorare le tue abilità di nei <strong>giochi enigmistici</strong>.</li>
+              <li>🕹️ <strong>Modalità Single Player:</strong> Allenati a risolvere le frasi e migliora le tue abilità nei <strong>giochi enigmistici</strong>.</li>
               <li>👥 <strong>Multiplayer Locale:</strong> Sfida amici e parenti sullo stesso dispositivo.</li>
               <li>🌍 <strong>Multiplayer Online:</strong> Crea stanze private e gioca a distanza con chiunque.</li>
               <li>🎡 <strong>Ruota:</strong> guadagna punti ma fai attenzione alle insidie nascoste, potresti perdere tutto!</li>
@@ -776,15 +777,15 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               <li>🔄 <strong>Sorpresa di Metà Partita:</strong> A metà gioco, un rullo verticale sconvolge completamente le sorti della partita: moltiplicatori, azzeramento punti o cambio della frase misteriosa. Tutto può cambiare!</li>
             </ul>
             <p>
-              Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone e <strong>indovina la frase!</strong>
+              Perfetto per gli amanti dei cruciverba, dei puzzle e dei giochi di società. Non serve scaricare nulla: gioca direttamente dal browser su PC, tablet o smartphone e <strong>indovina la frase!</strong> Ogni partita mette alla prova intuito, memoria e strategia: osserva le lettere già scoperte, scegli quando rischiare e usa i punti conquistati per avvicinarti alla soluzione. Attenzione agli spicchi speciali della ruota: possono cambiare il risultato di un turno. <a href="/it/rules">Leggi tutte le regole di SpinWords</a>.
             </p>
             <p>SpinWords è un gioco indipendente, non affiliato a programmi TV o a terzi.</p>
           </>
         ) : (
           <>
-            <h2 style={{ color: '#d91b5c', marginTop: 0 }}>The Funniest Free Online Word Game</h2>
+            <h1 style={{ color: '#d91b5c', marginTop: 0 }}>Play SpinWords, the Free Online Phrase Guessing Game</h1>
             <p>
-              SpinWords is a <strong>free puzzle word game</strong> perfect for word game enthusiasts.
+              SpinWords is a <strong>free online phrase guessing game</strong>. Spin the wheel, choose consonants, buy vowels, and guess the hidden phrase before your opponents.
               Spin the wheel, guess the consonants, buy vowels, and solve the hidden phrase before your opponents!
             </p>
             <h2>Game Features:</h2>
@@ -797,7 +798,7 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
               <li>🔄 <strong>Mid-Game Surprise:</strong> At mid-game, a vertical reel shakes up the game with multipliers, point resets, or phrase changes. Anything can happen!</li>
             </ul>
             <p>
-              Perfect for crossword lovers, puzzle enthusiasts, and party game fans. No download required: play directly in your browser on PC, tablet or smartphone.
+              Perfect for crossword lovers, puzzle enthusiasts, and party game fans. No download required: play directly in your browser on PC, tablet or smartphone. Every round puts your vocabulary, memory, and strategy to the test. Use the revealed letters to work out the phrase, decide when to take a risk, and make the most of the points you earn. Watch out for special wheel spaces that can change the outcome of a turn. <a href="/en/rules">Read all SpinWords game rules</a>.
             </p>
             <p>SpinWords is an independent game, unaffiliated with any TV shows or third parties.</p>
           </>

@@ -267,3 +267,24 @@ html, body {
     width: 100%;
   }
 }
+
+
+/* Intro text: same typography and palette as the rules inside the card. */
+.rules-intro {
+  max-width: 1000px;
+  width: min(90%, 1000px);
+  margin: -22px 0 0;
+  color: #3d2c00;
+  font-size: 17px;
+  line-height: 1.7;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .rules-intro {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-top: -26px;
+  }
+}
