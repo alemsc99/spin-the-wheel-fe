@@ -6,6 +6,18 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "https://spinwords.pages.dev/",
+        "type": 301
+      },
+      {
+        "source": "/:path*",
+        "destination": "https://spinwords.pages.dev/:path",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "**",
