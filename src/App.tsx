@@ -716,7 +716,7 @@ function AppContent() {
         if (numPlayers > 1){
           setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
         }else if (numPlayers === 1){
-          setTurnOverlayMsg(t('newGame.firstTurnSinglePlayer'));
+          //setTurnOverlayMsg(t('newGame.firstTurnSinglePlayer'));
         }
         setShowTurnOverlay(true);
       }
