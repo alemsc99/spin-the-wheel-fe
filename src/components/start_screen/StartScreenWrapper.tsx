@@ -60,7 +60,6 @@ export default function StartScreenWrapper({
             setTurnOverlayIsError(false);
             setShowTurnOverlay(false);
           } else {
-            setTurnOverlayMsg('overlay.turnSpin');
             setTurnOverlayIsError(false);
             setShowTurnOverlay(true);
           }
