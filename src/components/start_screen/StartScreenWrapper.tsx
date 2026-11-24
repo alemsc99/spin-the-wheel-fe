@@ -55,14 +55,11 @@ export default function StartScreenWrapper({
           // choose a random first player
           const idx = Math.floor(Math.random() * players);
           setFirstPlayerIdx(idx);
-          if (mode === 'daily') {
-            setTurnOverlayMsg('');
-            setTurnOverlayIsError(false);
-            setShowTurnOverlay(false);
-          } else {
-            setTurnOverlayIsError(false);
-            setShowTurnOverlay(true);
-          }
+          // Clear any previous turn overlay while the new game is being created.
+          // The new game response sets the single correct first-turn message.
+          setTurnOverlayMsg('');
+          setTurnOverlayIsError(false);
+          setShowTurnOverlay(false);
           // start the new game
           const started = await newGame(players, finalNames, category, userId, mode === 'daily', timezone);
           if (started === 'failed') { setShowTurnOverlay(false); return; }

@@ -713,11 +713,14 @@ function AppContent() {
         setTurnOverlayIsError(false);
         setShowTurnOverlay(false);
       } else {
-        if (numPlayers > 1){
-          setTurnOverlayMsg(t('newGame.firstTurn')+ data.player_names?.[data.current_player_idx || 0] || '');
-        }else if (numPlayers === 1){
-          //setTurnOverlayMsg(t('newGame.firstTurnSinglePlayer'));
+        if (players > 1) {
+          const firstPlayerIdx = typeof data.current_player_idx === 'number' ? data.current_player_idx : 0;
+          const firstPlayerName = data.player_names?.[firstPlayerIdx] ?? names[firstPlayerIdx] ?? '';
+          setTurnOverlayMsg(t('newGame.firstTurn') + firstPlayerName);
+        } else {
+          setTurnOverlayMsg(t('newGame.firstTurnSinglePlayer'));
         }
+        setTurnOverlayIsError(false);
         setShowTurnOverlay(true);
       }
 
