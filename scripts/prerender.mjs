@@ -4,7 +4,7 @@ import path from 'node:path';
 const distDir = path.resolve('dist');
 const template = await fs.readFile(path.join(distDir, 'index.html'), 'utf8');
 const translations = JSON.parse(await fs.readFile(path.resolve('src/i18n/strings.json'), 'utf8'));
-const baseUrl = 'https://spinwords.web.app';
+const baseUrl = 'https://spinwords.pages.dev';
 
 function escapeHtml(value) {
   return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');

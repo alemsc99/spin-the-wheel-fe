@@ -76,7 +76,7 @@ export default function RulesPage(): React.ReactElement {
     ? pageNameRaw
     : (activeLang === 'it' ? 'Regole del Gioco' : 'Game Rules');
 
-  const canonicalUrl = `https://spinwords.web.app/${activeLang}/rules`;
+  const canonicalUrl = `https://spinwords.pages.dev/${activeLang}/rules`;
   const metaTitle = activeLang === 'it' 
       ? "Regole del Gioco - SpinWords | Come Giocare a SpinWords" 
       : "Game Rules - SpinWords | How to Play Spinwords";

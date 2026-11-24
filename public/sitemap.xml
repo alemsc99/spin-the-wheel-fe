@@ -2,31 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://spinwords.web.app/it</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.web.app/it" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.web.app/en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.web.app/it" />
+    <loc>https://spinwords.pages.dev/it</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.pages.dev/it" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.pages.dev/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.pages.dev/it" />
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://spinwords.web.app/en</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.web.app/en" />
-    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.web.app/it" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.web.app/it" />
+    <loc>https://spinwords.pages.dev/en</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.pages.dev/en" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.pages.dev/it" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.pages.dev/it" />
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://spinwords.web.app/it/rules</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.web.app/it/rules" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.web.app/en/rules" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.web.app/it/rules" />
+    <loc>https://spinwords.pages.dev/it/rules</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.pages.dev/it/rules" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.pages.dev/en/rules" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.pages.dev/it/rules" />
     <lastmod>2026-11-01</lastmod>
   </url>
   <url>
-    <loc>https://spinwords.web.app/en/rules</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.web.app/en/rules" />
-    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.web.app/it/rules" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.web.app/it/rules" />
+    <loc>https://spinwords.pages.dev/en/rules</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://spinwords.pages.dev/en/rules" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://spinwords.pages.dev/it/rules" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spinwords.pages.dev/it/rules" />
     <lastmod>2026-11-01</lastmod>
   </url>
 </urlset>

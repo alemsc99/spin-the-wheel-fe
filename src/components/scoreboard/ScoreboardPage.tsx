@@ -27,7 +27,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dail
   const [copied, setCopied] = React.useState(false);
   const shareText = currentLangText(dailyResult);
   async function shareResult() {
-    const shareUrl = `https://spinwords.web.app/${currentLang}`;
+    const shareUrl = `https://spinwords.pages.dev/${currentLang}`;
     const text = `${shareText}\n${shareUrl}`;
     try {
       if (navigator.share) {
@@ -100,7 +100,7 @@ export default function ScoreboardPage({ ranking, onPlayAgain, dailyResult, dail
       ? "game rules, online wheel game, online multiplayer game, online scoring game, phrase guessing, score bonuses"
       : "final scores, leaderboard, winner, game over, SpinWords";
   }
-  const canonicalUrl = `https://spinwords.web.app/${currentLang}/scoreboard`;
+  const canonicalUrl = `https://spinwords.pages.dev/${currentLang}/scoreboard`;
 
 
   return (

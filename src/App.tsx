@@ -1332,7 +1332,7 @@ function AppContent() {
 
   const pageName = t('start.title');
   const currentPathSuffix = restPath ? `/${restPath}` : '';
-  const baseUrl = "https://spinwords.web.app";
+  const baseUrl = "https://spinwords.pages.dev";
   const isLocalizedHomePage = !restPath && SUPPORTED_LANGS.includes(pathLangCandidate as Lang);
   const isIndexablePage = isLocalizedHomePage || restPath === 'rules';
   const homeTitle = effectiveLang === 'it'
