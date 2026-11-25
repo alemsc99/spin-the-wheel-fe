@@ -368,6 +368,13 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
             <span className="rules-btn-icon" role="img" aria-label="rules">📜</span>
           </Link>
         </div>
+        {currentUser?.isGoogle && auth.currentUser?.email?.toLowerCase() === 'alessandromasci20@gmail.com' && (
+          <div className="admin-btn-container">
+            <Link to="admin" className="rules-btn pretty-btn cute-rules-btn" aria-label={isIt ? 'Dashboard gestionale' : 'Admin dashboard'} title={isIt ? 'Dashboard gestionale' : 'Admin dashboard'}>
+              <span role="img" aria-hidden="true">📊</span>
+            </Link>
+          </div>
+        )}
 
         <h1 className="title fancy-title">{isIt ? 'SpinWords' : 'SpinWords'}</h1>
 

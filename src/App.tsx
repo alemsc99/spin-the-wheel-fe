@@ -21,6 +21,7 @@ import { API_URL } from './constants/constants.jsx';
 import useScoreManager from './hooks/ScoreManager.ts';
 import HalfGameReel from './components/half_game_reel/HalfGameReel.jsx';
 import RulesPage from './components/rules/RulesPage';
+import AdminDashboard from './components/admin/AdminDashboard';
 import ScoreboardPage from './components/scoreboard/ScoreboardPage.tsx';
 import ShieldOverlay from './components/overlays/ShieldOverlay.tsx';
 import DoubleOverlay from './components/overlays/DoubleOverlay.tsx';
@@ -100,6 +101,7 @@ function AppContent() {
   const [pendingSpinData, setPendingSpinData] = useState<any>(null);
   const [myName, setMyName] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [gameCategory, setGameCategory] = useState<string>('Random');
   const [dailyMode, setDailyMode] = useState(false);
   const [dailyResult, setDailyResult] = useState<any>(null);
   const [dailyPuzzleDate, setDailyPuzzleDate] = useState('');
@@ -662,19 +664,20 @@ function AppContent() {
   async function newGame(players: number, names: string[], category?: string, userId?: string, daily = false, timezone = 'UTC'): Promise<'started' | 'completed' | 'failed'>{
     setDailyMode(daily);
     setDailyResult(null);
+    setGameCategory(daily ? 'Random' : category || 'Random');
     if (names[0]) setMyName(names[0]);
     setUserId(userId || null);
     try{
-      const token = daily && userId ? await auth.currentUser?.getIdToken() : undefined;
+      const token = userId ? await auth.currentUser?.getIdToken() : undefined;
       const res = await fetch(`${API_URL}/${daily ? 'daily-puzzle' : 'new-game'}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify(daily ? {
-          player_name: names[0], language: lang, timezone, user_id: userId || null
+          player_name: names[0], language: effectiveLang, timezone, user_id: userId || null
         } : {
           num_players: players,
           player_names: names,
-          language: lang,
+          language: effectiveLang,
           room_code: roomCode,
           category: category,
           user_id: userId
@@ -752,6 +755,7 @@ function AppContent() {
   }
 
   async function createRoom(players: number, language: string, host_name: string, category?: string, userId?: string) {
+    setGameCategory(category || 'Random');
     try {
       const res = await fetch(`${API_URL}/create-room`, {
         method: 'POST',
@@ -1299,7 +1303,7 @@ function AppContent() {
     if (location.pathname !== targetPath) {
       navigate(targetPath);
     }
-    await newGame(numPlayers, playerNames, topic);
+    await newGame(numPlayers, playerNames, gameCategory);
   }
 
   function handleWheelClick() {
@@ -1381,6 +1385,7 @@ function AppContent() {
         <Route path="/game" element={<Navigate to={localizedGamePath} replace />} />
         <Route path="/rules" element={<Navigate to={localizedRulesPath} replace />} />
         <Route path="/scoreboard" element={<Navigate to={localizedScoreboardPath} replace />} />
+        <Route path="/admin" element={<Navigate to={`/${effectiveLang}/admin`} replace />} />
         <Route
           path="/:lang"
           element={
@@ -1564,6 +1569,7 @@ function AppContent() {
           )}
         />
         <Route path="/:lang/rules" element={<RulesPage />} />
+        <Route path="/:lang/admin" element={<AdminDashboard />} />
         <Route path="*" element={<Navigate to={localizedStartPath} replace />} />
           </Routes>
 

@@ -6,6 +6,12 @@
   right: 16px;
   z-index: 6;
 }
+.admin-btn-container {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+}
 .rules-btn {
   display: flex;
   align-items: center;
