@@ -16,8 +16,9 @@ type Analytics = {
   by_category: Record<string, { started: number; completed: number }>;
   multiplayer_powerups: Record<string, number>;
   multiplayer_powerups_total: number;
+  time_series: { date: string; games_started: number; games_completed: number; daily_puzzles_solved: number; google_players: number; guest_players: number }[];
 };
-type Period = '15' | '30' | '180' | '365' | 'custom';
+type Period = 'today' | '7' | '30' | 'custom';
 const ADMIN_EMAIL = 'alessandromasci20@gmail.com';
 const formatDate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 const today = () => formatDate(new Date());
@@ -54,9 +55,9 @@ export default function AdminDashboard(): React.ReactElement {
       return;
     }
     if (period !== 'custom') {
-      const length = Number(period);
-      setStartDate(daysAgo(length));
-      setEndDate(today());
+      const currentDay = today();
+      setStartDate(period === 'today' ? currentDay : daysAgo(Number(period)));
+      setEndDate(currentDay);
     }
   }, [authReady, authorized, activeLang, navigate, period]);
 
@@ -92,6 +93,12 @@ export default function AdminDashboard(): React.ReactElement {
     'online-multiplayer': isIt ? 'Multiplayer online' : 'Online multiplayer',
     'daily-puzzle': isIt ? 'Puzzle giornaliero' : 'Daily puzzle',
   };
+  const powerupLabels: Record<string, string> = {
+    Double: isIt ? 'Doppio' : 'Double',
+    Skip: isIt ? 'Salta turno' : 'Skip',
+    Lose: isIt ? 'Perdi tutto' : 'Lose it all',
+    Shield: isIt ? 'Scudo' : 'Shield',
+  };
   if (!authReady || !authorized) return <div className="admin-loading">{isIt ? 'Verifica accesso…' : 'Checking access…'}</div>;
 
   return <main className="admin-dashboard">
@@ -101,7 +108,7 @@ export default function AdminDashboard(): React.ReactElement {
     </header>
     <section className="admin-filters">
       <label>{isIt ? 'Periodo' : 'Period'}<select value={period} onChange={e => setPeriod(e.target.value as Period)}>
-        <option value="15">{isIt ? 'Ultimi 15 giorni' : 'Last 15 days'}</option><option value="30">{isIt ? 'Ultimo mese' : 'Last 30 days'}</option><option value="180">{isIt ? 'Ultimi 6 mesi' : 'Last 6 months'}</option><option value="365">{isIt ? 'Ultimo anno' : 'Last year'}</option><option value="custom">{isIt ? 'Intervallo personalizzato' : 'Custom range'}</option>
+        <option value="today">{isIt ? 'Oggi' : 'Today'}</option><option value="7">{isIt ? 'Ultimi 7 giorni' : 'Last 7 days'}</option><option value="30">{isIt ? 'Ultimo mese' : 'Last month'}</option><option value="custom">{isIt ? 'Personalizzato' : 'Custom'}</option>
       </select></label>
       {period === 'custom' && <><label>{isIt ? 'Dal' : 'From'}<input type="date" value={startDate} max={endDate} onChange={e => setStartDate(e.target.value)} /></label><label>{isIt ? 'Al' : 'To'}<input type="date" value={endDate} min={startDate} max={today()} onChange={e => setEndDate(e.target.value)} /></label></>}
       <span className="admin-range">{startDate} — {endDate}</span>
@@ -117,22 +124,84 @@ export default function AdminDashboard(): React.ReactElement {
       ].map(([icon, label, value, hint]) => <article className="admin-kpi" key={String(label)}><span>{icon}</span><div><strong>{loading && !data ? '…' : value ?? '—'}</strong><small>{label}</small>{hint && <small className="admin-kpi-hint">{hint}</small>}</div></article>)}
     </section>
     <div className="admin-tables">
-      <section className="admin-panel"><h2>{isIt ? 'Partite per modalità' : 'Games by mode'}</h2><AnalyticsTable rows={modeRows} labels={labels} isIt={isIt} /></section>
-      <section className="admin-panel"><h2>{isIt ? 'Partite per categoria' : 'Games by category'}</h2><AnalyticsTable rows={categoryRows} isIt={isIt} /></section>
+      <section className="admin-panel"><h2>{isIt ? 'Partite per modalità' : 'Games by mode'}</h2><div className="admin-mode-pies">
+        <div><p className="admin-chart-subtitle">{isIt ? 'Iniziate' : 'Started'}</p><PieChart rows={modeRows.map(([name, stats]) => [labels[name] ?? name, stats.started])} emptyLabel={isIt ? 'Nessuna partita nel periodo' : 'No games in this period'} totalLabel={isIt ? 'totale' : 'total'} /></div>
+        <div><p className="admin-chart-subtitle">{isIt ? 'Concluse' : 'Completed'}</p><PieChart rows={modeRows.map(([name, stats]) => [labels[name] ?? name, stats.completed])} emptyLabel={isIt ? 'Nessuna partita conclusa' : 'No completed games'} totalLabel={isIt ? 'totale' : 'total'} /></div>
+      </div></section>
+      <section className="admin-panel"><h2>{isIt ? 'Partite per categoria' : 'Games by category'}</h2><p className="admin-chart-subtitle">{isIt ? 'Distribuzione delle partite iniziate' : 'Distribution of games started'}</p><PieChart rows={categoryRows.map(([name, stats]) => [name, stats.started])} emptyLabel={isIt ? 'Nessuna partita nel periodo' : 'No games in this period'} totalLabel={isIt ? 'totale' : 'total'} /></section>
       <section className="admin-panel admin-powerups-panel">
         <h2>{isIt ? `Power-up multiplayer · ${data?.multiplayer_powerups_total ?? 0} utilizzi` : `Multiplayer power-ups · ${data?.multiplayer_powerups_total ?? 0} uses`}</h2>
-        <div className="admin-table-wrap"><table><thead><tr><th>{isIt ? 'Power-up' : 'Power-up'}</th><th>{isIt ? 'Utilizzi' : 'Uses'}</th></tr></thead><tbody>
-          {powerupRows.length ? powerupRows.map(([name, count]) => <tr key={name}><td>{({ Double: isIt ? 'Doppio' : 'Double', Skip: isIt ? 'Salta turno' : 'Skip', Lose: isIt ? 'Perdi tutto' : 'Lose it all', Shield: isIt ? 'Scudo' : 'Shield' } as Record<string, string>)[name] ?? name}</td><td>{count}</td></tr>) : <tr><td colSpan={2}>{isIt ? 'Nessun utilizzo nel periodo' : 'No uses in this period'}</td></tr>}
-        </tbody></table></div>
+        <p className="admin-chart-subtitle">{isIt ? 'Distribuzione degli utilizzi nelle partite multiplayer' : 'Usage distribution in multiplayer games'}</p>
+        <PieChart rows={powerupRows.map(([name, count]) => [powerupLabels[name] ?? name, count])} emptyLabel={isIt ? 'Nessun utilizzo nel periodo' : 'No uses in this period'} totalLabel={isIt ? 'totale' : 'total'} />
       </section>
     </div>
+    <section className="admin-trends">
+      <h2>{isIt ? 'Andamento nel tempo' : 'Trends over time'}</h2>
+      <div className="admin-trend-grid">
+        <TrendChart title={isIt ? 'Partite iniziate' : 'Games started'} values={data?.time_series ?? []} field="games_started" color="#3974d8" />
+        <TrendChart title={isIt ? 'Partite concluse' : 'Games completed'} values={data?.time_series ?? []} field="games_completed" color="#18a78c" />
+        <TrendChart title={isIt ? 'Daily puzzle risolti' : 'Daily puzzles solved'} values={data?.time_series ?? []} field="daily_puzzles_solved" color="#e29a25" />
+        <TrendChart title={isIt ? 'Giocatori Google attivi' : 'Active Google players'} values={data?.time_series ?? []} field="google_players" color="#8063c7" />
+        <TrendChart title={isIt ? 'Giocatori ospiti' : 'Guest players'} values={data?.time_series ?? []} field="guest_players" color="#dc6684" />
+      </div>
+    </section>
     {loading && <p className="admin-status">{isIt ? 'Aggiornamento…' : 'Refreshing…'}</p>}
     <p className="admin-note">{isIt ? 'I dati temporali sono raccolti da questa versione in avanti. I giocatori Google indicano gli account distinti che hanno avviato almeno una partita nel periodo.' : 'Date-filtered data is collected from this version onward. Google players counts distinct accounts that started at least one game in the period.'}</p>
   </main>;
 }
 
-function AnalyticsTable({ rows, labels = {}, isIt }: { rows: [string, { started: number; completed: number }][]; labels?: Record<string, string>; isIt: boolean }): React.ReactElement {
-  return <div className="admin-table-wrap"><table><thead><tr><th>{isIt ? 'Gruppo' : 'Group'}</th><th>{isIt ? 'Iniziate' : 'Started'}</th><th>{isIt ? 'Concluse' : 'Completed'}</th></tr></thead><tbody>
-    {rows.length ? rows.map(([name, stats]) => <tr key={name}><td>{labels[name] ?? name}</td><td>{stats.started}</td><td>{stats.completed}</td></tr>) : <tr><td colSpan={3}>{isIt ? 'Nessun dato nel periodo' : 'No data in this period'}</td></tr>}
-  </tbody></table></div>;
+const CHART_COLORS = ['#3974d8', '#18a78c', '#e29a25', '#8063c7', '#dc6684', '#42a5bd', '#9aaf3e'];
+function PieChart({ rows, emptyLabel, totalLabel }: { rows: [string, number][]; emptyLabel: string; totalLabel: string }): React.ReactElement {
+  const positiveRows = rows.filter(([, value]) => value > 0);
+  const total = positiveRows.reduce((sum, [, value]) => sum + value, 0);
+  const radius = 66;
+  const circumference = 2 * Math.PI * radius;
+  let offset = 0;
+  return <div className="admin-pie-chart">
+    <svg className="admin-donut" viewBox="0 0 180 180" role="img" aria-label={emptyLabel}>
+      <circle cx="90" cy="90" r={radius} fill="none" stroke="#edf1f7" strokeWidth="30" />
+      {total > 0 && positiveRows.map(([name, value], index) => {
+        const length = (value / total) * circumference;
+        const segment = <circle key={name} cx="90" cy="90" r={radius} fill="none" stroke={CHART_COLORS[index % CHART_COLORS.length]} strokeWidth="30" strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-offset} transform="rotate(-90 90 90)"><title>{`${name}: ${value} (${Math.round(value / total * 100)}%)`}</title></circle>;
+        offset += length;
+        return segment;
+      })}
+      <text x="90" y="86" textAnchor="middle" className="admin-donut-total">{total}</text>
+      <text x="90" y="106" textAnchor="middle" className="admin-donut-caption">{total ? totalLabel : '—'}</text>
+    </svg>
+    {total ? <ul className="admin-legend">{positiveRows.map(([name, value], index) => <li key={name}><span className="admin-legend-name"><i style={{ background: CHART_COLORS[index % CHART_COLORS.length] }} />{name}</span><strong>{value}<small> · {Math.round(value / total * 100)}%</small></strong></li>)}</ul> : <p className="admin-chart-empty">{emptyLabel}</p>}
+  </div>;
+}
+
+type TrendPoint = Analytics['time_series'][number];
+function TrendChart({ title, values, field, color }: { title: string; values: TrendPoint[]; field: 'games_started' | 'games_completed' | 'daily_puzzles_solved' | 'google_players' | 'guest_players'; color: string }): React.ReactElement {
+  const width = 620;
+  const height = 190;
+  const left = 42;
+  const right = 12;
+  const top = 14;
+  const bottom = 34;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const maximum = Math.max(1, ...values.map(point => point[field]));
+  const points = values.map((point, index) => {
+    const x = left + (values.length <= 1 ? plotWidth / 2 : index * plotWidth / (values.length - 1));
+    const y = top + plotHeight - (point[field] / maximum) * plotHeight;
+    return { x, y, value: point[field], date: point.date };
+  });
+  const dateIndices = [...new Set([0, Math.floor((values.length - 1) / 2), values.length - 1])].filter(index => index >= 0);
+  const polyline = points.map(point => `${point.x},${point.y}`).join(' ');
+  return <article className="admin-trend-card">
+    <h3>{title}</h3>
+    <svg className="admin-line-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={title}>
+      {[0, 0.5, 1].map((fraction, index) => {
+        const y = top + fraction * plotHeight;
+        const value = Math.round(maximum * (1 - fraction));
+        return <g key={fraction}><line x1={left} x2={width - right} y1={y} y2={y} stroke="#e8edf4" /><text x={left - 8} y={y + 4} textAnchor="end" className="admin-axis-label">{value}</text></g>;
+      })}
+      {points.length > 1 && <polyline points={polyline} fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />}
+      {points.map(point => <circle key={point.date} cx={point.x} cy={point.y} r="3.4" fill={color}><title>{`${point.date}: ${point.value}`}</title></circle>)}
+      {dateIndices.map(index => <text key={values[index]?.date ?? index} x={points[index]?.x ?? left} y={height - 9} textAnchor={index === 0 ? 'start' : index === values.length - 1 ? 'end' : 'middle'} className="admin-axis-label">{values[index]?.date.slice(5) ?? ''}</text>)}
+    </svg>
+  </article>;
 }

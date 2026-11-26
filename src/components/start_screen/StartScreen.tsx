@@ -8,7 +8,7 @@ import { GoogleLogin } from '@react-oauth/google';
 
 import { API_URL, categoryIcons, VITE_GOOGLE_CLIENT_ID } from '../../constants/constants';
 import LoadingSpinner from '../loading_spinner/LoadingSpinner';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signOut } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 
 declare global {
@@ -118,6 +118,17 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
   const [guestName, setGuestName] = useState('');
   const [loginError, setLoginError] = useState('');
   const googleClientId = VITE_GOOGLE_CLIENT_ID || '';
+
+  React.useEffect(() => onAuthStateChanged(auth, user => {
+    if (!user) {
+      setCurrentUser(current => current?.isGoogle ? null : current);
+      return;
+    }
+    const isGoogle = user.providerData.some(provider => provider.providerId === 'google.com');
+    if (isGoogle) {
+      setCurrentUser({ id: user.uid, name: user.displayName || 'Utente', isGoogle: true });
+    }
+  }), []);
 
   // ---- GAME CONFIG STATE ----
   const [gameMode, setGameMode] = useState<GameMode>('single');
@@ -416,11 +427,15 @@ export default function StartScreen({ onStart }: StartScreenProps): React.ReactE
                     <p className="logged-in-name">{currentUser.name}</p>
                     <button
                       className="change-user-btn"
-                      onClick={() => {
-                        setCurrentUser(null);
-                        setShowGuestForm(false);
-                        setGuestName('');
-                        setLoginError('');
+                      onClick={async () => {
+                        try {
+                          if (currentUser.isGoogle) await signOut(auth);
+                        } finally {
+                          setCurrentUser(null);
+                          setShowGuestForm(false);
+                          setGuestName('');
+                          setLoginError('');
+                        }
                       }}
                     >
                       ✏️ {isIt ? 'Cambia' : 'Change'}
